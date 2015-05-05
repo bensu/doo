@@ -9,4 +9,5 @@
   "I don't do a lot."
   [project js-env & cljsbuild-args]
   {:pre [(contains? js-envs (keyword js-env))]}
+  (pprint (:cljsbuild project))
   (apply cljsbuild/cljsbuild project cljsbuild-args))

@@ -1,7 +1,7 @@
 /target
 /classes
 /checkouts
-/resources
+/resourcesj
 pom.xml
 pom.xml.asc
 *.jar
