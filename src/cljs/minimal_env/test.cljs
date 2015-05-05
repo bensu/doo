@@ -1,4 +1,4 @@
-(ns minimal-env)
+(ns minimal-env.test)
 
 (enable-console-print!)
 
