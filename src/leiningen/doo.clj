@@ -62,7 +62,7 @@
 (defn doo 
   "Interprets command line arguments and calls doo.core"
   [project js-env build-id]
-  {:pre [(doo/valid-js-env? js-env)]}
+  (doo/assert-js-env js-env)
   ;; FIX: execute ina try catch like the one in run-local-project
   ;; FIX: get the version dynamically
   (let [project' (add-dep project ['doo "0.1.0-SNAPSHOT"])

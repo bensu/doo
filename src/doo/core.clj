@@ -8,6 +8,12 @@
 (defn valid-js-env? [js-env]
   (contains? js-envs (keyword js-env)))
 
+(defn assert-js-env [js-env]
+  (assert (valid-js-env? js-env)
+    (str "The js-env should be one of: "
+      (clojure.string/join ", " (map name js-envs))
+      " and we got: " js-env)))
+
 (def base-dir "runners/")
 
 (defn get-resource [rs]
