@@ -1,4 +1,4 @@
-(ns doo.core-test
+(ns lein-doo.core-test
   (:require [cljs.test :refer-macros [async deftest is testing]]))
 
 (deftest sync-test 
