@@ -1,8 +1,6 @@
 (ns doo.core-test
   (:require [cljs.test :refer-macros [async deftest is testing]]))
 
-(enable-console-print!)
-
 (deftest sync-test 
   (is (= 2 1)))
 
