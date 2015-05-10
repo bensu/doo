@@ -2,4 +2,4 @@
 
 (enable-console-print!)
 
-(println "I'm alive")
+(println "I'm alive!")

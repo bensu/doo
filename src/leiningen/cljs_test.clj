@@ -1,5 +1,6 @@
 (ns leiningen.cljs-test
-  (:require [leiningen.core.main :as lmain]
+  (:require 
+            [leiningen.core.main :as lmain]
             [leiningen.cljsbuild :as cljsbuild]
             [leiningen.cljsbuild.config :as config]
             [leiningen.cljsbuild.subproject :as subproject]
@@ -32,9 +33,8 @@
 
 ;; well this is private in the leiningen.cljsbuild ns & figwheel!
 (defn run-local-project [project builds requires form]
-  (let [project' (update-in (make-subproject project builds)
-                   [:dependencies]
-                   (partial remove #(= '[cljsbuild "1.0.5"] %)))] 
+  (let [project' (make-subproject project builds)] 
+    (pprint form)
     (leval/eval-in-project (dissoc project' :eval-in)
       `(try
          (do
@@ -54,9 +54,9 @@
         (first (:builds (config/extract-options project)))]
     (pprint source-paths)
     (pprint compiler)
-
     (run-local-project project [build-id]
-      '(require 'cljs.build.api)
-      `(cljs.build.api/build ~source-paths ~compiler)
-      ;; `(wrap-compiler ~source-paths ~compiler)
+      '(require 'cljs.build.api 'cljs.closure)
+      `(cljs.build.api/watch
+        (apply cljs.build.api/inputs ~source-paths)
+        ~compiler)
       )))
