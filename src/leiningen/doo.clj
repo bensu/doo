@@ -60,7 +60,7 @@
              (System/exit 1))))
       requires)))
 
-(defn cljs-test
+(defn doo 
   "I don't do a lot."
   [project js-env build-id]
   {:pre [(doo/valid-js-env? js-env)]}
