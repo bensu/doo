@@ -2,7 +2,6 @@
   (:require [clojure.java.io :as io] 
             [doo.core :as doo]
             [leiningen.core.main :as lmain]
-            [leiningen.cljsbuild :as cljsbuild]
             [leiningen.cljsbuild.config :as config]
             [leiningen.cljsbuild.subproject :as subproject]
             [leiningen.core.eval :as leval]
@@ -61,7 +60,7 @@
       requires)))
 
 (defn doo 
-  "I don't do a lot."
+  "Interprets command line arguments and calls doo.core"
   [project js-env build-id]
   {:pre [(doo/valid-js-env? js-env)]}
   ;; FIX: execute ina try catch like the one in run-local-project
