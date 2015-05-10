@@ -12,5 +12,4 @@
   {:builds {:main {:source-paths ["src"]
                    :compiler {:output-to "resources/public/js/testable.js"
                               :main 'minimal-env.test
-                              :optimizations :none
-                              :verbose true}}}})
+                              :optimizations :whitespace}}}})
