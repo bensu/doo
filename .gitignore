@@ -1,7 +1,8 @@
 /target
+cljs.jar
 /classes
 /checkouts
-/resourcesj
+/resources
 pom.xml
 pom.xml.asc
 *.jar
