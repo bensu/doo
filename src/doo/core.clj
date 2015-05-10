@@ -3,10 +3,12 @@
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]))
 
+;; Inside this ns all js-envs are keywords.
 (def js-envs #{:phantom :slimer :node})
 
 (defn valid-js-env? [js-env]
-  (contains? js-envs (keyword js-env)))
+  {:pre [(keyword? js-env)]}
+  (contains? js-envs js-env))
 
 (defn assert-js-env [js-env]
   (assert (valid-js-env? js-env)
@@ -42,6 +44,6 @@
 
 (defn run-script [js-env compiler-opts]
   {:pre [(valid-js-env? js-env)]}
-  (let [r (apply sh (conj (js->command (keyword js-env))
+  (let [r (apply sh (conj (js->command js-env)
                       (:output-to compiler-opts)))]
     (println (:out r))))

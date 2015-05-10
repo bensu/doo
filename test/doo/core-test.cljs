@@ -3,5 +3,5 @@
 
 (enable-console-print!)
 
-(deftest basic
-  (is (= 1 2)))
+(deftest js-envs 
+  (is (= 2 1)))
