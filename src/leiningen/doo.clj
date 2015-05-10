@@ -1,4 +1,4 @@
-(ns leiningen.cljs-test
+(ns leiningen.doo
   (:require [clojure.java.io :as io] 
             [doo.core :as doo]
             [leiningen.core.main :as lmain]
