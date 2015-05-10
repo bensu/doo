@@ -52,8 +52,7 @@
   {:pre [(contains? js-envs (keyword js-env))]}
   (let [{:keys [source-paths compiler]}
         (first (:builds (config/extract-options project)))]
-    (pprint source-paths)
-    (pprint compiler)
+    (pprint (assoc compiler :watch-fn #(println "!!!")))
     (run-local-project project [build-id]
       '(require 'cljs.build.api 'cljs.closure)
       `(cljs.build.api/watch
