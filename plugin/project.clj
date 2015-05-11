@@ -20,7 +20,11 @@
   :clean-targets ^{:protect false} ["resources/public/js/"]
 
   :cljsbuild
-  {:builds {:test {:source-paths ["src" "test"]
+  {:builds {:dev {:source-paths ["src" "test"]
+                  :main 'lein-doo.core-test
+                  :compiler {:output-to "resources/public/js/testable.js"
+                             :optimizations :none}}
+            :test {:source-paths ["src" "test"]
                    :compiler {:output-to "resources/public/js/testable.js"
                               :main 'lein-doo.runner
                               :optimizations :whitespace}}}})
