@@ -48,7 +48,7 @@
     :slimer ["slimerjs" (runner-path! :slimer "unit-test.js") ]
     :node "node"))
 
-;; Compier options
+;; Compiler options
 ;; ===============
 
 (def valid-optimizations #{:simple :whitespace :advanced})

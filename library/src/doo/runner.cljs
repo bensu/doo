@@ -14,17 +14,21 @@
 
 (def ^:export run! nil)
 
-(defn set-run! [f]
+(defn set-entry-point!
+  "Sets the function to be run when starting the script"
+  [f]
   {:pre [(ifn? f)]}
   (set! run! f))
 
 ;; Finish Testing 
 ;; ==============
 
-(def ^:dynamic *on-testing-complete-fn* nil)
+(def ^:dynamic *exit-fn* nil)
 
-(defn ^:export set-on-testing-complete! [f]
+(defn ^:export set-exit-point!
+  "Sets the fn to be called when exiting the script"
+  [f]
   {:pre [(ifn? f)]}
-  (set! *on-testing-complete-fn* f))
+  (set! *exit-fn* f))
 
 

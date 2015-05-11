@@ -78,12 +78,13 @@ p.open("file://" + pagePath, function (status) {
     };
 
     p.evaluate(function (exitCodePrefix) {
-	doo.runner.set_on_testing_complete_BANG_(function () {
-            console.log("Testing complete");
+	doo.runner.set_exit_point_BANG_(function () {
+            console.log("Exiting Script");
+            // TODO: make the exitCode depend on the tests results
 	    window.alert(exitCodePrefix + 0);
 	});
 
-        // FIX: this should be started in doo
+        console.log("Starting Script");
         var results = doo.runner.run_BANG_();
 
     }, exitCodePrefix);
