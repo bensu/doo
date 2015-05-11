@@ -76,6 +76,11 @@ Usage:\n
 Where - js-env: slimer, phantom, or node
       - build-id: any of the ids under the :cljsbuild map in your project.clj\n")
 
+(defn find-by-id
+  "Out of a seq of builds, returns the one with the given id"
+  [builds id]
+  (first (filter #(= id (:id %)) builds)))
+
 (defn doo 
   "Interprets command line arguments and calls doo.core"
   ([project] (lmain/info help-string))
@@ -88,12 +93,14 @@ Where - js-env: slimer, phantom, or node
    ;; FIX: execute ina try catch like the one in run-local-project
    ;; FIX: get the version dynamically
    (let [project' (add-dep project ['doo "0.1.0-SNAPSHOT"])
-         {:keys [source-paths compiler]} (-> project'
-                                           config/extract-options
-                                           :builds
-                                           first)]
+         builds (-> project' config/extract-options :builds)
+         {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
+     (assert (not (empty? build))
+       (str "The given build (" build-id ") was not found in these options: "
+         (clojure.string/join ", " (map :id builds))))
      (doo/assert-compiler-opts compiler)
-     (run-local-project project' [build-id]
+     ;; FIX: there is probably a bug regarding the incorrect use of builds
+     (run-local-project project' [builds]
        '(require 'cljs.build.api 'doo.core)
        `(cljs.build.api/watch
           (apply cljs.build.api/inputs ~source-paths)
