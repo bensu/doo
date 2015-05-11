@@ -56,7 +56,12 @@ p.open("file://" + pagePath, function (status) {
     };
 
     p.evaluate(function () {
-        if ((goog.async != undefined) && (slimer != undefined)) {
+        // Helper functions
+        function isSlimer() {
+            return !(typeof slimer !== 'undefined');
+        }
+        // Shim to use async in Slimer
+        if ((goog.async != undefined) && isSlimer()) {
             goog.async.nextTick.setImmediate_ = function(funcToCall) {
                 return window.setTimeout(funcToCall, 0);
             };

@@ -79,6 +79,24 @@ handle the entry and exit points yourself from ClojureScript:
 You should not change `doo.runner/*exit-fn*` since it is used by the
 script runner to know when to exit.
 
+## Setting up Environments
+
+This is the hardest part and `doo` doesn't do it for you (yet?). Right
+now if you want to run
+[`slimer](http://docs.slimerjs.org/current/installation.html) and [`phantom`](http://phantomjs.org/download.html) you need to install them
+so that these commands work on the command line:
+
+    phantomjs -v
+
+    slimerjs -v
+
+In the future I plan to allow for customized commands in case you want to
+run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
+
+> Note: Do not install slimerjs with homebrew unless you know what you
+are doing. There are [reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM) of it not working with ClojureScript when
+installed that way because of dated versions.
+
 ## License
 
 Most code in this project is a repackaging of
