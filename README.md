@@ -1,8 +1,8 @@
 # doo 
 
->  ...and I would have gotten away with it, too, if it wasn't for you meddling kids.
-
 A library and Leiningen plugin to run `cljs.test` in many JS environments.
+
+>  ...and I would have gotten away with it, too, if it wasn't for you meddling kids.
 
 ## Usage
 
@@ -10,7 +10,7 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
     lein doo {js-env} {build-id}
 
-* `js-env` can be any of `slimer` or `phantom`. In the future it
+* `js-env` can be any `slimer` or `phantom`. In the future it
 is planned to support `node`, `rhino`, `V8`, `jscore`, and others.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
 
@@ -22,7 +22,7 @@ is planned to support `node`, `rhino`, `V8`, `jscore`, and others.
 ```
 
 Notice that `:main` is set to the namespace `your-project.runner`
-where you define which test namespaces you want to run using:
+where you define which test namespaces you want to run, using:
 
 ```clj
 (ns your-project.runner
@@ -50,7 +50,7 @@ to be in one file).
 
 ### Library
 
-To run a Js file in many environments you can directly call
+To run a JS file in your preferred runner you can directly call
 `doo.core/run-script` from Clojure:
 
 ```clj
@@ -66,7 +66,7 @@ handle the entry and exit points yourself from ClojureScript:
 (require '[doo.runner :as run])
 
 (defn main
-    "The fn you want to run"
+    "The function you want to run"
     []
     ;; what you want to do
     (catch-the-ghost!)
