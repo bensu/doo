@@ -83,7 +83,7 @@ script runner to know when to exit.
 
 This is the hardest part and `doo` doesn't do it for you (yet?). Right
 now if you want to run
-[`slimer](http://docs.slimerjs.org/current/installation.html) and [`phantom`](http://phantomjs.org/download.html) you need to install them
+[`slimer`](http://docs.slimerjs.org/current/installation.html) and [`phantom`](http://phantomjs.org/download.html) you need to install them
 so that these commands work on the command line:
 
     phantomjs -v
