@@ -1,5 +1,6 @@
 (ns leiningen.doo
-  "Provides a command line wrapper around doo.core. See the main fn: doo"
+  "Provides a command line wrapper around doo.core/run-script.
+   See the main fn: doo"
   (:require [clojure.java.io :as io] 
             [doo.core :as doo]
             [leiningen.core.main :as lmain]
@@ -24,6 +25,7 @@
         " is not a string: " version))
     version))
 
+;; Needed to ensure cljsbuild compatibility
 (defn make-subproject [project builds]
   (with-meta
     (merge
@@ -78,8 +80,9 @@ Where - js-env: slimer, phantom, or node
   "Interprets command line arguments and calls doo.core"
   ([project] (lmain/info help-string))
   ([project js-env]
-   (lmain/info (str "We have the js-env (" js-env
-                 ") but we are missing the build-id. See `lein doo` for help.")))
+   (lmain/info
+     (str "We have the js-env (" js-env
+       ") but we are missing the build-id. See `lein doo` for help.")))
   ([project js-env build-id]
    (doo/assert-js-env (keyword js-env))
    ;; FIX: execute ina try catch like the one in run-local-project
