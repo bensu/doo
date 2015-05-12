@@ -4,3 +4,12 @@
 
 (deftest adding
   (is (= 2 (core/adder 1 1))))
+
+(deftest async-test
+  (async done
+    (let [a 1]
+      (js/setTimeout (fn []
+                       (is (= 2 a))
+                       (done))
+        100)
+      (is (= 1 a)))))
