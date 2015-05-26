@@ -9,7 +9,7 @@
   (async done
     (let [a 1]
       (js/setTimeout (fn []
-                       (is (= 2 a))
+                       (is (= 1 a))
                        (done))
         100)
       (is (= 1 a)))))

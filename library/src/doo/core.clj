@@ -9,7 +9,7 @@
 ;; ===============
 
 ;; Inside this ns all js-envs are keywords.
-(def js-envs #{:phantom :slimer :node})
+(def js-envs #{:phantom :slimer :node :rhino})
 
 (defn valid-js-env? [js-env]
   {:pre [(keyword? js-env)]}
@@ -51,6 +51,7 @@
     :phantom ["phantomjs" (runner-path! :phantom "unit-test.js") 
               (runner-path! :phantom-shim "phantomjs-shims.js")]
     :slimer ["slimerjs" (runner-path! :slimer "unit-test.js") ]
+    :rhino ["rhino" "-opt" "-1" (runner-path! :rhino "rhino.js")]
     :node "node"))
 
 ;; Compiler options

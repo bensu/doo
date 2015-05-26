@@ -10,8 +10,8 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
     lein doo {js-env} {build-id}
 
-* `js-env` can be any `slimer` or `phantom`. In the future it
-is planned to support `node`, `rhino`, `V8`, `jscore`, and others.
+* `js-env` can be any `slimer`, `phantom`, or `rhino`. In the future it
+is planned to support `node`, `V8`, `jscore`, and others.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
 
 ```clj
@@ -90,12 +90,20 @@ so that these commands work on the command line:
 
     slimerjs -v
 
+    rhino -help
+
 In the future I plan to allow for customized commands in case you want to
 run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 
 > Note: Do not install slimerjs with homebrew unless you know what you
-are doing. There are [reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM) of it not working with ClojureScript when
-installed that way because of dated versions.
+> are doing. There are
+> [reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
+> of it not working with ClojureScript when installed that way because
+> of dated versions.
+
+> Remember that Rhino doesn't come with a DOM so you can't call the
+> window or document objects. It is meant to test functions and
+> business logic not rendering.
 
 ## License
 
