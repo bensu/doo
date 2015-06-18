@@ -1,10 +1,6 @@
-(ns doo.runner)
+(ns doo.runner
+  (:require [cljs.test]))
 
 (defmacro doo-tests [& namespaces]
   `(doo.runner/set-entry-point! 
-     (fn [] (cljs.test/run-block
-             (concat (cljs.test/run-tests-block ~@namespaces)
-               ;; How do I pass an argument?
-               [(fn []
-                  (if (ifn? doo.runner/*exit-fn*)
-                    (doo.runner/*exit-fn*)))])))))
+     (fn [] (cljs.test/run-tests ~@namespaces))))

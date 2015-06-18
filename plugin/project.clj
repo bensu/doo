@@ -1,4 +1,4 @@
-(defproject lein-doo "0.1.0-SNAPSHOT"
+(defproject lein-doo "0.1.1-SNAPSHOT"
   :description "lein-doo is a plugin to run clj.test on different js environments."
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"
@@ -11,13 +11,13 @@
 
   :eval-in-leiningen true
   
-  :dependencies [[org.clojure/clojure "1.7.0-beta2"]
-                 [org.clojure/clojurescript "0.0-3269"]
+  :dependencies [[org.clojure/clojure "1.7.0-RC2"]
+                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]
                  [doo "0.1.0-SNAPSHOT"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]]
 
-  :clean-targets ^{:protect false} ["resources/public/js/"]
+  :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
 
   :cljsbuild
   {:builds {:dev {:source-paths ["src" "test"]

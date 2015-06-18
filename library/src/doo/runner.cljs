@@ -1,5 +1,6 @@
 (ns doo.runner
-  (:refer-clojure :exclude (run! set-print-fn!)))
+  (:refer-clojure :exclude (run! set-print-fn!))
+  (:require [cljs.test :refer [successful?]]))
 
 ;; Printing
 ;; ========
@@ -26,9 +27,11 @@
 (def ^:dynamic *exit-fn* nil)
 
 (defn ^:export set-exit-point!
-  "Sets the fn to be called when exiting the script"
+  "Sets the fn to be called when exiting the script.
+   It should take one bool argument: successful?"
   [f]
   {:pre [(ifn? f)]}
   (set! *exit-fn* f))
 
-
+(defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
+  (*exit-fn* (successful? m)))

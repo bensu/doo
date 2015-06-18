@@ -58,17 +58,22 @@ p.open("file://" + pagePath, function (status) {
     p.evaluate(function () {
         // Helper functions
         function isSlimer() {
-            return !(typeof slimer !== 'undefined');
+            return (typeof slimer !== 'undefined');
+        }
+        function isAsync() {
+            return (typeof goog.async !== 'undefined');
         }
         // Shim to use async in Slimer
-        if ((goog.async != undefined) && isSlimer()) {
+        if (isAsync() && isSlimer()) {
             goog.async.nextTick.setImmediate_ = function(funcToCall) {
                 return window.setTimeout(funcToCall, 0);
             };
         }
 	doo.runner.set_print_fn_BANG_(function(x) {
-	    // using callPhantom to work around https://github.com/laurentj/slimerjs/issues/223
-	    window.callPhantom(x.replace(/\n/g, "[NEWLINE]")); // since console.log *itself* adds a newline
+	    // using callPhantom to work around
+            // https://github.com/laurentj/slimerjs/issues/223
+	    window.callPhantom(x.replace(/\n/g, "[NEWLINE]"));
+            // since console.log *itself* adds a newline
 	});
     });
 
@@ -83,13 +88,10 @@ p.open("file://" + pagePath, function (status) {
     };
 
     p.evaluate(function (exitCodePrefix) {
-	doo.runner.set_exit_point_BANG_(function () {
-            console.log("Exiting Script");
-            // TODO: make the exitCode depend on the tests results
-	    window.alert(exitCodePrefix + 0);
+	doo.runner.set_exit_point_BANG_(function (isSuccess) {
+	    window.alert(exitCodePrefix + (isSuccess ? 0 : 1));
 	});
 
-        console.log("Starting Script");
         var results = doo.runner.run_BANG_();
 
     }, exitCodePrefix);

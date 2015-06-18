@@ -1,4 +1,4 @@
- (defproject doo "0.1.0-SNAPSHOT"
+ (defproject doo "0.1.1-SNAPSHOT"
    :description "doo is a library to run clj.test on different js environments."
    :url "https://github.com/bensu/doo"
    :license {:name "Eclipse Public License"
@@ -11,5 +11,5 @@
   
    :resource-paths ["resources"]
 
-   :dependencies [[org.clojure/clojure "1.7.0-beta2"]
-                  [org.clojure/clojurescript "0.0-3269" :scope "provided"]])
+   :dependencies [[org.clojure/clojure "1.7.0-RC2"]
+                  [org.clojure/clojurescript "0.0-3308" :scope "provided"]])

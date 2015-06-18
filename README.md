@@ -4,6 +4,11 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
 >  ...and I would have gotten away with it, too, if it wasn't for you meddling kids.
 
+[![Clojars Project](http://clojars.org/lein-doo/latest-version.svg)](http://clojars.org/lein-doo)
+
+Versions from `[0.1.1-SNAPSHOT]` onwards need
+`[org.clojure/clojurescript "0.0-3308"]`. 
+
 ## Usage
 
 ### Plugin
@@ -11,7 +16,6 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
     lein doo {js-env} {build-id}
 
     lein doo {js-env} {build-id} {watch-mode}
-
 
 * `js-env` can be any `slimer`, `phantom`, or `rhino`. In the future it
 is planned to support `node`, `V8`, `jscore`, and others.
@@ -109,6 +113,12 @@ run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 > Remember that Rhino doesn't come with a DOM so you can't call the
 > window or document objects. It is meant to test functions and
 > business logic not rendering.
+
+## Changes
+
+* `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
+code reflecting if the tests failed, to be used in CI builds. It also
+**requires [org.clojure/clojurescript "0.0-3308"]** or newer.
 
 ## License
 
