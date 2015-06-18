@@ -8,7 +8,7 @@
                  [org.clojure/clojurescript "0.0-3308"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
-            [lein-doo "0.1.0-SNAPSHOT"]]
+            [lein-doo "0.1.1-SNAPSHOT"]]
 
   :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
 
