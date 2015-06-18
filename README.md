@@ -10,8 +10,13 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
     lein doo {js-env} {build-id}
 
+    lein doo {js-env} {build-id} {watch-mode}
+
+
 * `js-env` can be any `slimer`, `phantom`, or `rhino`. In the future it
 is planned to support `node`, `V8`, `jscore`, and others.
+* `watch-mode` (optional): either `auto` (default) or `once` which
+  exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
 
 ```clj

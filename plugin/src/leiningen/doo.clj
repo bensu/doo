@@ -82,17 +82,31 @@ Where - js-env: slimer, phantom, or node
   (first (filter #(= id (:id %)) builds)))
 
 (defn doo 
-  "Interprets command line arguments and calls doo.core"
+  "Command line API for doo, which compiles a cljsbuild
+   and runs it in a js enviroment:
+
+  lein doo {js-env} {build-id}
+
+  lein doo {js-env} {build-id} {watch-mode}
+
+  - js-env: any of slimer, phantom, rhinno
+  - build-id: the build-id from your cljsbuild configuration
+  - watch-mode (optional): either auto (default) or once which exits with 0 if the tests were successful and 1 if they failed."
   ([project] (lmain/info help-string))
   ([project js-env]
    (lmain/info
      (str "We have the js-env (" js-env
        ") but we are missing the build-id. See `lein doo` for help.")))
-  ([project js-env build-id]
+
+  ([project js-env build-id] (doo project js-env build-id "auto"))
+  ([project js-env build-id watch-mode]
+   (assert (contains? #{"auto" "once"} watch-mode)
+     (str "Possible watch-modes are auto or once, " watch-mode " was given."))
    (doo/assert-js-env (keyword js-env))
-   ;; FIX: execute ina try catch like the one in run-local-project
+   ;; FIX: execute in a try catch like the one in run-local-project
    ;; FIX: get the version dynamically
-   (let [project' (add-dep project ['doo "0.1.0-SNAPSHOT"])
+   (let [auto? (= "auto" watch-mode)
+         project' (add-dep project ['doo "0.1.0-SNAPSHOT"])
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (assert (not (empty? build))
@@ -102,8 +116,13 @@ Where - js-env: slimer, phantom, or node
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      (run-local-project project' [builds]
        '(require 'cljs.build.api 'doo.core)
-       `(cljs.build.api/watch
-          (apply cljs.build.api/inputs ~source-paths)
-          (assoc ~compiler
-            :watch-fn (fn []
-                        (doo.core/run-script (keyword ~js-env) ~compiler))))))))
+       (if auto?
+         `(cljs.build.api/watch
+            (apply cljs.build.api/inputs ~source-paths)
+            (assoc ~compiler
+              :watch-fn (fn []
+                          (doo.core/run-script (keyword ~js-env) ~compiler))))
+         `(do (cljs.build.api/build
+                (apply cljs.build.api/inputs ~source-paths) ~compiler)
+              (let [results# (doo.core/run-script (keyword ~js-env) ~compiler)]
+                (System/exit (:exit results#)))))))))
