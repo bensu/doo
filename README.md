@@ -114,6 +114,11 @@ run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 > window or document objects. It is meant to test functions and
 > business logic not rendering.
 
+## Travis CI
+To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file in the example project: [example/.travis.yml](example/.travis.yml)
+
+(Currently only tested with PhantomJS.)
+
 ## Changes
 
 * `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
