@@ -5,8 +5,8 @@
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]))
 
+;; ====================================================================== 
 ;; JS Environments
-;; ===============
 
 ;; Inside this ns all js-envs are keywords.
 (def js-envs #{:phantom :slimer :node :rhino})
@@ -24,9 +24,8 @@
       (clojure.string/join ", " (map name js-envs))
       " and we got: " js-env)))
 
-
+;; ====================================================================== 
 ;; Runners
-;; =======
 
 (def base-dir "runners/")
 
@@ -52,10 +51,10 @@
               (runner-path! :phantom-shim "phantomjs-shims.js")]
     :slimer ["slimerjs" (runner-path! :slimer "unit-test.js") ]
     :rhino ["rhino" "-opt" "-1" (runner-path! :rhino "rhino.js")]
-    :node "node"))
+    :node ["node" (runner-path! :node "node-runner.js")]))
 
+;; ====================================================================== 
 ;; Compiler options
-;; ===============
 
 (def valid-optimizations #{:simple :whitespace :advanced})
 
@@ -72,8 +71,8 @@
       (clojure.string/join ", " (map str valid-optimizations))
       ". It currently is " (:optimizations opts))))
 
-;; bash
-;; ====
+;; ====================================================================== 
+;; Bash
 
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts

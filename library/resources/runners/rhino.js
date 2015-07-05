@@ -79,8 +79,8 @@ doo.runner.set_print_fn_BANG_(function(x) {
     if (x.length > 0) print(x);
 });
 
-doo.runner.set_exit_point_BANG_(function () {
-    java.lang.System.exit(0);
+doo.runner.set_exit_point_BANG_(function (isSuccess) {
+    java.lang.System.exit(isSuccess ? 0 : 1);
 });
 
 var results = doo.runner.run_BANG_();

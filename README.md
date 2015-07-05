@@ -17,8 +17,8 @@ Versions from `[0.1.1-SNAPSHOT]` onwards need
 
     lein doo {js-env} {build-id} {watch-mode}
 
-* `js-env` can be any `slimer`, `phantom`, or `rhino`. In the future it
-is planned to support `node`, `V8`, `jscore`, and others.
+* `js-env` can be any `slimer`, `phantom`, `node`, or `rhino`. In the future it
+is planned to support `V8`, `jscore`, and others.
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
@@ -68,59 +68,53 @@ To run a JS file in your preferred runner you can directly call
 (doo/run-script :phantom {:output-to "path/to/the/file"})
 ```
 
-If you don't want to run test and run your own functions you need to
-handle the entry and exit points yourself from ClojureScript:
-
-```clj
-(require '[doo.runner :as run])
-
-(defn main
-    "The function you want to run"
-    []
-    ;; what you want to do
-    (catch-the-ghost!)
-    ;; and then exit when you are done
-    (run/*exit-fn*))
-    
-(run/set-entry-point! main)
-```
-
-You should not change `doo.runner/*exit-fn*` since it is used by the
-script runner to know when to exit.
-
 ## Setting up Environments
 
 This is the hardest part and `doo` doesn't do it for you (yet?). Right
 now if you want to run
-[`slimer`](http://docs.slimerjs.org/current/installation.html) and [`phantom`](http://phantomjs.org/download.html) you need to install them
+[`slimer`](http://docs.slimerjs.org/current/installation.html),
+[`phantom`](http://phantomjs.org/download.html), or [`node`](https://github.com/joyent/node/wiki/Installation) you need to install them
 so that these commands work on the command line:
 
     phantomjs -v
 
     slimerjs -v
 
+    node -v
+
     rhino -help
 
 In the future I plan to allow for customized commands in case you want to
 run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 
-> Note: Do not install slimerjs with homebrew unless you know what you
-> are doing. There are
-> [reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
-> of it not working with ClojureScript when installed that way because
-> of dated versions.
+> Remember that Rhino and Node don't come with a DOM so you can't call the
+> window or document objects. They are meant to test functions and
+> business logic, not rendering.
 
-> Remember that Rhino doesn't come with a DOM so you can't call the
-> window or document objects. It is meant to test functions and
-> business logic not rendering.
+### Slimer
+
+Do not install slimerjs with homebrew unless you know what you
+are doing. There are
+[reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
+of it not working with ClojureScript when installed that way because
+of dated versions.
+
+### Node
+
+The `:target :nodejs` option for the compiler is not currently
+supported. If you need to use this options, please file an issue and
+I'll prioritize it. Also, `*main-cli-fn*` is not needed, since `doo`
+initializes the tests.
 
 ## Travis CI
+
 To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file in the example project: [example/.travis.yml](example/.travis.yml)
 
 (Currently only tested with PhantomJS.)
 
 ## Changes
 
+* `0.1.2-SNAPSHOT` adds `node` support.
 * `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
 code reflecting if the tests failed, to be used in CI builds. It also
 **requires [org.clojure/clojurescript "0.0-3308"]** or newer.
@@ -132,7 +126,7 @@ Most code in this project is a repackaging of
 therefore most of the credit goes to Chas Emerick and contributors to
 that project.
 
-Copyright © 2015 Sebastian Bensusan
+Copyright © 2015 Sebastian Bensusan and Contributors.
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

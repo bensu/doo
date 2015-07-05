@@ -105,8 +105,7 @@ Where - js-env: slimer, phantom, or node
    (doo/assert-js-env (keyword js-env))
    ;; FIX: execute in a try catch like the one in run-local-project
    ;; FIX: get the version dynamically
-   (let [auto? (= "auto" watch-mode)
-         project' (add-dep project ['doo "0.1.1-SNAPSHOT"])
+   (let [project' (add-dep project ['doo "0.1.2-SNAPSHOT"])
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (assert (not (empty? build))
@@ -116,7 +115,7 @@ Where - js-env: slimer, phantom, or node
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      (run-local-project project' [builds]
        '(require 'cljs.build.api 'doo.core)
-       (if auto?
+       (if (= "auto" watch-mode)
          `(cljs.build.api/watch
             (apply cljs.build.api/inputs ~source-paths)
             (assoc ~compiler
