@@ -45,55 +45,63 @@ p.onError = function(msg) {
 p.open("file://" + pagePath, function (status) {
     fs.remove(pagePath);
     if (status == "fail") {
-        console.log("Failed to open: " + pagePath);
+        // TODO: improve error reporting
+        console.log("Slimer or Phantom have failed to open the script. Try manually running it in a browser to see the errors");
+        phantom.exit(1);
+    } else {
+
+        p.onCallback = function (x) {
+	    var line = x.toString();
+	    if (line !== "[NEWLINE]") {
+	        console.log(line.replace(/\[NEWLINE\]/g, "\n"));
+	    }
+        };
+        
+        p.evaluate(function () {
+            // Helper functions
+            function isSlimer() {
+                return (typeof slimer !== 'undefined');
+            }
+            function isAsync() {
+                return ((typeof goog !== 'undefined') &&
+                        (typeof goog.async !== 'undefined'));
+            }
+            // Shim to use async in Slimer
+            if (isAsync() && isSlimer()) {
+                goog.async.nextTick.setImmediate_ = function(funcToCall) {
+                    return window.setTimeout(funcToCall, 0);
+                };
+            }
+            if (typeof doo !== 'undefined') {
+	        doo.runner.set_print_fn_BANG_(function(x) {
+	            // using callPhantom to work around
+                    // https://github.com/laurentj/slimerjs/issues/223
+	            window.callPhantom(x.replace(/\n/g, "[NEWLINE]"));
+                    // since console.log *itself* adds a newline
+	        });
+            } else {
+                window.callPhantom("ERROR: doo was not loaded from the compiled script. Please make sure you are calling doo-tests");
+            }
+        });
+        
+        // p.evaluate is sandboxed, can't ship closures across;
+        // so, a bit of a hack, better than polling :-P
+        var exitCodePrefix = "phantom-exit-code:";
+        p.onAlert = function (msg) {
+	    var exit = msg.replace(exitCodePrefix, "");
+	    if (msg != exit) {
+                phantom.exit(parseInt(exit));
+            }
+        };
+        
+        p.evaluate(function (exitCodePrefix) {
+	    doo.runner.set_exit_point_BANG_(function (isSuccess) {
+	        window.alert(exitCodePrefix + (isSuccess ? 0 : 1));
+	    });
+            
+            var results = doo.runner.run_BANG_();
+            
+        }, exitCodePrefix);
     }
-
-    p.onCallback = function (x) {
-	var line = x.toString();
-	if (line !== "[NEWLINE]") {
-	    console.log(line.replace(/\[NEWLINE\]/g, "\n"));
-	}
-    };
-
-    p.evaluate(function () {
-        // Helper functions
-        function isSlimer() {
-            return (typeof slimer !== 'undefined');
-        }
-        function isAsync() {
-            return (typeof goog.async !== 'undefined');
-        }
-        // Shim to use async in Slimer
-        if (isAsync() && isSlimer()) {
-            goog.async.nextTick.setImmediate_ = function(funcToCall) {
-                return window.setTimeout(funcToCall, 0);
-            };
-        }
-	doo.runner.set_print_fn_BANG_(function(x) {
-	    // using callPhantom to work around
-            // https://github.com/laurentj/slimerjs/issues/223
-	    window.callPhantom(x.replace(/\n/g, "[NEWLINE]"));
-            // since console.log *itself* adds a newline
-	});
-    });
-
-    // p.evaluate is sandboxed, can't ship closures across;
-    // so, a bit of a hack, better than polling :-P
-    var exitCodePrefix = "phantom-exit-code:";
-    p.onAlert = function (msg) {
-	var exit = msg.replace(exitCodePrefix, "");
-	if (msg != exit) {
-            phantom.exit(parseInt(exit));
-        }
-    };
-
-    p.evaluate(function (exitCodePrefix) {
-	doo.runner.set_exit_point_BANG_(function (isSuccess) {
-	    window.alert(exitCodePrefix + (isSuccess ? 0 : 1));
-	});
-
-        var results = doo.runner.run_BANG_();
-
-    }, exitCodePrefix);
 
 });
