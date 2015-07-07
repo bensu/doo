@@ -27,6 +27,7 @@ for (var i = 1; i < sys.args.length; i++) {
     html += "<script>//<![CDATA[\n" + src + "\n//]]></script>";
 }
 
+// some libraries (i.e. d3) use non ASCII characters
 html = "<html><head><meta charset=\"UTF-8\">" + html + "</head><body></body></html>";
 fs.write(pagePath, html, 'w');
 
