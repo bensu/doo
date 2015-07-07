@@ -67,8 +67,10 @@ To run a JS file in your preferred runner you can directly call
 ```clj
 (require '[doo.core :as doo])
 
-(doo/run-script :phantom {:output-to "path/to/the/file"})
+(doo/run-script :phantom "path/to/the/file")
 ```
+
+When used with Slimer, the path to file should be absolute.
 
 ## Setting up Environments
 
