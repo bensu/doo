@@ -118,7 +118,7 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
-* `0.1.2-SNAPSHOT` adds `node` support.
+* `0.1.2-SNAPSHOT` adds `node` support and changed `run-script`'s interface.
 * `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
 code reflecting if the tests failed, to be used in CI builds. It also
 **requires [org.clojure/clojurescript "0.0-3308"]** or newer.
