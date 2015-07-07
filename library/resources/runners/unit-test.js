@@ -30,6 +30,10 @@ for (var i = 1; i < sys.args.length; i++) {
 html = "<html><head>" + html + "</head><body></body></html>";
 fs.write(pagePath, html, 'w');
 
+function isSlimer() {
+    return (typeof slimer !== 'undefined');
+}
+
 // Prepare the page with triggers
 
 // Redirects the output of the page into the script
@@ -57,21 +61,23 @@ p.open("file://" + pagePath, function (status) {
 	    }
         };
         
-        p.evaluate(function () {
-            // Helper functions
-            function isSlimer() {
-                return (typeof slimer !== 'undefined');
-            }
-            function isAsync() {
-                return ((typeof goog !== 'undefined') &&
-                        (typeof goog.async !== 'undefined'));
-            }
-            // Shim to use async in Slimer
-            if (isAsync() && isSlimer()) {
-                goog.async.nextTick.setImmediate_ = function(funcToCall) {
-                    return window.setTimeout(funcToCall, 0);
-                };
-            }
+        // if slimer & async add a shim to avoid insecure operations 
+        if (isSlimer()) {
+            p.evaluate(function () {
+                // Helper functions
+                function isAsync() {
+                    return ((typeof goog !== 'undefined') &&
+                            (typeof goog.async !== 'undefined'));
+                }
+                if (isAsync()) {
+                    goog.async.nextTick.setImmediate_ = function(funcToCall) {
+                        return window.setTimeout(funcToCall, 0);
+                    };
+                }
+            });
+        }
+        
+        p.evaluate(function() {
             if (typeof doo !== 'undefined') {
 	        doo.runner.set_print_fn_BANG_(function(x) {
 	            // using callPhantom to work around
@@ -80,10 +86,10 @@ p.open("file://" + pagePath, function (status) {
                     // since console.log *itself* adds a newline
 	        });
             } else {
-                window.callPhantom("ERROR: doo was not loaded from the compiled script. Please make sure you are calling doo-tests");
+                window.callPhantom("ERROR: doo was not loaded from the compiled script. Please make sure you are calling doo-tests or doo-all-tests");
             }
         });
-        
+
         // p.evaluate is sandboxed, can't ship closures across;
         // so, a bit of a hack, better than polling :-P
         var exitCodePrefix = "phantom-exit-code:";

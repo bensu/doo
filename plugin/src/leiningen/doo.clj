@@ -120,7 +120,8 @@ Where - js-env: slimer, phantom, or node
             (apply cljs.build.api/inputs ~source-paths)
             (assoc ~compiler
               :watch-fn (fn []
-                          (doo.core/run-script (keyword ~js-env) ~compiler))))
+                          (doo.core/run-script (keyword ~js-env)
+                                               ~(:output-to compiler)))))
          `(do (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) ~compiler)
               (let [results# (doo.core/run-script (keyword ~js-env) ~compiler)]

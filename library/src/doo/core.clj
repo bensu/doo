@@ -35,7 +35,7 @@
   (let [full-path (str base-dir filename)
         runner-path (.getAbsolutePath
                      (doto (File/createTempFile (name runner) ".js")
-                       (.deleteOnExit)
+                       ;; (.deleteOnExit)
                        (#(io/copy (slurp (io/resource full-path)) %))))]
     runner-path))
 
@@ -77,9 +77,8 @@
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
    and runs it in the selected js-env."
-  [js-env compiler-opts]
+  [js-env script-path]
   {:pre [(valid-js-env? js-env)]}
-  (let [r (apply sh (conj (js->command js-env)
-                      (:output-to compiler-opts)))]
+  (let [r (apply sh (conj (js->command js-env) script-path))]
     (println (:out r))
     r))
