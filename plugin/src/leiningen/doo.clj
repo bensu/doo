@@ -124,5 +124,6 @@ Where - js-env: slimer, phantom, or node
                                                ~(:output-to compiler)))))
          `(do (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) ~compiler)
-              (let [results# (doo.core/run-script (keyword ~js-env) ~compiler)]
+              (let [results# (doo.core/run-script (keyword ~js-env)
+                                                  ~(:output-to compiler))]
                 (System/exit (:exit results#)))))))))
