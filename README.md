@@ -46,7 +46,9 @@ where you define which test namespaces you want to run, using:
 `doo.runner/doo-tests` works just like `cljs.test/run-tests` but it places hooks
 around the tests to know when to start them and finish them. Since it
 is a macro that will be calling said namespaces, you need to require
-them in `your-project.runner` even if you don't call any of their functions.
+them in `your-project.runner` even if you don't call any of their
+functions. You can also call `(doo.runner/doo-all-tests)` which wraps
+`cljs.test/run-all-tests` to run tests in all loaded namespaces.
 
 Then you can run:
 
