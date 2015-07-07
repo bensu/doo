@@ -27,7 +27,7 @@ for (var i = 1; i < sys.args.length; i++) {
     html += "<script>//<![CDATA[\n" + src + "\n//]]></script>";
 }
 
-html = "<html><head>" + html + "</head><body></body></html>";
+html = "<html><head><meta charset=\"UTF-8\">" + html + "</head><body></body></html>";
 fs.write(pagePath, html, 'w');
 
 function isSlimer() {
@@ -47,7 +47,7 @@ p.onError = function(msg) {
 };
 
 p.open("file://" + pagePath, function (status) {
-    fs.remove(pagePath);
+    // fs.remove(pagePath);
     if (status == "fail") {
         // TODO: improve error reporting
         console.log("Slimer or Phantom have failed to open the script. Try manually running it in a browser to see the errors");
