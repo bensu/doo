@@ -29,13 +29,12 @@
 
 (def base-dir "runners/")
 
-;; The runner keyword is not necessary
 (defn runner-path! [runner filename]
   "Creates a temp file for the given runner resource file"
   (let [full-path (str base-dir filename)
         runner-path (.getAbsolutePath
                      (doto (File/createTempFile (name runner) ".js")
-                       ;; (.deleteOnExit)
+                       (.deleteOnExit)
                        (#(io/copy (slurp (io/resource full-path)) %))))]
     runner-path))
 
