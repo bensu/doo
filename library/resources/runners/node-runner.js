@@ -29,7 +29,7 @@ var failIfCljsTestUndefined = function () {
 };
 
 args.forEach(function (arg) {
-    var file = path.join(process.cwd(), arg);
+    var file = path.isAbsolute(arg) ? arg : path.join(process.cwd(), arg);
     global.require = require;
     global.process = process;
     if (fs.existsSync(file)) {
