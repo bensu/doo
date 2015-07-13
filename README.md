@@ -118,6 +118,8 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
+* `0.1.3-SNAPSHOT` adds support for absolute paths in the runners.
+  Requires `node => 0.12`.
 * `0.1.2-SNAPSHOT` adds `node` support and changed `run-script`'s interface.
 * `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
 code reflecting if the tests failed, to be used in CI builds. It also

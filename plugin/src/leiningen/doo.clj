@@ -97,7 +97,6 @@ Where - js-env: slimer, phantom, or node
    (lmain/info
      (str "We have the js-env (" js-env
        ") but we are missing the build-id. See `lein doo` for help.")))
-
   ([project js-env build-id] (doo project js-env build-id "auto"))
   ([project js-env build-id watch-mode]
    (assert (contains? #{"auto" "once"} watch-mode)
@@ -105,7 +104,7 @@ Where - js-env: slimer, phantom, or node
    (doo/assert-js-env (keyword js-env))
    ;; FIX: execute in a try catch like the one in run-local-project
    ;; FIX: get the version dynamically
-   (let [project' (add-dep project ['doo "0.1.2-SNAPSHOT"])
+   (let [project' (add-dep project ['doo "0.1.3-SNAPSHOT"])
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (assert (not (empty? build))

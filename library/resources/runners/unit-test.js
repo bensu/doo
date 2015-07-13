@@ -4,7 +4,8 @@
 var p = require('webpage').create();
 var fs = require('fs');
 var sys = require('system');
-var workDir = fs.workingDirectory;
+
+var runnerPath = sys.args[0];
 
 // this craziness works around inscrutable JS context issues when tests being
 // run use iframes and such; rather than injecting or eval'ing test scripts and
@@ -12,7 +13,7 @@ var workDir = fs.workingDirectory;
 // guaranteed to work.
 
 var html = "";
-var pagePath = sys.args[0] + ".html";
+var pagePath = runnerPath + ".html";
 
 for (var i = 1; i < sys.args.length; i++) {
     var src;
@@ -48,7 +49,7 @@ p.onError = function(msg) {
 };
 
 p.open("file://" + pagePath, function (status) {
-    // fs.remove(pagePath);
+    fs.remove(pagePath);
     if (status == "fail") {
         // TODO: improve error reporting
         console.log("Slimer or Phantom have failed to open the script. Try manually running it in a browser to see the errors");
