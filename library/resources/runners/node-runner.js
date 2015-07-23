@@ -2,6 +2,9 @@ var path = require("path"),
 fs = require("fs"),
 args = process.argv.slice(2);
 
+// Support lein-npm, etc. in the simple case
+module.paths.push(path.join(process.cwd(), 'node_modules'));
+
 var haveCljsTest = function () {
     return (typeof cljs !== "undefined" &&
             typeof cljs.test !== "undefined" &&
