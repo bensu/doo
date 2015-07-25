@@ -99,30 +99,32 @@ Where - js-env: slimer, phantom, or node
        ") but we are missing the build-id. See `lein doo` for help.")))
   ([project js-env build-id] (doo project js-env build-id "auto"))
   ([project js-env build-id watch-mode]
-   (assert (contains? #{"auto" "once"} watch-mode)
-     (str "Possible watch-modes are auto or once, " watch-mode " was given."))
-   (doo/assert-js-env (keyword js-env))
-   ;; FIX: execute in a try catch like the one in run-local-project
-   ;; FIX: get the version dynamically
-   (let [project' (add-dep project ['doo "0.1.3-SNAPSHOT"])
-         builds (-> project' config/extract-options :builds)
-         {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
-     (assert (not (empty? build))
-       (str "The given build (" build-id ") was not found in these options: "
-         (clojure.string/join ", " (map :id builds))))
-     (doo/assert-compiler-opts compiler)
-     ;; FIX: there is probably a bug regarding the incorrect use of builds
-     (run-local-project project' [builds]
-       '(require 'cljs.build.api 'doo.core)
-       (if (= "auto" watch-mode)
-         `(cljs.build.api/watch
-            (apply cljs.build.api/inputs ~source-paths)
-            (assoc ~compiler
-              :watch-fn (fn []
-                          (doo.core/run-script (keyword ~js-env)
-                                               ~(:output-to compiler)))))
-         `(do (cljs.build.api/build
-                (apply cljs.build.api/inputs ~source-paths) ~compiler)
-              (let [results# (doo.core/run-script (keyword ~js-env)
-                                                  ~(:output-to compiler))]
-                (System/exit (:exit results#)))))))))
+   (let [js-env-kw (keyword js-env)]
+     (assert (contains? #{"auto" "once"} watch-mode)
+       (str "Possible watch-modes are auto or once, " watch-mode " was given."))
+     (doo/assert-js-env js-env-kw)
+     ;; FIX: execute in a try catch like the one in run-local-project
+     ;; FIX: get the version dynamically
+     (let [project' (add-dep project ['doo "0.1.4-SNAPSHOT"])
+           builds (-> project' config/extract-options :builds)
+           {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
+       (assert (not (empty? build))
+         (str "The given build (" build-id ") was not found in these options: "
+           (clojure.string/join ", " (map :id builds))))
+       (doo/assert-compiler-opts js-env-kw compiler)
+       ;; FIX: there is probably a bug regarding the incorrect use of builds
+       (run-local-project project' [builds]
+         '(require 'cljs.build.api 'doo.core)
+         (if (= "auto" watch-mode)
+           `(cljs.build.api/watch
+              (apply cljs.build.api/inputs ~source-paths)
+              (assoc ~compiler
+                :watch-fn (fn []
+                            (doo.core/run-script ~js-env-kw 
+                              ~(:output-to compiler)))))
+           `(do (cljs.build.api/build
+                  (apply cljs.build.api/inputs ~source-paths) ~compiler)
+                (let [results# (doo.core/run-script ~js-env-kw 
+                                 ~(:output-to compiler))]
+                  (System/exit (:exit results#)))))))))
+)

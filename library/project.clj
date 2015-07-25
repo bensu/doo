@@ -1,4 +1,4 @@
-(defproject doo "0.1.3-SNAPSHOT"
+(defproject doo "0.1.4-SNAPSHOT"
   :description "doo is a library to run clj.test on different js environments."
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"

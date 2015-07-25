@@ -65,15 +65,16 @@
 
 (def valid-optimizations #{:simple :whitespace :advanced})
 
-(defn valid-complier-opts? [opts]
+(defn valid-compiler-opts? [js-env opts]
   {:pre [(map? opts)]}
-  (contains? valid-optimizations (:optimizations opts)))
+  (or (contains? valid-optimizations (:optimizations opts))
+      (and (= :node js-env) (= :none (:optimizations opts)))))
 
 (defn assert-compiler-opts
   "Raises an exception if the compiler options are not valid.
    See valid-compiler-opts?"
-  [opts]
-  (assert (valid-complier-opts? opts)
+  [js-env opts]
+  (assert (valid-compiler-opts? js-env opts)
     (str ":optmimizations should be one of: "
       (clojure.string/join ", " (map str valid-optimizations))
       ". It currently is " (:optimizations opts))))

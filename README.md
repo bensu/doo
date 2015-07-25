@@ -105,10 +105,21 @@ of dated versions.
 
 ### Node
 
-The `:target :nodejs` option for the compiler is not currently
-supported. If you need to use this options, please file an issue and
-I'll prioritize it. Also, `*main-cli-fn*` is not needed, since `doo`
-initializes the tests.
+The `:target :nodejs` option for the compiler is only 
+supported for `:optimizations :none`. If you need to use this options,
+please file an issue and I'll prioritize it. Also, `*main-cli-fn*` is
+not needed (but can be used), since `doo` initializes the tests.
+
+Node currently supports `:optimizations :none`:
+
+```clj
+:node-test {:source-paths ["src" "test"]
+            :compiler {:output-to "target/testable.js"
+                       :output-dir "target"
+                       :main 'example.runner
+                       :optimizations :none
+                       :target :nodejs}}
+```
 
 ## Travis CI
 
@@ -118,7 +129,10 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
-* `0.1.3-SNAPSHOT` adds support for absolute paths in the runners.
+* `0.1.4-SNAPSHOT` allows `:optimizations :none` for node projects and
+  changes `valid-compiler-options?`'s signature to take `js-env`. 
+* `0.1.3-SNAPSHOT` adds support for absolute paths in the runners and
+  allows projects to use node dependencies through `lein-npm`.
   Requires `node => 0.12`.
 * `0.1.2-SNAPSHOT` adds `node` support and changed `run-script`'s interface.
 * `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
