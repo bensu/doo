@@ -5,31 +5,26 @@ var p = require('webpage').create();
 var fs = require('fs');
 var sys = require('system');
 
-var runnerPath = sys.args[0];
+function toAbsolutePath(path) {
+    if (fs.isAbsolute(path)) {
+        return path;
+    } else {
+        return fs.absolute(".") + "/" + path;
+    };
+};
 
-// this craziness works around inscrutable JS context issues when tests being
-// run use iframes and such; rather than injecting or eval'ing test scripts and
-// expressions, dump them all into a static HTML file and everything will be
-// guaranteed to work.
+var pagePath = sys.args[0] + ".html";
 
-var html = "";
-var pagePath = runnerPath + ".html";
+var scripts = "";
 
 for (var i = 1; i < sys.args.length; i++) {
-    var src;
-
-    if (fs.exists(sys.args[i])) {
-	src = fs.read(sys.args[i]);
-    } else {
-	if (sys.args[i].match(/\.js$/)) console.log("WARNING: additional cljsbuild :test-command argument looks like a filename, but file does not exist, including as JavaScript expression: " + sys.args[i]);
-	src = sys.args[i];
-    }
-
-    html += "<script>//<![CDATA[\n" + src + "\n//]]></script>";
+    scripts += '<script src="' + toAbsolutePath(sys.args[i]) + '"></script>';
 }
 
-// some libraries (i.e. d3) use non ASCII characters
-html = "<html><head><meta charset=\"UTF-8\">" + html + "</head><body></body></html>";
+var html = "<html><head><meta charset=\"UTF-8\">"
+           + scripts
+           + "</head><body></body></html>";
+
 fs.write(pagePath, html, 'w');
 
 function isSlimer() {

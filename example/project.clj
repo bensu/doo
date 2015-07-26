@@ -24,9 +24,12 @@
                    :compiler {:output-to "target/testable.js"
                               :main 'example.runner
                               :optimizations :whitespace}}
+            :none-test {:source-paths ["src" "test"]
+                        :compiler {:output-to "target/testable.js"
+                                   :main 'example.runner
+                                   :optimizations :none}}
             :node-test {:source-paths ["src" "test"]
                         :compiler {:output-to "target/testable.js"
-                                   :output-dir "target"
                                    :main 'example.runner
                                    :optimizations :none
                                    :target :nodejs}}}})

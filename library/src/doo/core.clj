@@ -1,7 +1,8 @@
 (ns doo.core
   "Runs a Js script in any Js environment. See doo.core/run-script"
   (:import java.io.File)
-  (:require [clojure.java.shell :refer [sh]]
+  (:require [clojure.string :as str]
+            [clojure.java.shell :refer [sh]]
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]))
 
@@ -21,8 +22,8 @@
   [js-env]
   (assert (valid-js-env? js-env)
     (str "The js-env should be one of: "
-      (clojure.string/join ", " (map name js-envs))
-      " and we got: " js-env)))
+         (str/join ", " (map name js-envs))
+         " and we got: " js-env)))
 
 ;; ====================================================================== 
 ;; Runners
@@ -63,21 +64,29 @@
 ;; ====================================================================== 
 ;; Compiler options
 
-(def valid-optimizations #{:simple :whitespace :advanced})
-
-(defn valid-compiler-opts? [js-env opts]
-  {:pre [(map? opts)]}
-  (or (contains? valid-optimizations (:optimizations opts))
-      (and (= :node js-env) (= :none (:optimizations opts)))))
+(def valid-optimizations #{:none :simple :whitespace :advanced})
 
 (defn assert-compiler-opts
   "Raises an exception if the compiler options are not valid.
    See valid-compiler-opts?"
   [js-env opts]
-  (assert (valid-compiler-opts? js-env opts)
-    (str ":optmimizations should be one of: "
-      (clojure.string/join ", " (map str valid-optimizations))
-      ". It currently is " (:optimizations opts))))
+  {:pre [(keyword? js-env) (map? opts)]}
+  (let [optimization (:optimizations opts)]
+    (assert (contains? valid-optimizations optimization)
+      (str ":optmimizations :none should be one of: "
+           (str/join ", " (map str valid-optimizations))
+           ". It currently is " optimization))
+    (assert (or (not= :none optimization)
+                (.isAbsolute (File. (:output-dir opts))))
+      ":output-dir is not supported with :optimizations :none")
+    (assert (not (and (= :node js-env)
+                      (= :none optimization)
+                      (not= :nodejs (:target opts))))
+      "To use :optimizations :none with :node you need to add :target :nodejs to your compiler options")
+    (assert (or (not= :nodejs (:target opts)) (= :none optimization))
+      ":target :nodejs is only supported for :optimizations :none")
+    (assert (not (and (= :rhino js-env) (= :none optimization)))
+      "rhino doesn't support :optimizations :none")))
 
 ;; ====================================================================== 
 ;; Bash
