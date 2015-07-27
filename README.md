@@ -27,7 +27,7 @@ is planned to support `V8`, `jscore`, and others.
 :cljsbuild {:test {:source-paths ["src" "test"]
     			   :compiler {:output-to "resources/public/js/testable.js"
                               :main 'your-project.runner
-                              :optimizations :whitespace}}}
+                              :optimizations :none}}}
 ```
 
 Notice that `:main` is set to the namespace `your-project.runner`
@@ -55,9 +55,7 @@ Then you can run:
     lein doo slimer test
 
 which starts an ClojureScript autobuilder for the `test` profile and
-runs `slimerjs` on it when it's done. The build profiles must set
-`:optimizations` to **anything but `:none`** (we need all the JavaScript
-to be in one file).
+runs `slimerjs` on it when it's done.
 
 ### Library
 
@@ -67,10 +65,10 @@ To run a JS file in your preferred runner you can directly call
 ```clj
 (require '[doo.core :as doo])
 
-(doo/run-script :phantom "path/to/the/file")
+(doo/run-script :phantom "/path/to/the/file")
 ```
 
-When used with Slimer, the path to file should be absolute.
+In general, the path to the file should be absolute.
 
 ## Setting up Environments
 
@@ -95,9 +93,13 @@ run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 > window or document objects. They are meant to test functions and
 > business logic, not rendering.
 
-### Slimer
+### Slimer & Phantom
 
-Do not install slimerjs with homebrew unless you know what you
+When using `slimer` and `phantom` with `:none` make sure your
+`:output-dir` is either unspecified or an absolute path. `doo` will
+bark otherwise.
+
+Do not install Slimer with homebrew unless you know what you
 are doing. There are
 [reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
 of it not working with ClojureScript when installed that way because
@@ -105,12 +107,9 @@ of dated versions.
 
 ### Node
 
-The `:target :nodejs` option for the compiler is only 
-supported for `:optimizations :none`. If you need to use this options,
-please file an issue and I'll prioritize it. Also, `*main-cli-fn*` is
-not needed (but can be used), since `doo` initializes the tests.
-
-Node currently supports `:optimizations :none`:
+`*main-cli-fn*` is not needed (but can be used), since `doo`
+initializes the tests. `:output-dir` is needed whenever you are using `:none`.
+`:hashbang false` and `:target :nodejs` are always needed.
 
 ```clj
 :node-test {:source-paths ["src" "test"]
@@ -118,6 +117,7 @@ Node currently supports `:optimizations :none`:
                        :output-dir "target"
                        :main 'example.runner
                        :optimizations :none
+                       :hashbang false
                        :target :nodejs}}
 ```
 
@@ -129,8 +129,9 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
-* `0.1.4-SNAPSHOT` allows `:optimizations :none` for node projects and
-  changes `valid-compiler-options?`'s signature to take `js-env`. 
+* `0.1.4-SNAPSHOT` allows `:optimizations :none` for all platforms but
+  rhino, changes `valid-compiler-options?`'s signature to take
+  `js-env`, and changes many of the compiler requirements.
 * `0.1.3-SNAPSHOT` adds support for absolute paths in the runners and
   allows projects to use node dependencies through `lein-npm`.
   Requires `node => 0.12`.
