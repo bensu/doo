@@ -72,16 +72,13 @@
   [js-env opts]
   {:pre [(keyword? js-env) (map? opts)]}
   (let [optimization (:optimizations opts)]
-    (assert (contains? valid-optimizations optimization)
-      (str ":optmimizations should be one of: "
-        (str/join ", " (map str valid-optimizations))
-        ". It currently is " optimization))
     (when (and (not= :node js-env) (= :none optimization))
       (assert (.isAbsolute (File. (:output-dir opts)))
-        ":phantom and :slimer do not support relative :output-dir when used with :none"))
+        ":phantom and :slimer do not support relative :output-dir when used with :none. Specify an absolute path or leave it blank."))
     (when (= :node js-env)
       (assert (and (= :nodejs (:target opts)) (false? (:hashbang opts)))
         "node should be used with :target :nodejs and :hashbang false")
+      ;; TODO: this is probably a cljs bug
       (when (= :none optimization)
         (assert (not (.isAbsolute (File. (:output-dir opts))))
           "to use :none with node you need to provide a relative :output-dir")))

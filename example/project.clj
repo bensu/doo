@@ -1,4 +1,4 @@
-(defproject lein-doo-example "0.1.3-SNAPSHOT"
+(defproject lein-doo-example "0.1.4-SNAPSHOT"
   :description "Project to test lein-doo. Do not take it as an example"
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"
@@ -27,11 +27,11 @@
                               :optimizations :whitespace}}
             :none-test {:source-paths ["src" "test"]
                         :compiler {:output-to "target/testable.js"
-                                   :output-dir "target/none"
                                    :main 'example.runner
                                    :optimizations :none}}
             :node-test {:source-paths ["src" "test"]
                         :compiler {:output-to "target/testable.js"
+                                   :output-dir "target/node"
                                    :main 'example.runner
                                    :hashbang false
                                    :optimizations :none
