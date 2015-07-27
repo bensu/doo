@@ -73,20 +73,22 @@
   {:pre [(keyword? js-env) (map? opts)]}
   (let [optimization (:optimizations opts)]
     (assert (contains? valid-optimizations optimization)
-      (str ":optmimizations :none should be one of: "
-           (str/join ", " (map str valid-optimizations))
-           ". It currently is " optimization))
-    (assert (or (not= :none optimization)
-                (.isAbsolute (File. (:output-dir opts))))
-      ":output-dir is not supported with :optimizations :none")
-    (assert (not (and (= :node js-env)
-                      (= :none optimization)
-                      (not= :nodejs (:target opts))))
-      "To use :optimizations :none with :node you need to add :target :nodejs to your compiler options")
-    (assert (or (not= :nodejs (:target opts)) (= :none optimization))
-      ":target :nodejs is only supported for :optimizations :none")
-    (assert (not (and (= :rhino js-env) (= :none optimization)))
-      "rhino doesn't support :optimizations :none")))
+      (str ":optmimizations should be one of: "
+        (str/join ", " (map str valid-optimizations))
+        ". It currently is " optimization))
+    (when (and (not= :node js-env) (= :none optimization))
+      (assert (.isAbsolute (File. (:output-dir opts)))
+        ":phantom and :slimer do not support relative :output-dir when used with :none"))
+    (when (= :node js-env)
+      (assert (and (= :nodejs (:target opts)) (false? (:hashbang opts)))
+        "node should be used with :target :nodejs and :hashbang false")
+      (when (= :none optimization)
+        (assert (not (.isAbsolute (File. (:output-dir opts))))
+          "to use :none with node you need to provide a relative :output-dir")))
+    (when (= :rhino js-env)
+      (assert (not= :none optimization)
+        "rhino doesn't support :optimizations :none"))
+    true))
 
 ;; ====================================================================== 
 ;; Bash

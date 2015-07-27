@@ -9,6 +9,8 @@
 
   :deploy-repositories [["clojars" {:creds :gpg}]]
   
+  :test-paths ["test/clj"]
+
   :resource-paths ["resources"]
 
   :dependencies [[org.clojure/clojure "1.7.0"]
