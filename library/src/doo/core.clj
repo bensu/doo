@@ -9,12 +9,35 @@
 ;; ====================================================================== 
 ;; JS Environments
 
-;; Inside this ns all js-envs are keywords.
+;; All js-envs are keywords.
+
 (def js-envs #{:phantom :slimer :node :rhino})
+
+(def default-aliases {:browsers [:slimer :phantom]})
+
+(defn resolve-alias
+  "Given an alias it resolves to a list of the js-envs it represents,
+   or an empty list if it represents not js-envs. js-envs resolve to 
+   themselves.
+
+   Ex: (resolve-alias :browsers) => [:phantom :slimer]
+       (resolve-alias :slimer) => [:slimer]
+       (resolve-alias :something) => []"
+  [alias]
+  (cond
+    (contains? js-envs alias) [alias]
+    (contains? default-aliases alias) (get default-aliases alias)
+    :else []))
 
 (defn valid-js-env? [js-env]
   {:pre [(keyword? js-env)]}
   (contains? js-envs js-env))
+
+(defn assert-alias [js-env-alias js-env]
+  (assert (not (empty? js-envs))
+    (str "The given alias: " js-env-alias
+      " didn't resolve to any runners. Try any of: "
+      (str/join ", " js-envs) " or " (str/join ", " (keys default-aliases)))))
 
 (defn assert-js-env
   "Throws an exception if the js-env is not valid.
@@ -33,12 +56,11 @@
 (defn runner-path!
   "Creates a temp file for the given runner resource file"
   [runner filename]
-  (let [full-path (str base-dir filename)
-        runner-path (.getAbsolutePath
-                      (doto (File/createTempFile (name runner) ".js")
-                        (.deleteOnExit)
-                        (#(io/copy (slurp (io/resource full-path)) %))))]
-    runner-path))
+  (let [full-path (str base-dir filename)]
+    (.getAbsolutePath
+      (doto (File/createTempFile (name runner) ".js")
+        (.deleteOnExit)
+        (#(io/copy (slurp (io/resource full-path)) %))))))
 
 (defn get-resource [rs]
   (.getPath (io/resource (str base-dir rs))))
@@ -52,7 +74,7 @@
 ;; Define in terms of multimethods to allow user extensibility
 (defn js->command [js]
   {:pre [(keyword? js)]
-   :post [(not (nil? %))]}
+   :post [(some? %)]}
   (let [cmd (command-table js)]
     (case js
       :phantom [cmd (runner-path! :phantom "unit-test.js") 
@@ -63,8 +85,6 @@
 
 ;; ====================================================================== 
 ;; Compiler options
-
-(def valid-optimizations #{:none :simple :whitespace :advanced})
 
 (defn assert-compiler-opts
   "Raises an exception if the compiler options are not valid.

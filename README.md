@@ -18,7 +18,8 @@ Versions from `[0.1.1-SNAPSHOT]` onwards need
     lein doo {js-env} {build-id} {watch-mode}
 
 * `js-env` can be any `slimer`, `phantom`, `node`, or `rhino`. In the future it
-is planned to support `V8`, `jscore`, and others.
+is planned to support `V8`, `jscore`, and others. It can also be the alias
+`browsers` which resolves to `slimer` and `phantom` (both get executed).
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
@@ -99,6 +100,8 @@ When using `slimer` and `phantom` with `:none` make sure your
 `:output-dir` is either unspecified or an absolute path. `doo` will
 bark otherwise.
 
+If you want to run both, use `lein doo browsers {build-id} {watch-mode}`.
+
 Do not install Slimer with homebrew unless you know what you
 are doing. There are
 [reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
@@ -130,8 +133,9 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 ## Changes
 
 * `0.1.4-SNAPSHOT` allows `:optimizations :none` for all platforms but
-  rhino, changes `valid-compiler-options?`'s signature to take
-  `js-env`, and changes many of the compiler requirements.
+  `rhino`, changes `valid-compiler-options?`'s signature to take
+  `js-env`, adds the `browsers` alias, and changes many of the
+  compiler requirements.
 * `0.1.3-SNAPSHOT` adds support for absolute paths in the runners and
   allows projects to use node dependencies through `lein-npm`.
   Requires `node => 0.12`.

@@ -1,7 +1,8 @@
 (ns leiningen.doo
   "Provides a command line wrapper around doo.core/run-script.
-   See the main fn: doo"
+   See the main function: doo"
   (:require [clojure.java.io :as io] 
+            [clojure.string :as str]
             [doo.core :as doo]
             [leiningen.core.main :as lmain]
             [leiningen.cljsbuild.config :as config]
@@ -97,34 +98,41 @@ Where - js-env: slimer, phantom, or node
    (lmain/info
      (str "We have the js-env (" js-env
        ") but we are missing the build-id. See `lein doo` for help.")))
-  ([project js-env build-id] (doo project js-env build-id "auto"))
-  ([project js-env build-id watch-mode]
-   (let [js-env-kw (keyword js-env)]
-     (assert (contains? #{"auto" "once"} watch-mode)
-       (str "Possible watch-modes are auto or once, " watch-mode " was given."))
-     (doo/assert-js-env js-env-kw)
-     ;; FIX: execute in a try catch like the one in run-local-project
-     ;; FIX: get the version dynamically
-     (let [project' (add-dep project ['doo "0.1.4-SNAPSHOT"])
-           builds (-> project' config/extract-options :builds)
-           {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
-       (assert (not (empty? build))
-         (str "The given build (" build-id ") was not found in these options: "
-           (clojure.string/join ", " (map :id builds))))
-       (doo/assert-compiler-opts js-env-kw compiler)
-       ;; FIX: there is probably a bug regarding the incorrect use of builds
-       (run-local-project project' [builds]
-         '(require 'cljs.build.api 'doo.core)
-         (if (= "auto" watch-mode)
-           `(cljs.build.api/watch
-              (apply cljs.build.api/inputs ~source-paths)
-              (assoc ~compiler
-                :watch-fn (fn []
-                            (doo.core/run-script ~js-env-kw 
-                              ~(:output-to compiler)))))
-           `(do (cljs.build.api/build
-                  (apply cljs.build.api/inputs ~source-paths) ~compiler)
-                (let [results# (doo.core/run-script ~js-env-kw 
-                                 ~(:output-to compiler))]
-                  (System/exit (:exit results#)))))))))
-)
+  ([project js-env-alias build-id] (doo project js-env-alias build-id "auto"))
+  ([project js-env-alias build-id watch-mode]
+   (assert (contains? #{"auto" "once"} watch-mode)
+     (str "Possible watch-modes are auto or once, " watch-mode " was given."))
+   ;; FIX: execute in a try catch like the one in run-local-project
+   ;; FIX: get the version dynamically
+   (let [js-envs (doo/resolve-alias (keyword js-env-alias))
+         project' (add-dep project ['doo "0.1.4-SNAPSHOT"])
+         builds (-> project' config/extract-options :builds)
+         {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
+     (doo/assert-alias js-env-alias js-envs)
+     (doseq [js-env js-envs]
+       (doo/assert-js-env js-env))
+     (assert (not (empty? build))
+       (str "The given build (" build-id ") was not found in these options: "
+         (str/join ", " (map :id builds))))
+     (doseq [js-env js-envs]
+       (doo/assert-compiler-opts js-env compiler))
+     ;; FIX: there is probably a bug regarding the incorrect use of builds
+     (run-local-project project' [builds]
+       '(require 'cljs.build.api 'doo.core)
+       (if (= "auto" watch-mode)
+         `(cljs.build.api/watch
+            (apply cljs.build.api/inputs ~source-paths)
+            (assoc ~compiler
+              :watch-fn
+              (fn []
+                (doseq [js-env# ~js-envs]
+                  (println ";;" (clojure.string/join "" (take 70 (repeat "="))))
+                  (println (str ";; Testing with "
+                             (clojure.string/capitalize (name js-env#)) ":"))
+                  (doo.core/run-script js-env# ~(:output-to compiler))))))
+         `(do (cljs.build.api/build
+                (apply cljs.build.api/inputs ~source-paths) ~compiler)
+              (let [rs# (map #(doo.core/run-script % ~(:output-to compiler))
+                             ~js-envs)
+                    exit-code# (if (some (comp not zero? :exit) rs#) 1 0)]
+                (System/exit exit-code#))))))))

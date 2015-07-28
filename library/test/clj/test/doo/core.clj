@@ -1,5 +1,5 @@
 (ns test.doo.core
-  (:require [clojure.test :refer [deftest are is]]
+  (:require [clojure.test :refer [deftest are is testing]]
             [doo.core :as doo]))
 
 (defn prepare [opts]
@@ -56,3 +56,24 @@
        :slimer {:output-to "target/testable.js"
                 :main 'example.runner
                 :optimizations :none}))
+
+(deftest js-env
+  (testing "We know which js-envs we support"
+    (are [js-env] (not (doo/valid-js-env? js-env))
+         :spidermonkey
+         :v8
+         :d8
+         :something-else)
+    (are [js-env] (doo/valid-js-env? js-env)
+         :rhino
+         :slimer
+         :phantom
+         :node))
+  (testing "We can resolve aliases"
+    (are [alias js-envs] (= (doo/resolve-alias alias) js-envs)
+         :phantom [:phantom]
+         :slimer [:slimer]
+         :node [:node]
+         :rhino [:rhino]
+         :browsers [:slimer :phantom]
+         :not-an-alias [])))
