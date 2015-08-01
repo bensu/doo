@@ -126,13 +126,12 @@ Where - js-env: slimer, phantom, or node
               :watch-fn
               (fn []
                 (doseq [js-env# ~js-envs]
-                  (println ";;" (clojure.string/join "" (take 70 (repeat "="))))
-                  (println (str ";; Testing with "
-                             (clojure.string/capitalize (name js-env#)) ":"))
+                  (doo.core/print-env js-env#)
                   (doo.core/run-script js-env# ~(:output-to compiler))))))
          `(do (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) ~compiler)
-              (let [rs# (map #(doo.core/run-script % ~(:output-to compiler))
+              (let [rs# (map #(do (doo.core/print-env %)
+                                (doo.core/run-script % ~(:output-to compiler)))
                              ~js-envs)
                     exit-code# (if (some (comp not zero? :exit) rs#) 1 0)]
                 (System/exit exit-code#))))))))

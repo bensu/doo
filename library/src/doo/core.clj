@@ -48,6 +48,10 @@
          (str/join ", " (map name js-envs))
          " and we got: " js-env)))
 
+(defn print-env [js-env]
+  (println ";;" (str/join "" (take 70 (repeat "="))))
+  (println (str ";; Testing with " (str/capitalize (name js-env)) ":")))
+
 ;; ====================================================================== 
 ;; Runners
 
