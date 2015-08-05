@@ -5,20 +5,12 @@ var p = require('webpage').create();
 var fs = require('fs');
 var sys = require('system');
 
-function toAbsolutePath(path) {
-    if (fs.isAbsolute(path)) {
-        return path;
-    } else {
-        return fs.absolute(".") + "/" + path;
-    };
-};
-
-var pagePath = sys.args[0] + ".html";
+var pagePath = fs.absolute(sys.args[sys.args.length-1] + ".html");
 
 var scripts = "";
 
 for (var i = 1; i < sys.args.length; i++) {
-    scripts += '<script src="' + toAbsolutePath(sys.args[i]) + '"></script>';
+    scripts += '<script src="' + fs.absolute(sys.args[i]) + '"></script>';
 }
 
 var html = "<html><head><meta charset=\"UTF-8\">"
@@ -35,7 +27,7 @@ function isSlimer() {
 
 // Redirects the output of the page into the script
 p.onConsoleMessage = function(msg) {
-    console.log(msg); 
+    console.log(msg);
 };
 
 p.onError = function(msg) {
@@ -57,8 +49,8 @@ p.open("file://" + pagePath, function (status) {
 	        console.log(line.replace(/\[NEWLINE\]/g, "\n"));
 	    }
         };
-        
-        // if slimer & async add a shim to avoid insecure operations 
+
+        // if slimer & async add a shim to avoid insecure operations
         if (isSlimer()) {
             p.evaluate(function () {
                 // Helper functions
@@ -73,7 +65,7 @@ p.open("file://" + pagePath, function (status) {
                 }
             });
         }
-        
+
         p.evaluate(function() {
             if (typeof doo !== 'undefined') {
 	        doo.runner.set_print_fn_BANG_(function(x) {
@@ -96,14 +88,14 @@ p.open("file://" + pagePath, function (status) {
                 phantom.exit(parseInt(exit));
             }
         };
-        
+
         p.evaluate(function (exitCodePrefix) {
 	    doo.runner.set_exit_point_BANG_(function (isSuccess) {
 	        window.alert(exitCodePrefix + (isSuccess ? 0 : 1));
 	    });
-            
+
             var results = doo.runner.run_BANG_();
-            
+
         }, exitCodePrefix);
     }
 
