@@ -11,7 +11,7 @@
 
 ;; All js-envs are keywords.
 
-(def js-envs #{:phantom :slimer :node :rhino})
+(def js-envs #{:phantom :slimer :node :rhino :karma})
 
 (def default-aliases {:browsers [:slimer :phantom]})
 
@@ -66,17 +66,37 @@
         (.deleteOnExit)
         (#(io/copy (slurp (io/resource full-path)) %))))))
 
-(defn get-resource [rs]
-  (.getPath (io/resource (str base-dir rs))))
+(defn replace-output-to [f script-path]
+  (str/replace f #"doooutputto" script-path))
+
+(defn replace-output-dir [f dir-path]
+  (str/replace f #"doooutputdir" dir-path))
+
+(defn relative-runner-path!
+  "Creates a file for the given runner resource file in the users dir"
+  [compiler-opts]
+  (let [runner :karma
+        filename "karma.conf.js"
+        full-path (str base-dir filename)]
+    (println (:output-dir compiler-opts))
+    (.getPath
+      (doto (io/file (str (name runner) ".js"))
+        (.deleteOnExit)
+        (#(io/copy (->  (io/resource full-path)
+                     slurp
+                     (replace-output-to (:output-to compiler-opts))
+                     (replace-output-dir (:output-dir compiler-opts))) 
+            %))))))
 
 (def command-table
   {:phantom "phantomjs" 
    :slimer "slimerjs" 
    :rhino "rhino"
-   :node "node"})
+   :node "node"
+   :karma "./node_modules/karma/bin/karma"})
 
 ;; Define in terms of multimethods to allow user extensibility
-(defn js->command [js]
+(defn js->command [js compiler-opts]
   {:pre [(keyword? js)]
    :post [(some? %)]}
   (let [cmd (command-table js)]
@@ -85,6 +105,7 @@
                 (runner-path! :phantom-shim "phantomjs-shims.js")]
       :slimer [cmd (runner-path! :slimer "unit-test.js") ]
       :rhino [cmd "-opt" "-1" (runner-path! :rhino "rhino.js")]
+      :karma [cmd "start" (relative-runner-path! compiler-opts)]
       :node [cmd (runner-path! :node "node-runner.js")])))
 
 ;; ====================================================================== 
@@ -123,10 +144,11 @@ If it does work, file an issue and we'll sort it together!")
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
    and runs it in the selected js-env."
-  [js-env script-path]
+  [js-env compiler-opts]
   {:pre [(valid-js-env? js-env)]}
   (try
-    (let [r (apply sh (conj (js->command js-env) script-path))]
+    (let [r (apply sh (conj (js->command js-env compiler-opts)
+                        (:output-to compiler-opts)))]
       (println (:out r))
       r)
     (catch java.io.IOException e

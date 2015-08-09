@@ -1,7 +1,7 @@
 // karma.conf.js
 module.exports = function(config) {
   // same as :output-dir
-  var root = 'target/';
+  var root =  'doooutputdir';
 
   config.set({
     frameworks: ['cljs-test'],
@@ -13,9 +13,9 @@ module.exports = function(config) {
     browsers: ['Chrome', 'Firefox'],
 
     files: [
-      root + '/cljsbuild-compiler-1/goog/base.js',
-      root + '/cljsbuild-compiler-1/cljs_deps.js',
-      root + '/testable.js', // same as :output-to
+      root + '/goog/base.js',
+      root + '/cljs_deps.js',
+      'doooutputto',
       {pattern: root + '/*.js', included: false},
       {pattern: root + '/**/*.js', included: false}
     ],
