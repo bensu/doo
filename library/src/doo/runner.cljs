@@ -1,17 +1,27 @@
 (ns doo.runner
   (:refer-clojure :exclude (run! set-print-fn!))
-  (:require [cljs.test :refer [successful?]]))
-
+  (:require [cljs.test :refer [successful?]]
+            [jx.reporter.karma :as karma :include-macros true]))
+            
+;; ====================================================================== 
 ;; Printing
-;; ========
 
 (enable-console-print!)
 
 (defn ^:export set-print-fn! [f]
   (set! cljs.core.*print-fn* f))
 
+;; ====================================================================== 
+;; Karma Helpers
+
+(defn karma? []
+  (exists? js/window.__karma__))
+
+(defmethod cljs.test/report [:jx.reporter.karma/karma :begin-test-ns] [m]
+  (println "Testing" (name (:ns m))))
+
+;; ====================================================================== 
 ;; Start Testing
-;; =============
 
 (def ^:export run! nil)
 
@@ -21,8 +31,8 @@
   {:pre [(ifn? f)]}
   (set! run! f))
 
+;; ====================================================================== 
 ;; Finish Testing 
-;; ==============
 
 (def ^:dynamic *exit-fn* nil)
 

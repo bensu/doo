@@ -1,0 +1,10 @@
+{
+  "name": "doo-example",
+  "version": "1.0.0",
+  "devDependencies": {
+    "karma": "^0.12.14",
+    "karma-cljs-test": "^0.1.0",
+    "karma-closure": "~0.1",
+    "karma-junit-reporter": "^0.3.3"
+  }
+}

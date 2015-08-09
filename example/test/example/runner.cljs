@@ -3,4 +3,4 @@
             [doo.runner :refer-macros [doo-all-tests doo-tests]]
             [example.core-test]))
 
-(doo-all-tests)
+(doo-tests 'example.core-test)

@@ -14,4 +14,5 @@
   :resource-paths ["resources"]
 
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]])
+                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]
+                 [karma-reporter "0.1.0-SNAPSHOT"]])
