@@ -1,4 +1,4 @@
-(defproject lein-doo-example "0.1.4-SNAPSHOT"
+(defproject lein-doo-example "0.1.5-SNAPSHOT"
   :description "Project to test lein-doo. Do not take it as an example"
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"
