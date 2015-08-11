@@ -105,7 +105,7 @@ Where - js-env: slimer, phantom, or node
    ;; FIX: execute in a try catch like the one in run-local-project
    ;; FIX: get the version dynamically
    (let [js-envs (doo/resolve-alias (keyword js-env-alias))
-         project' (add-dep project ['doo "0.1.4-SNAPSHOT"])
+         project' (add-dep project ['doo "0.1.4"])
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)
