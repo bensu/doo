@@ -58,6 +58,10 @@ Then you can run:
 which starts an ClojureScript autobuilder for the `test` profile and
 runs `slimerjs` on it when it's done.
 
+### Boot
+
+`doo` is packaged as a Boot task in [boot-cljs-test](https://github.com/crisptrutski/boot-cljs-test).
+
 ### Library
 
 To run a JS file in your preferred runner you can directly call
