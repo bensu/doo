@@ -17,9 +17,10 @@ Versions from `[0.1.1-SNAPSHOT]` onwards need
 
     lein doo {js-env} {build-id} {watch-mode}
 
-* `js-env` can be any `slimer`, `phantom`, `node`, or `rhino`. In the future it
-is planned to support `V8`, `jscore`, and others. It can also be the alias
-`browsers` which resolves to `slimer` and `phantom` (both get executed).
+* `js-env` can be any `chrome`, `firefox`, `safari`, `opera`,
+`slimer`, `phantom`, `node`, or `rhino`. In the future it 
+is planned to support `V8`, `jscore`, and others. It can also be an
+alias: either user defined or built-in (see the Alias section) 
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
@@ -70,7 +71,7 @@ To run a JS file in your preferred runner you can directly call
 ```clj
 (require '[doo.core :as doo])
 
-(doo/run-script :phantom "/path/to/the/file")
+(doo/run-script :phantom {:output-to "/path/to/the/file"})
 ```
 
 In general, the path to the file should be absolute.
@@ -91,12 +92,73 @@ so that these commands work on the command line:
 
     rhino -help
 
+    karma -v
+
 In the future I plan to allow for customized commands in case you want to
 run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 
 > Remember that Rhino and Node don't come with a DOM so you can't call the
 > window or document objects. They are meant to test functions and
 > business logic, not rendering.
+
+### Karma
+
+#### Installation
+
+[Karma](http://karma-runner.github.io/0.13/index.html)
+is a comprehensive JavaScript test runner. It uses
+[plugins](http://karma-runner.github.io/0.13/dev/plugins.html) to
+extend functionality. We are interested in several "launcher" plugins
+which start a browser on command. You might **want** any of:
+
+    - karma-chrome-launcher
+    - karma-firefox-launcher
+    - karma-safari-launcher
+    - karma-opera-launcher
+    - karma-ie-launcher 
+
+Alternatively, if you don't want `doo` to launch the browsers for you,
+you can always launch them yourself and navigate to
+[http://localhost:9876](http://localhost:9876) 
+
+We also need to properly report `cljs.test` results inside Karma.
+We'll **need** a "framework" plugin:
+
+    - karma-cljs-test
+
+Karma and its plugins are installed with `npm`, globally
+with `npm install -g karma`, or local to
+the project with `npm install karma`. These alternatives can't be
+combined: you can't install `karma` globally and then install
+`karma-chrome-launcher` locally. I recommend the local option since
+you will probably get sucked into `npm` sooner rather than later
+(if you are not already there). For local installation run:
+
+    npm install karma karma-cljs-test --save-dev
+
+and then install any of the launchers you'll use:
+
+    npm install karma-chrome-launcher karma-firefox-launcher --save-dev
+    npm install karma-safari-launcher karma-opera-launcher
+    npm install karma-ie-launcher --save-dev
+
+The `--save-dev` option informs `npm` that you only need the packages
+during development and not when packaging artifacts.
+
+The installation will generate both a `package.json`, specifying what was
+installed and a `node-modules` folder with all the
+installed modules. It is recommended to add `node-modules` to your
+`.gitignore`. Leave `package.json` in git (even though it is
+generated) so that other developers in your projects can run all your
+install commands with: `npm install` (which reads from `package.json`). 
+
+If you are using `lein-npm`, follow their [instructions](https://github.com/RyanMcG/lein-npm).
+
+For global installation, run the same commands but add the `-g` option
+as in `npm install -g karma`. Global installation will allow you to
+use karma in all of your projects. The problem is that it won't be
+explicitly configured in your project that karma is used for testing,
+which makes it harder for new contributors to setup.
 
 ### Slimer & Phantom
 
