@@ -84,3 +84,20 @@
          :rhino [:rhino]
          :headless [:slimer :phantom]
          :not-an-alias [])))
+
+(deftest resolve-path
+  (testing "When given a js-env, it gets the correct path"
+    (testing "with the defaults"
+      (are [js-env path] (= path (doo/command-table js-env {}))
+           :slimer "slimerjs"
+           :phantom "phantomjs"
+           :rhino "rhino"
+           :node "node"
+           :karma "./node_modules/karma/bin/karma")
+      (is (thrown? java.lang.AssertionError
+            (doo/command-table :unknown {}))))
+    (testing "when passing options"
+      (are [js-env path] (= path (doo/command-table js-env
+                                   {:paths {:karma "karma"}}))
+           :slimer "slimerjs"
+           :karma "karma"))))

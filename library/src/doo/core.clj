@@ -86,42 +86,45 @@
         (#(io/copy (selmer/render-file resource-path tmpl-opts) %))))))
 
 ;; TODO: should be configurable
-(def command-table
-  {:phantom "phantomjs"
-   :slimer "slimerjs" 
-   :rhino "rhino"
-   :node "node"
-   :karma "./node_modules/karma/bin/karma"})
+(defn command-table [js-env opts]
+  {:post [(some? %)]}
+  (get (merge {:phantom "phantomjs"
+               :slimer "slimerjs" 
+               :rhino "rhino"
+               :node "node"
+               :karma "./node_modules/karma/bin/karma"}
+         (:paths opts))
+    js-env))
 
 ;; Define in terms of multimethods to allow user extensibility
 (defmulti js->command
-  (fn [js _]
+  (fn [js _ _]
     (if (contains? karma-envs js)
       :karma
       js)))
 
 (defmethod js->command :phantom
-  [_ _]
-  [(command-table :phantom)
+  [_ _ opts]
+  [(command-table :phantom opts)
    (runner-path! :phantom "unit-test.js") 
    (runner-path! :phantom-shim "phantomjs-shims.js")])
 
 (defmethod js->command :slimer
-  [_ _]
-  [(command-table :slimer)
+  [_ _ opts]
+  [(command-table :slimer opts)
    (runner-path! :slimer "unit-test.js")])
 
 (defmethod js->command :rhino
-  [_ _]
-  [(command-table :rhino) "-opt" "-1" (runner-path! :rhino "rhino.js")])
+  [_ _ opts]
+  [(command-table :rhino opts) "-opt" "-1" (runner-path! :rhino "rhino.js")])
 
 (defmethod js->command :node
-  [_ _]
-  [(command-table :node) (runner-path! :node "node-runner.js")])
+  [_ _ opts]
+  [(command-table :node opts) (runner-path! :node "node-runner.js")])
 
 (defmethod js->command :karma
-  [js-env compiler-opts]
-  [(command-table :karma) "start" (karma-runner! js-env compiler-opts)])
+  [js-env compiler-opts opts]
+  [(command-table :karma opts) "start" (karma-runner! js-env compiler-opts)])
 
 ;; ====================================================================== 
 ;; Compiler options
@@ -129,18 +132,18 @@
 (defn assert-compiler-opts
   "Raises an exception if the compiler options are not valid.
    See valid-compiler-opts?"
-  [js-env opts]
-  {:pre [(keyword? js-env) (map? opts)]}
-  (let [optimization (:optimizations opts)]
+  [js-env compiler]
+  {:pre [(keyword? js-env) (map? compiler)]}
+  (let [optimization (:optimizations compiler)]
     (when (and (not= :node js-env) (= :none optimization))
-      (assert (.isAbsolute (File. (:output-dir opts)))
+      (assert (.isAbsolute (File. (:output-dir compiler)))
         ":phantom and :slimer do not support relative :output-dir when used with :none. Specify an absolute path or leave it blank."))
     (when (= :node js-env)
-      (assert (and (= :nodejs (:target opts)) (false? (:hashbang opts)))
+      (assert (and (= :nodejs (:target compiler)) (false? (:hashbang compiler)))
         "node should be used with :target :nodejs and :hashbang false")
       ;; TODO: this is probably a cljs bug
       (when (= :none optimization)
-        (assert (not (.isAbsolute (File. (:output-dir opts))))
+        (assert (not (.isAbsolute (File. (:output-dir compiler))))
           "to use :none with node you need to provide a relative :output-dir")))
     (when (= :rhino js-env)
       (assert (not= :none optimization)
@@ -156,22 +159,30 @@
 If it doesn't work you need to install %s, see https://github.com/bensu/doo#setting-up-environments\n
 If it does work, file an issue and we'll sort it together!")
 
+(def default-opts {})
+
+(defn valid-opts? [opts] true)
+
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
    and runs it in the selected js-env."
-  [js-env compiler-opts]
-  {:pre [(valid-js-env? js-env)]}
-  (try
-    (let [cmd (conj (js->command js-env compiler-opts)
-                        (:output-to compiler-opts))
-          r (apply sh cmd)]
-      (println (:out r))
-      r)
-    (catch java.io.IOException e
-      (let [cmd (command-table js-env)
-            error-msg (format cmd-not-found cmd
-                        (if (= js-env :rhino) "rhino -help" (str cmd " -v"))
-                        cmd)]
-        (println error-msg)
-        {:exit 127
-         :out error-msg}))))
+  ([js-env compiler-opts]
+   (run-script js-env compiler-opts {}))
+  ([js-env compiler-opts opts]
+   {:pre [(valid-js-env? js-env)]}
+   (try
+     (let [doo-opts (merge default-opts opts)
+           _ (assert (valid-opts? opts))
+           cmd (conj (js->command js-env compiler-opts doo-opts)
+                 (:output-to compiler-opts))
+           r (apply sh cmd)]
+       (println (:out r))
+       r)
+     (catch java.io.IOException e
+       (let [cmd (command-table js-env)
+             error-msg (format cmd-not-found cmd
+                         (if (= js-env :rhino) "rhino -help" (str cmd " -v"))
+                         cmd)]
+         (println error-msg)
+         {:exit 127
+          :out error-msg})))))
