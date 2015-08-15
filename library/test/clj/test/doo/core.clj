@@ -70,7 +70,12 @@
          :rhino
          :slimer
          :phantom
-         :node))
+         :node
+         :chrome
+         :safari
+         :firefox
+         :opera
+         :ie))
   (testing "We can resolve aliases"
     (are [alias js-envs] (= (doo/resolve-alias alias) js-envs)
          :phantom [:phantom]

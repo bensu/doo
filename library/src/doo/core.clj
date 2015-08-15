@@ -13,7 +13,7 @@
 
 ;; All js-envs are keywords.
 
-(def karma-envs #{:chrome :firefox})
+(def karma-envs #{:chrome :firefox :safari :opera :ie})
 
 (def doo-envs #{:phantom :slimer :node :rhino})
 
@@ -78,7 +78,8 @@
   [js-env compiler-opts]
   (let [resource-path (str base-dir "karma.conf.js.tmpl")
         tmpl-opts (assoc compiler-opts
-                    js-env true)]
+                    js-env true
+                    :none (= :none (:optimizations compiler-opts)))]
     (.getPath
       (doto (io/file "karma.js")
         (.deleteOnExit)
@@ -93,7 +94,11 @@
    :karma "./node_modules/karma/bin/karma"})
 
 ;; Define in terms of multimethods to allow user extensibility
-(defmulti js->command (fn [js _] js))
+(defmulti js->command
+  (fn [js _]
+    (if (contains? karma-envs js)
+      :karma
+      js)))
 
 (defmethod js->command :phantom
   [_ _]
@@ -114,17 +119,9 @@
   [_ _]
   [(command-table :node) (runner-path! :node "node-runner.js")])
 
-(defmethod js->command :chrome
-  [_ compiler-opts]
-  [(command-table :karma)
-   "start"
-   (karma-runner! :chrome compiler-opts)])
-
-(defmethod js->command :firefox
-  [_ compiler-opts]
-  [(command-table :karma)
-   "start"
-   (karma-runner! :firefox compiler-opts)])
+(defmethod js->command :karma
+  [js-env compiler-opts]
+  [(command-table :karma) "start" (karma-runner! js-env compiler-opts)])
 
 ;; ====================================================================== 
 ;; Compiler options
