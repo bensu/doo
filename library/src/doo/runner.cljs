@@ -15,7 +15,8 @@
 ;; Karma Helpers
 
 (defn karma? []
-  (exists? js/window.__karma__))
+  (or (and (exists? js/window) (exists? js/window.__karma__))
+      (and (exists? js/global) (exists? js/global.__karma__))))
 
 (defmethod cljs.test/report [:jx.reporter.karma/karma :begin-test-ns] [m]
   (println "Testing" (name (:ns m))))

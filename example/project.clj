@@ -34,5 +34,5 @@
                                    :output-dir "target/node"
                                    :main 'example.runner
                                    :hashbang false
-                                   :optimizations :simple
+                                   :optimizations :none
                                    :target :nodejs}}}})
