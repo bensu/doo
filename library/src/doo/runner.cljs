@@ -24,13 +24,16 @@
 ;; ====================================================================== 
 ;; Start Testing
 
-(def ^:export run! nil)
+(def ^:dynamic run-fn nil)
+
+(defn ^:export run! []
+  (run-fn))
 
 (defn set-entry-point!
   "Sets the function to be run when starting the script"
   [f]
   {:pre [(ifn? f)]}
-  (set! run! f))
+  (set! run-fn f))
 
 ;; ====================================================================== 
 ;; Finish Testing 

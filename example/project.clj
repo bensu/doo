@@ -25,6 +25,10 @@
                               :output-dir "target/test"
                               :main 'example.runner
                               :optimizations :whitespace}}
+            :advanced {:source-paths ["src" "test"]
+                       :compiler {:output-to "target/testable.js"
+                                  :main 'example.runner
+                                  :optimizations :advanced}}
             :none-test {:source-paths ["src" "test"]
                         :compiler {:output-to "target/testable.js"
                                    :main 'example.runner
