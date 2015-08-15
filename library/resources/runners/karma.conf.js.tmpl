@@ -8,14 +8,22 @@ module.exports = function(config) {
       
     plugins: [{% if chrome %}'karma-chrome-launcher',{% endif %}
               {% if firefox %}'karma-firefox-launcher',{% endif %}
+              {% if ie %}'karma-ie-launcher',{% endif %}
+              {% if opera %}'karma-opera-launcher',{% endif %}
+	      {% if safari %}'karma-safari-launcher',{% endif %}
               'karma-cljs-test'],
 
     browsers: [{% if firefox %}'Firefox',{% endif %}
-               {% if chrome %}'Chrome',{% endif %}],
+               {% if chrome %}'Chrome',{% endif %}
+               {% if ie %}'IE',{% endif %}
+               {% if opera %}'Opera',{% endif %}
+               {% if safari %}'Safari',{% endif %}],
 
     files: [
+      {% if none %}
       root + '/goog/base.js',
       root + '/cljs_deps.js',
+      {% endif %}
       '{{ output-to }}',
       {pattern: root + '/*.js', included: false},
       {pattern: root + '/**/*.js', included: false}
