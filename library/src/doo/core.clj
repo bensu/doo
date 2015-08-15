@@ -170,19 +170,21 @@ If it does work, file an issue and we'll sort it together!")
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
    {:pre [(valid-js-env? js-env)]}
-   (try
-     (let [doo-opts (merge default-opts opts)
-           _ (assert (valid-opts? opts))
-           cmd (conj (js->command js-env compiler-opts doo-opts)
-                 (:output-to compiler-opts))
-           r (apply sh cmd)]
-       (println (:out r))
-       r)
-     (catch java.io.IOException e
-       (let [cmd (command-table js-env)
-             error-msg (format cmd-not-found cmd
-                         (if (= js-env :rhino) "rhino -help" (str cmd " -v"))
-                         cmd)]
-         (println error-msg)
-         {:exit 127
-          :out error-msg})))))
+   (let [doo-opts (merge default-opts opts)
+         cmd (conj (js->command js-env compiler-opts doo-opts)
+               (:output-to compiler-opts))]
+     (assert (valid-opts? opts))
+     (try
+       (let [r (apply sh cmd)]
+         (println (:out r))
+         r)
+       (catch java.io.IOException e
+         (let [js-path (first cmd)
+               error-msg (format cmd-not-found js-path 
+                           (if (= js-env :rhino)
+                             "rhino -help"
+                             (str js-path " -v"))
+                           js-path)]
+           (println error-msg)
+           {:exit 127
+            :out error-msg}))))))
