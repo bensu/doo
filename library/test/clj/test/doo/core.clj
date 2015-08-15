@@ -61,6 +61,8 @@
   (testing "We know which js-envs we support"
     (are [js-env] (not (doo/valid-js-env? js-env))
          :spidermonkey
+         :browser
+         :browsers
          :v8
          :d8
          :something-else)
@@ -75,5 +77,5 @@
          :slimer [:slimer]
          :node [:node]
          :rhino [:rhino]
-         :browsers [:slimer :phantom]
+         :headless [:slimer :phantom]
          :not-an-alias [])))

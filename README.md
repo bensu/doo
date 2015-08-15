@@ -166,7 +166,7 @@ When using `slimer` and `phantom` with `:none` make sure your
 `:output-dir` is either unspecified or an absolute path. `doo` will
 bark otherwise.
 
-If you want to run both, use `lein doo browsers {build-id} {watch-mode}`.
+If you want to run both, use `lein doo headless {build-id} {watch-mode}`.
 
 Do not install Slimer with homebrew unless you know what you
 are doing. There are
@@ -198,6 +198,8 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
+* `0.1.5-SNAPSHOT` changes `browsers` to use `chrome` and `firefox`,
+  and leaves `headless` for `slimer` and `phantom`.
 * `0.1.4-SNAPSHOT` allows `:optimizations :none` for all platforms but
   `rhino`, changes `valid-compiler-options?`'s signature to take
   `js-env`, adds the `browsers` alias, and changes many of the

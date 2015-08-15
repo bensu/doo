@@ -73,8 +73,8 @@
 (def help-string
 "\ndoo - run cljs.test in any JS environment.\n
 Usage:\n
-  lein doo {js-env} {build-id}\n
-Where - js-env: slimer, phantom, or node
+  lein doo {js-env} {build-id} {watch-mode}\n
+Where - js-env: slimer, phantom, rhino, or node
       - build-id: any of the ids under the :cljsbuild map in your project.clj\n")
 
 (defn find-by-id
@@ -90,7 +90,7 @@ Where - js-env: slimer, phantom, or node
 
   lein doo {js-env} {build-id} {watch-mode}
 
-  - js-env: any of slimer, phantom, rhinno
+  - js-env: any of slimer, phantom, rhino
   - build-id: the build-id from your cljsbuild configuration
   - watch-mode (optional): either auto (default) or once which exits with 0 if the tests were successful and 1 if they failed."
   ([project] (lmain/info help-string))
@@ -103,8 +103,8 @@ Where - js-env: slimer, phantom, or node
    (assert (contains? #{"auto" "once"} watch-mode)
      (str "Possible watch-modes are auto or once, " watch-mode " was given."))
    ;; FIX: execute in a try catch like the one in run-local-project
-   ;; FIX: get the version dynamically
    (let [js-envs (doo/resolve-alias (keyword js-env-alias))
+         ;; FIX: get the version dynamically
          project' (add-dep project ['doo "0.1.5-SNAPSHOT"])
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]

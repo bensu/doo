@@ -13,14 +13,14 @@
 
 (def js-envs #{:phantom :slimer :node :rhino :karma})
 
-(def default-aliases {:browsers [:slimer :phantom]})
+(def default-aliases {:headless [:slimer :phantom]})
 
 (defn resolve-alias
   "Given an alias it resolves to a list of the js-envs it represents,
    or an empty list if it represents not js-envs. js-envs resolve to 
    themselves.
 
-   Ex: (resolve-alias :browsers) => [:phantom :slimer]
+   Ex: (resolve-alias :headless) => [:phantom :slimer]
        (resolve-alias :slimer) => [:slimer]
        (resolve-alias :something) => []"
   [alias]
@@ -33,11 +33,11 @@
   {:pre [(keyword? js-env)]}
   (contains? js-envs js-env))
 
-(defn assert-alias [js-env-alias js-env]
+(defn assert-alias [js-env-alias js-envs]
   (assert (not (empty? js-envs))
     (str "The given alias: " js-env-alias
       " didn't resolve to any runners. Try any of: "
-      (str/join ", " js-envs) " or " (str/join ", " (keys default-aliases)))))
+       (str/join ", " (keys default-aliases)))))
 
 (defn assert-js-env
   "Throws an exception if the js-env is not valid.
