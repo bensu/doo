@@ -2,6 +2,7 @@
   "Runs a Js script in any Js environment. See doo.core/run-script"
   (:import java.io.File)
   (:require [clojure.string :as str]
+            [clojure.set :as set]
             [clojure.java.shell :refer [sh]]
             [clojure.java.io :as io]
             [clojure.pprint :refer [pprint]]
@@ -12,7 +13,11 @@
 
 ;; All js-envs are keywords.
 
-(def js-envs #{:phantom :slimer :node :rhino :chrome})
+(def karma-envs #{:chrome :firefox})
+
+(def doo-envs #{:phantom :slimer :node :rhino})
+
+(def js-envs (set/union doo-envs karma-envs))
 
 (def default-aliases {:headless [:slimer :phantom]})
 
@@ -68,36 +73,58 @@
         (.deleteOnExit)
         (#(io/copy (slurp (io/resource full-path)) %))))))
 
-(defn relative-runner-path!
+(defn karma-runner! 
   "Creates a file for the given runner resource file in the users dir"
   [js-env compiler-opts]
-  (let [runner :karma
-        filename "karma.conf.js.tmpl"
-        full-path (str base-dir filename)]
+  (let [resource-path (str base-dir "karma.conf.js.tmpl")
+        tmpl-opts (assoc compiler-opts
+                    js-env true)]
     (.getPath
-      (doto (io/file (str (name runner) ".js"))
+      (doto (io/file "karma.js")
         (.deleteOnExit)
-        (#(io/copy (selmer/render-file full-path compiler-opts) %))))))
+        (#(io/copy (selmer/render-file resource-path tmpl-opts) %))))))
 
+;; TODO: should be configurable
 (def command-table
-  {:phantom "phantomjs" 
+  {:phantom "phantomjs"
    :slimer "slimerjs" 
    :rhino "rhino"
    :node "node"
    :karma "./node_modules/karma/bin/karma"})
 
 ;; Define in terms of multimethods to allow user extensibility
-(defn js->command [js compiler-opts]
-  {:pre [(keyword? js)]
-   :post [(some? %)]}
-  (let [cmd (command-table js)]
-    (case js
-      :phantom [cmd (runner-path! :phantom "unit-test.js") 
-                (runner-path! :phantom-shim "phantomjs-shims.js")]
-      :slimer [cmd (runner-path! :slimer "unit-test.js") ]
-      :rhino [cmd "-opt" "-1" (runner-path! :rhino "rhino.js")]
-      :node [cmd (runner-path! :node "node-runner.js")]
-      :chrome [cmd "start" (relative-runner-path! :chrome compiler-opts)])))
+(defmulti js->command (fn [js _] js))
+
+(defmethod js->command :phantom
+  [_ _]
+  [(command-table :phantom)
+   (runner-path! :phantom "unit-test.js") 
+   (runner-path! :phantom-shim "phantomjs-shims.js")])
+
+(defmethod js->command :slimer
+  [_ _]
+  [(command-table :slimer)
+   (runner-path! :slimer "unit-test.js")])
+
+(defmethod js->command :rhino
+  [_ _]
+  [(command-table :rhino) "-opt" "-1" (runner-path! :rhino "rhino.js")])
+
+(defmethod js->command :node
+  [_ _]
+  [(command-table :node) (runner-path! :node "node-runner.js")])
+
+(defmethod js->command :chrome
+  [_ compiler-opts]
+  [(command-table :karma)
+   "start"
+   (karma-runner! :chrome compiler-opts)])
+
+(defmethod js->command :firefox
+  [_ compiler-opts]
+  [(command-table :karma)
+   "start"
+   (karma-runner! :firefox compiler-opts)])
 
 ;; ====================================================================== 
 ;; Compiler options
@@ -138,8 +165,9 @@ If it does work, file an issue and we'll sort it together!")
   [js-env compiler-opts]
   {:pre [(valid-js-env? js-env)]}
   (try
-    (let [r (apply sh (conj (js->command js-env compiler-opts)
-                        (:output-to compiler-opts)))]
+    (let [cmd (conj (js->command js-env compiler-opts)
+                        (:output-to compiler-opts))
+          r (apply sh cmd)]
       (println (:out r))
       r)
     (catch java.io.IOException e

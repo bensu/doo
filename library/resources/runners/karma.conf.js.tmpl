@@ -1,20 +1,22 @@
 // karma.conf.js
 module.exports = function(config) {
   // same as :output-dir
-  var root =  {{ output-dir }};
+  var root = '{{ output-dir }}';
 
   config.set({
     frameworks: ['cljs-test'],
       
-    plugins: ['karma-cljs-test',
-              'karma-chrome-launcher'],
+    plugins: [{% if chrome %}'karma-chrome-launcher',{% endif %}
+              {% if firefox %}'karma-firefox-launcher',{% endif %}
+              'karma-cljs-test'],
 
-    browsers: ['Chrome'],
+    browsers: [{% if firefox %}'Firefox',{% endif %}
+               {% if chrome %}'Chrome',{% endif %}],
 
     files: [
       root + '/goog/base.js',
       root + '/cljs_deps.js',
-      {{ output-to }},
+      '{{ output-to }}',
       {pattern: root + '/*.js', included: false},
       {pattern: root + '/**/*.js', included: false}
     ],
