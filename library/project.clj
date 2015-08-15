@@ -15,4 +15,5 @@
 
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/clojurescript "0.0-3308" :scope "provided"]
+                 [selmer "0.8.9"]
                  [karma-reporter "0.1.0-SNAPSHOT"]])

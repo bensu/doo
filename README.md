@@ -160,6 +160,10 @@ use karma in all of your projects. The problem is that it won't be
 explicitly configured in your project that karma is used for testing,
 which makes it harder for new contributors to setup.
 
+> In some systems (e.g. Ubuntu) you might need to run all npm commands
+> as root:
+> 	sudo npm install karma --save-dev
+
 ### Slimer & Phantom
 
 When using `slimer` and `phantom` with `:none` make sure your

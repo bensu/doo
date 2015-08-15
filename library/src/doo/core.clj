@@ -4,14 +4,15 @@
   (:require [clojure.string :as str]
             [clojure.java.shell :refer [sh]]
             [clojure.java.io :as io]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]]
+            [selmer.parser :as selmer]))
 
 ;; ====================================================================== 
 ;; JS Environments
 
 ;; All js-envs are keywords.
 
-(def js-envs #{:phantom :slimer :node :rhino :karma})
+(def js-envs #{:phantom :slimer :node :rhino :chrome})
 
 (def default-aliases {:headless [:slimer :phantom]})
 
@@ -66,27 +67,16 @@
         (.deleteOnExit)
         (#(io/copy (slurp (io/resource full-path)) %))))))
 
-(defn replace-output-to [f script-path]
-  (str/replace f #"doooutputto" script-path))
-
-(defn replace-output-dir [f dir-path]
-  (str/replace f #"doooutputdir" dir-path))
-
 (defn relative-runner-path!
   "Creates a file for the given runner resource file in the users dir"
-  [compiler-opts]
+  [js-env compiler-opts]
   (let [runner :karma
-        filename "karma.conf.js"
+        filename "karma.conf.js.tmpl"
         full-path (str base-dir filename)]
-    (println (:output-dir compiler-opts))
     (.getPath
       (doto (io/file (str (name runner) ".js"))
         (.deleteOnExit)
-        (#(io/copy (->  (io/resource full-path)
-                     slurp
-                     (replace-output-to (:output-to compiler-opts))
-                     (replace-output-dir (:output-dir compiler-opts))) 
-            %))))))
+        (#(io/copy (selmer/render-file full-path compiler-opts) %))))))
 
 (def command-table
   {:phantom "phantomjs" 
@@ -105,8 +95,8 @@
                 (runner-path! :phantom-shim "phantomjs-shims.js")]
       :slimer [cmd (runner-path! :slimer "unit-test.js") ]
       :rhino [cmd "-opt" "-1" (runner-path! :rhino "rhino.js")]
-      :karma [cmd "start" (relative-runner-path! compiler-opts)]
-      :node [cmd (runner-path! :node "node-runner.js")])))
+      :node [cmd (runner-path! :node "node-runner.js")]
+      :chrome [cmd "start" (relative-runner-path! :chrome compiler-opts)])))
 
 ;; ====================================================================== 
 ;; Compiler options
