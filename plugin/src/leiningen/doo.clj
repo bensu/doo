@@ -106,6 +106,7 @@ Where - js-env: slimer, phantom, rhino, or node
    (let [js-envs (doo/resolve-alias (keyword js-env-alias))
          ;; FIX: get the version dynamically
          project' (add-dep project ['doo "0.1.5-SNAPSHOT"])
+         doo-opts (:doo project')
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)
@@ -127,11 +128,11 @@ Where - js-env: slimer, phantom, rhino, or node
               (fn []
                 (doseq [js-env# ~js-envs]
                   (doo.core/print-env js-env#)
-                  (doo.core/run-script js-env# ~compiler)))))
+                  (doo.core/run-script js-env# ~compiler ~doo-opts)))))
          `(do (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) ~compiler)
               (let [rs# (map #(do (doo.core/print-env %)
-                                  (doo.core/run-script % ~compiler))
+                                  (doo.core/run-script % ~compiler ~doo-opts))
                              ~js-envs)
                     exit-code# (if (some (comp not zero? :exit) rs#) 1 0)]
                 (System/exit exit-code#))))))))
