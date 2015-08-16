@@ -4,7 +4,12 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
 >  ...and I would have gotten away with it, too, if it wasn't for you meddling kids.
 
-[![Clojars Project](http://clojars.org/lein-doo/latest-version.svg)](http://clojars.org/lein-doo)
+The latest release:
+
+`[lein-doo 0.1.5-SNAPSHOT]`
+
+contains some experimental features. The latest stable version is:
+`[lein-doo 0.1.4]` and the docs are [here]().
 
 Versions from `[0.1.1-SNAPSHOT]` onwards need
 `[org.clojure/clojurescript "0.0-3308"]`. 
