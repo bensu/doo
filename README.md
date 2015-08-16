@@ -17,10 +17,9 @@ Versions from `[0.1.1-SNAPSHOT]` onwards need
 
     lein doo {js-env} {build-id} {watch-mode}
 
-* `js-env` can be any `chrome`, `firefox`, `safari`, `opera`,
+* `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
 `slimer`, `phantom`, `node`, or `rhino`. In the future it 
-is planned to support `V8`, `jscore`, and others. It can also be an
-alias: either user defined or built-in (see the Alias section) 
+is planned to support `v8`, `jscore`, and others. 
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
@@ -244,6 +243,31 @@ environment. You can configure that paths like so:
 
 :cljsbuild { your-builds }
 ```
+
+## Aliases
+
+You might want to group runners into groups and have a name to call
+them from the command line. For example, while developing you might
+only be interested in `chrome` and `firefox`, but you also want to
+test with `safari` before doing a deploy.
+
+```clj
+:doo {:alias {:browsers [:chrome :firefox]
+              :all [:browsers :safari]}}
+
+:cljsbuild { my-builds }
+```
+
+Then you can use:
+
+    lein doo browsers my-build  # runs chrome and firefox
+
+    lein doo all my-build # runs chrome, firefox, and safari
+
+As you can see, alias can be recursively defined: watch for circular
+dependencies or `doo` will bark.
+
+The only built-in alias is `:headless [:phantom :slimer]`.
 
 ## Travis CI
 

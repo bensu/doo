@@ -100,10 +100,10 @@ Usage:
    (assert (contains? #{"auto" "once"} watch-mode)
      (str "Possible watch-modes are auto or once, " watch-mode " was given."))
    ;; FIX: execute in a try catch like the one in run-local-project
-   (let [js-envs (doo/resolve-alias (keyword js-env-alias))
+   (let [doo-opts (:doo project)
+         js-envs (doo/resolve-alias (keyword js-env-alias) (:alias doo-opts))
          ;; FIX: get the version dynamically
          project' (add-dep project ['doo "0.1.5-SNAPSHOT"])
-         doo-opts (:doo project')
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)

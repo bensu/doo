@@ -77,13 +77,32 @@
          :opera
          :ie))
   (testing "We can resolve aliases"
-    (are [alias js-envs] (= (doo/resolve-alias alias) js-envs)
+    (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
          :phantom [:phantom]
          :slimer [:slimer]
          :node [:node]
          :rhino [:rhino]
          :headless [:slimer :phantom]
-         :not-an-alias [])))
+         :not-an-alias [])
+    (are [alias js-envs] (= (doo/resolve-alias alias
+                              {:browsers [:chrome :firefox]
+                               :engines [:rhino]
+                               :all [:browsers :engines]})
+                            js-envs)
+         :browsers [:chrome :firefox]
+         :engines [:rhino]
+         :all [:chrome :firefox :rhino]
+         :phantom [:phantom]
+         :slimer [:slimer]
+         :node [:node]
+         :rhino [:rhino]
+         :headless [:slimer :phantom]
+         :not-an-alias []))
+  (testing "we warn against circular dependencies"
+    (is (thrown-with-msg? java.lang.Exception #"circular" 
+          (doo/resolve-alias :all {:browsers [:chrome :engines]
+                                   :engines [:rhino :browsers]
+                                   :all [:browsers :engines]})))))
 
 (deftest resolve-path
   (testing "When given a js-env, it gets the correct path"

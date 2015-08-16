@@ -15,7 +15,10 @@
 
   :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
   
-  :doo {:paths {:karma "karma"}}
+  :doo {:paths {:karma "karma"}
+        :alias {:browsers [:chrome :firefox]
+                :all [:browsers :slimer]}
+        }
 
   :cljsbuild
   {:builds {:dev {:source-paths ["src" "dev"]

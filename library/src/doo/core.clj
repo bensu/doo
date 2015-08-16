@@ -26,14 +26,22 @@
    or an empty list if it represents not js-envs. js-envs resolve to 
    themselves.
 
-   Ex: (resolve-alias :headless) => [:phantom :slimer]
-       (resolve-alias :slimer) => [:slimer]
-       (resolve-alias :something) => []"
-  [alias]
-  (cond
-    (contains? js-envs alias) [alias]
-    (contains? default-aliases alias) (get default-aliases alias)
-    :else []))
+   Ex: (resolve-alias :headless {}) => [:phantom :slimer]
+       (resolve-alias :slimer {}) => [:slimer]
+       (resolve-alias :something {}) => []"
+  [alias alias-table]
+  (let [alias-table (merge default-aliases alias-table)
+        stack-number (atom 0)]
+    (letfn [(resolve-alias' [alias]
+              (if (< 10 @stack-number)
+                (throw (Exception. (str "There is a circular dependency in the alias Map: " (pr-str alias-table))))
+                (do (swap! stack-number inc)
+                    (cond
+                      (contains? js-envs alias) [alias]
+                      (contains? alias-table alias)
+                      (vec (mapcat resolve-alias' (get alias-table alias)))
+                      :else []))))]
+      (resolve-alias' alias))))
 
 (defn valid-js-env? [js-env]
   {:pre [(keyword? js-env)]}
