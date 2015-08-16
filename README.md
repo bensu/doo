@@ -9,7 +9,7 @@ The latest release:
 `[lein-doo 0.1.5-SNAPSHOT]`
 
 contains some experimental features. The latest stable version is:
-`[lein-doo 0.1.4]` and the docs are [here]().
+`[lein-doo 0.1.4]` and the docs are [here](https://github.com/bensu/doo/blob/master/README_STABLE.md).
 
 Versions from `[0.1.1-SNAPSHOT]` onwards need
 `[org.clojure/clojurescript "0.0-3308"]`. 
