@@ -89,7 +89,7 @@
                     js-env true
                     :none (= :none (:optimizations compiler-opts)))]
     (.getPath
-      (doto (io/file "karma.js")
+      (doto (io/file "doo_karma_runner.js")
         (.deleteOnExit)
         (#(io/copy (selmer/render-file resource-path tmpl-opts) %))))))
 
@@ -147,6 +147,8 @@
       (assert (.isAbsolute (File. (:output-dir compiler)))
         ":phantom and :slimer do not support relative :output-dir when used with :none. Specify an absolute path or leave it blank."))
     (when (= :node js-env)
+      (assert (not= :advanced optimization)
+        ":node is not supported with :advanced (yet)")
       (assert (and (= :nodejs (:target compiler)) (false? (:hashbang compiler)))
         "node should be used with :target :nodejs and :hashbang false")
       ;; TODO: this is probably a cljs bug

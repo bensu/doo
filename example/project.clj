@@ -16,9 +16,8 @@
   :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
   
   :doo {:paths {:karma "karma"}
-        :alias {:browsers [:chrome :firefox]
-                :all [:browsers :slimer]}
-        }
+        :alias {:browsers [:chrome]
+                :all [:browsers :headless]}}
 
   :cljsbuild
   {:builds {:dev {:source-paths ["src" "dev"]
@@ -45,6 +44,7 @@
                                    :hashbang false
                                    :optimizations :none
                                    :target :nodejs}}
+            ;; FIX: not working
             :node-advanced {:source-paths ["src" "test"]
                             :compiler {:output-to "target/testable.js"
                                        :main 'example.runner
