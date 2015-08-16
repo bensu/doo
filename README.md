@@ -91,10 +91,8 @@ so that these commands work on the command line:
 
     rhino -help
 
-    karma -v
-
-In the future I plan to allow for customized commands in case you want to
-run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
+If you want to use a different command to run a certain runner, see
+Paths.
 
 > Remember that Rhino and Node don't come with a DOM so you can't call the
 > window or document objects. They are meant to test functions and
@@ -156,34 +154,31 @@ We'll **need** a "framework" plugin:
     - karma-cljs-test
 
 Karma and its plugins are installed with `npm`, globally
-with `npm install -g karma`, or local to
+with `npm install -g karma`, or locally to
 the project with `npm install karma`. These alternatives can't be
 combined: you can't install `karma` globally and then install
-`karma-chrome-launcher` locally. I recommend the local option since
-you will probably get sucked into `npm` sooner rather than later
-(if you are not already there). For local installation run:
+`karma-chrome-launcher` locally. The local option is recommended.
+For local installation run:
 
     npm install karma karma-cljs-test --save-dev
 
 and then install any of the launchers you'll use:
 
     npm install karma-chrome-launcher karma-firefox-launcher --save-dev
-    npm install karma-safari-launcher karma-opera-launcher
+    npm install karma-safari-launcher karma-opera-launcher --save-dev
     npm install karma-ie-launcher --save-dev
 
 The `--save-dev` option informs `npm` that you only need the packages
 during development and not when packaging artifacts.
 
-The installation will generate both a `package.json`, specifying what was
-installed and a `node-modules` folder with all the
+The installation will generate a `node-modules` folder with all the
 installed modules. It is recommended to add `node-modules` to your
-`.gitignore`. Leave `package.json` in git (even though it is
-generated) so that other developers in your projects can run all your
-install commands with: `npm install` (which reads from `package.json`). 
+`.gitignore`. 
 
-If you are using `lein-npm`, follow their [instructions](https://github.com/RyanMcG/lein-npm).
+If you are using `lein-npm`, follow their
+[instructions](https://github.com/RyanMcG/lein-npm).
 
-If you are using a local installation with `node_modules` not located
+If you are using a local installation and `node_modules` is not located
 at the project root, you need to tell `doo` about it. Add this to your
 `project.clj`:
 
@@ -194,7 +189,7 @@ at the project root, you need to tell `doo` about it. Add this to your
 ```
 
 and make sure that the file `karma/bin/karma` exists inside
-`node_modules` (see Paths).
+`node_modules`.
 
 For global installation, run the same commands but add the `-g` option
 as in `npm install -g karma`. Then, you need to inform `doo`, add this
@@ -246,10 +241,10 @@ environment. You can configure that paths like so:
 
 ## Aliases
 
-You might want to group runners into groups and have a name to call
+You might want to group runners and call
 them from the command line. For example, while developing you might
 only be interested in `chrome` and `firefox`, but you also want to
-test with `safari` before doing a deploy.
+test with `safari` before doing a deploy:
 
 ```clj
 :doo {:alias {:browsers [:chrome :firefox]
@@ -260,11 +255,13 @@ test with `safari` before doing a deploy.
 
 Then you can use:
 
-    lein doo browsers my-build  # runs chrome and firefox
+```sh
+lein doo browsers my-build  # runs chrome and firefox
 
-    lein doo all my-build # runs chrome, firefox, and safari
+lein doo all my-build # runs chrome, firefox, and safari
+```
 
-As you can see, alias can be recursively defined: watch for circular
+As you can see, aliases can be recursively defined: watch for circular
 dependencies or `doo` will bark.
 
 The only built-in alias is `:headless [:phantom :slimer]`.
