@@ -101,7 +101,37 @@ run something like `/path/to/slimer/v1/slimerjs` instead of `slimerjs`.
 > window or document objects. They are meant to test functions and
 > business logic, not rendering.
 
-### Karma
+### Slimer & Phantom
+
+When using `slimer` and `phantom` with `:none` make sure your
+`:output-dir` is either unspecified or an absolute path. `doo` will
+bark otherwise.
+
+If you want to run both, use `lein doo headless {build-id} {watch-mode}`.
+
+Do not install Slimer with homebrew unless you know what you
+are doing. There are
+[reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
+of it not working with ClojureScript when installed that way because
+of dated versions.
+
+### Node
+
+`*main-cli-fn*` is not needed (but can be used), since `doo`
+initializes the tests. `:output-dir` is needed whenever you are using `:none`.
+`:hashbang false` and `:target :nodejs` are always needed.
+
+```clj
+:node-test {:source-paths ["src" "test"]
+            :compiler {:output-to "target/testable.js"
+                       :output-dir "target"
+                       :main 'example.runner
+                       :optimizations :none
+                       :hashbang false
+                       :target :nodejs}}
+```
+
+### Karma (experimental)
 
 #### Installation
 
@@ -154,8 +184,32 @@ install commands with: `npm install` (which reads from `package.json`).
 
 If you are using `lein-npm`, follow their [instructions](https://github.com/RyanMcG/lein-npm).
 
+If you are using a local installation with `node_modules` not located
+at the project root, you need to tell `doo` about it. Add this to your
+`project.clj`:
+
+```clj
+:doo {:paths {:karma "path/to/node_modules/karma/bin/karma"}}
+
+:cljsbuild { your-builds }
+```
+
+and make sure that the file `karma/bin/karma` exists inside
+`node_modules` (see Paths).
+
 For global installation, run the same commands but add the `-g` option
-as in `npm install -g karma`. Global installation will allow you to
+as in `npm install -g karma`. Then, you need to inform `doo`, add this
+to your `project.clj`:
+
+```clj
+:doo {:paths {:karma "karma"}} ;; => resolve :karma's path to "karma"
+
+:cljsbuild { your-builds }
+```
+
+For more info on `:paths` see Paths.
+
+Global installation will allow you to
 use karma in all of your projects. The problem is that it won't be
 explicitly configured in your project that karma is used for testing,
 which makes it harder for new contributors to setup.
@@ -164,34 +218,31 @@ which makes it harder for new contributors to setup.
 > as root:
 > 	sudo npm install karma --save-dev
 
-### Slimer & Phantom
+#### Troubleshooting Karma
 
-When using `slimer` and `phantom` with `:none` make sure your
-`:output-dir` is either unspecified or an absolute path. `doo` will
-bark otherwise.
+When Karma fails to found a launcher (e.g., chrome), it asks the user
+for feedback on what to do next. I haven't figured out a way to show
+their error, so right now it looks like this:
 
-If you want to run both, use `lein doo headless {build-id} {watch-mode}`.
+```
+;; ======================================================================
+;; Testing with Chrome:
+```
 
-Do not install Slimer with homebrew unless you know what you
-are doing. There are
-[reports](https://groups.google.com/forum/#!topic/clojurescript/4EF-NAzu-kM)
-of it not working with ClojureScript when installed that way because
-of dated versions.
+and it hangs. So if your tests hang right after starting, make sure
+your specified launchers have been installed.
 
-### Node
+## Paths
 
-`*main-cli-fn*` is not needed (but can be used), since `doo`
-initializes the tests. `:output-dir` is needed whenever you are using `:none`.
-`:hashbang false` and `:target :nodejs` are always needed.
+You might want to use a different version of node, or the global
+version of Karma, or any other binary to run your tests for a given
+environment. You can configure that paths like so:
 
-```clj
-:node-test {:source-paths ["src" "test"]
-            :compiler {:output-to "target/testable.js"
-                       :output-dir "target"
-                       :main 'example.runner
-                       :optimizations :none
-                       :hashbang false
-                       :target :nodejs}}
+```
+:doo {:paths {:node "user/local/bin/node12"
+              :karma "./frontend/node_modules/karma/bin/karma"}
+
+:cljsbuild { your-builds }
 ```
 
 ## Travis CI

@@ -69,30 +69,27 @@
              (System/exit 1))))
       requires)))
 
-;; TODO: generate the js-env opts & build-ids dynamically
 (def help-string
-"\ndoo - run cljs.test in any JS environment.\n
-Usage:\n
-  lein doo {js-env} {build-id} {watch-mode}\n
-Where - js-env: slimer, phantom, rhino, or node
-      - build-id: any of the ids under the :cljsbuild map in your project.clj\n")
+"
+doo - run cljs.test in any JS environment.
+
+Usage:
+
+  lein doo {js-env} {build-id}
+
+  lein doo {js-env} {build-id} {watch-mode}
+
+  - js-env: slimer, phantom, rhino, node, chrome, firefox, safari, ie, or opera.
+  - build-id: any of the ids under the :cljsbuild map in your project.clj
+  - watch-mode (optional): either auto (default) or once\n")
 
 (defn find-by-id
   "Out of a seq of builds, returns the one with the given id"
   [builds id]
   (first (filter #(= id (:id %)) builds)))
 
-(defn doo 
-  "Command line API for doo, which compiles a cljsbuild
-   and runs it in a js enviroment:
-
-  lein doo {js-env} {build-id}
-
-  lein doo {js-env} {build-id} {watch-mode}
-
-  - js-env: any of slimer, phantom, rhino
-  - build-id: the build-id from your cljsbuild configuration
-  - watch-mode (optional): either auto (default) or once which exits with 0 if the tests were successful and 1 if they failed."
+(defn ^{:doc help-string}
+  doo 
   ([project] (lmain/info help-string))
   ([project js-env]
    (lmain/info
