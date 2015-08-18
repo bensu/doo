@@ -4,11 +4,11 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
 >  ...and I would have gotten away with it, too, if it wasn't for you meddling kids.
 
-The latest release:
+This README is for the latest release:
 
 `[lein-doo 0.1.5-SNAPSHOT]`
 
-contains some experimental features. The latest stable version is:
+which contains some experimental features. The latest stable version is:
 `[lein-doo 0.1.4]` and the docs are [here](https://github.com/bensu/doo/blob/master/README_STABLE.md).
 
 Versions from `[0.1.1-SNAPSHOT]` onwards need
