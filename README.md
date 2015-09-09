@@ -119,6 +119,8 @@ of dated versions.
 
 ### Node
 
+Minimum node version required: `0.12`
+
 `*main-cli-fn*` is not needed (but can be used), since `doo`
 initializes the tests. `:output-dir` is needed whenever you are using `:none`.
 `:hashbang false` and `:target :nodejs` are always needed.
