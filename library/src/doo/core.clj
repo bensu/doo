@@ -128,7 +128,9 @@
 
 (defmethod js->command :node
   [_ _ opts]
-  [(command-table :node opts) (runner-path! :node "node-runner.js")])
+  [(command-table :node opts)
+   ;; (runner-path! :node "node-runner.js")
+   ])
 
 (defmethod js->command :karma
   [js-env compiler-opts opts]
@@ -147,10 +149,8 @@
       (assert (.isAbsolute (File. (:output-dir compiler)))
         ":phantom and :slimer do not support relative :output-dir when used with :none. Specify an absolute path or leave it blank."))
     (when (= :node js-env)
-      (assert (not= :advanced optimization)
-        ":node is not supported with :advanced (yet)")
-      (assert (and (= :nodejs (:target compiler)) (false? (:hashbang compiler)))
-        "node should be used with :target :nodejs and :hashbang false")
+      (assert (= :nodejs (:target compiler))
+        "node should be used with :target :nodejs")
       ;; TODO: this is probably a cljs bug
       (when (= :none optimization)
         (assert (not (.isAbsolute (File. (:output-dir compiler))))

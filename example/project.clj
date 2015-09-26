@@ -41,13 +41,10 @@
                         :compiler {:output-to "target/testable.js"
                                    :output-dir "target/node"
                                    :main example.runner
-                                   :hashbang false
                                    :optimizations :none
                                    :target :nodejs}}
-            ;; FIX: not working
             :node-advanced {:source-paths ["src" "test"]
                             :compiler {:output-to "target/testable.js"
                                        :main example.runner
-                                       :hashbang false
                                        :optimizations :advanced
                                        :target :nodejs}}}})

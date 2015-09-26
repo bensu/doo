@@ -13,6 +13,12 @@
   (set! cljs.core.*print-fn* f))
 
 ;; ====================================================================== 
+;; Node
+
+(defn node? []
+  (exists? js/process))
+
+;; ====================================================================== 
 ;; Karma Helpers
 
 (defn karma? []
@@ -35,7 +41,9 @@
   "Sets the function to be run when starting the script"
   [f]
   {:pre [(ifn? f)]}
-  (set! *run-fn* f))
+  (if (node?)
+    (set! *main-cli-fn* f)
+    (set! *run-fn* f)))
 
 ;; ====================================================================== 
 ;; Finish Testing 
@@ -50,4 +58,7 @@
   (set! *exit-fn* f))
 
 (defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
-  (*exit-fn* (successful? m)))
+  (let [success? (successful? m)]
+    (if (node?)
+      (.exit js/process (if success? 0 1))
+      (*exit-fn* success?))))
