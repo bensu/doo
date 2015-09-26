@@ -83,6 +83,31 @@ Usage:
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode (optional): either auto (default) or once\n")
 
+(defprotocol ->Main
+  (main->str [main]))
+
+(extend-protocol ->Main
+  clojure.lang.Symbol
+  (main->str [main] (name main))
+  java.lang.String
+  (main->str [main] main)
+  Object
+  (main->str [main] main))
+
+(defn correct-main [compiler-opts]
+  (cond-> compiler-opts
+    (some? (:main compiler-opts)) (update :main main->str)))
+
+(defn correct-builds [project]
+  (update-in project [:cljsbuild :builds]
+    (fn [builds]
+      (cond
+        (map? builds) (->> builds
+                        (map (fn [[k v]] [k (update v :compiler correct-main)]))
+                        (into {}))
+        (vector? builds) (mapv #(update % :compiler correct-main) builds)
+        :else (throw (Exception. ":cljsbuild :builds needs to be either a vector or a map"))))))
+
 (defn find-by-id
   "Out of a seq of builds, returns the one with the given id"
   [builds id]
@@ -103,7 +128,9 @@ Usage:
    (let [doo-opts (:doo project)
          js-envs (doo/resolve-alias (keyword js-env-alias) (:alias doo-opts))
          ;; FIX: get the version dynamically
-         project' (add-dep project ['doo "0.1.5-SNAPSHOT"])
+         project' (-> project
+                      correct-builds
+                      (add-dep ['doo "0.1.5-SNAPSHOT"]))
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)

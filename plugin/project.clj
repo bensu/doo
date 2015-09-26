@@ -22,5 +22,5 @@
   :cljsbuild
   {:builds {:test {:source-paths ["src" "test"]
                    :compiler {:output-to "resources/public/js/testable.js"
-                              :main "lein-doo.runner"
+                              :main lein-doo.runner
                               :optimizations :whitespace}}}})

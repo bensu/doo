@@ -22,32 +22,32 @@
   :cljsbuild
   {:builds {:dev {:source-paths ["src"]
                   :compiler {:output-to "resources/public/js/dev.js"
-                             :main "example.core" 
+                             :main example.core
                              :optimizations :none}}
             :test {:source-paths ["src" "test"]
                    :compiler {:output-to "target/testable.js"
                               :output-dir "target/test"
-                              :main "example.runner"
+                              :main example.runner
                               :optimizations :whitespace}}
             :advanced {:source-paths ["src" "test"]
                        :compiler {:output-to "target/testable.js"
-                                  :main "example.runner"
+                                  :main example.runner
                                   :optimizations :advanced}}
             :none-test {:source-paths ["src" "test"]
                         :compiler {:output-to "target/testable.js"
-                                   :main "example.runner"
+                                   :main example.runner
                                    :optimizations :none}}
             :node-none {:source-paths ["src" "test"]
                         :compiler {:output-to "target/testable.js"
                                    :output-dir "target/node"
-                                   :main "example.runner"
+                                   :main example.runner
                                    :hashbang false
                                    :optimizations :none
                                    :target :nodejs}}
             ;; FIX: not working
             :node-advanced {:source-paths ["src" "test"]
                             :compiler {:output-to "target/testable.js"
-                                       :main "example.runner"
+                                       :main example.runner
                                        :hashbang false
                                        :optimizations :advanced
                                        :target :nodejs}}}})
