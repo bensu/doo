@@ -120,19 +120,17 @@ of dated versions.
 
 ### Node
 
-Minimum node version required: `0.12`
+Some requirements:
 
-`*main-cli-fn*` is not needed (but can be used), since `doo`
-initializes the tests. `:output-dir` is needed whenever you are using `:none`.
-`:hashbang false` and `:target :nodejs` are always needed.
+* Minimum node version required: `0.12`
+* `:output-dir` is needed whenever you are using `:none`.
+* `:target :nodejs` is always needed.
 
 ```clj
 :node-test {:source-paths ["src" "test"]
             :compiler {:output-to "target/testable.js"
                        :output-dir "target"
                        :main example.runner
-                       :optimizations :none
-                       :hashbang false
                        :target :nodejs}}
 ```
 
