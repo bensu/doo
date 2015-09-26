@@ -238,7 +238,7 @@ You might want to use a different version of node, or the global
 version of Karma, or any other binary to run your tests for a given
 environment. You can configure that paths like so:
 
-```
+```clj
 :doo {:paths {:node "user/local/bin/node12"
               :karma "./frontend/node_modules/karma/bin/karma"}
 
