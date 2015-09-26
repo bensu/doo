@@ -30,11 +30,11 @@ is planned to support `v8`, `jscore`, and others.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
 
 ```clj
-:cljsbuild {
-  :builds {:test {:source-paths ["src" "test"]
-                  :compiler {:output-to "resources/public/js/testable.js"
-                             :main 'your-project.runner
-                             :optimizations :none}}}}
+:cljsbuild
+  {:builds {:test {:source-paths ["src" "test"]
+                   :compiler {:output-to "resources/public/js/testable.js"
+                              :main "your-project.runner"
+                              :optimizations :none}}}}
 ```
 
 Notice that `:main` is set to the namespace `your-project.runner`
@@ -130,7 +130,7 @@ initializes the tests. `:output-dir` is needed whenever you are using `:none`.
 :node-test {:source-paths ["src" "test"]
             :compiler {:output-to "target/testable.js"
                        :output-dir "target"
-                       :main 'example.runner
+                       :main "example.runner"
                        :optimizations :none
                        :hashbang false
                        :target :nodejs}}
