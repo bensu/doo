@@ -96,16 +96,16 @@ Usage:
 
 (defn correct-main [compiler-opts]
   (cond-> compiler-opts
-    (some? (:main compiler-opts)) (update :main main->str)))
+    (some? (:main compiler-opts)) (update-in [:main] main->str)))
 
 (defn correct-builds [project]
   (update-in project [:cljsbuild :builds]
     (fn [builds]
       (cond
         (map? builds) (->> builds
-                        (map (fn [[k v]] [k (update v :compiler correct-main)]))
+                        (map (fn [[k v]] [k (update-in v [:compiler] correct-main)]))
                         (into {}))
-        (vector? builds) (mapv #(update % :compiler correct-main) builds)
+        (vector? builds) (mapv #(update-in % [:compiler] correct-main) builds)
         :else (throw (Exception. ":cljsbuild :builds needs to be either a vector or a map"))))))
 
 (defn find-by-id
