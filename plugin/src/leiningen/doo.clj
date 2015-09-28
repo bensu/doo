@@ -130,7 +130,7 @@ Usage:
          ;; FIX: get the version dynamically
          project' (-> project
                       correct-builds
-                      (add-dep ['doo "0.1.5-SNAPSHOT"]))
+                      (add-dep ['doo "0.1.5"]))
          builds (-> project' config/extract-options :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)
