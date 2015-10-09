@@ -23,6 +23,14 @@ function isSlimer() {
     return (typeof slimer !== 'undefined');
 }
 
+function exit(code) {
+    if (isSlimer()) {
+        slimer.exit(1);
+    } else {
+        phantom.exit(1);
+    }
+}
+
 // Prepare the page with triggers
 
 // Redirects the output of the page into the script
@@ -32,7 +40,7 @@ p.onConsoleMessage = function(msg) {
 
 p.onError = function(msg) {
     console.error(msg);
-    phantom.exit(1);
+    exit(1);
 };
 
 p.open("file://" + pagePath, function (status) {
@@ -40,7 +48,7 @@ p.open("file://" + pagePath, function (status) {
     if (status == "fail") {
         // TODO: improve error reporting
         console.log("Slimer or Phantom have failed to open the script. Try manually running it in a browser to see the errors");
-        phantom.exit(1);
+        exit(1);
     } else {
 
         p.onCallback = function (x) {
@@ -85,7 +93,7 @@ p.open("file://" + pagePath, function (status) {
         p.onAlert = function (msg) {
 	    var exit = msg.replace(exitCodePrefix, "");
 	    if (msg != exit) {
-                phantom.exit(parseInt(exit));
+                exit(parseInt(exit));
             }
         };
 

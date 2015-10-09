@@ -118,6 +118,11 @@ are doing. There are
 of it not working with ClojureScript when installed that way because
 of dated versions.
 
+> Note: Slimer does not
+> [currently](https://github.com/laurentj/slimerjs/pull/278) throw
+> error exit codes when encountering an error, which makes them
+> unsuitable for CI testing.
+
 ### Node
 
 Some requirements:
