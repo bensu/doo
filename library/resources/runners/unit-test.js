@@ -25,9 +25,9 @@ function isSlimer() {
 
 function exit(code) {
     if (isSlimer()) {
-        slimer.exit(1);
+        slimer.exit(code);
     } else {
-        phantom.exit(1);
+        phantom.exit(code);
     }
 }
 
@@ -44,7 +44,7 @@ p.onError = function(msg) {
 };
 
 p.open("file://" + pagePath, function (status) {
-    fs.remove(pagePath);
+    // fs.remove(pagePath);
     if (status == "fail") {
         // TODO: improve error reporting
         console.log("Slimer or Phantom have failed to open the script. Try manually running it in a browser to see the errors");
@@ -91,9 +91,9 @@ p.open("file://" + pagePath, function (status) {
         // so, a bit of a hack, better than polling :-P
         var exitCodePrefix = "phantom-exit-code:";
         p.onAlert = function (msg) {
-	    var exit = msg.replace(exitCodePrefix, "");
-	    if (msg != exit) {
-                exit(parseInt(exit));
+	    var exitCode = msg.replace(exitCodePrefix, "");
+	    if (msg != exitCode) {
+                exit(parseInt(exitCode));
             }
         };
 

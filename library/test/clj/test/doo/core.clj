@@ -105,9 +105,11 @@
 
 (deftest integration
   (testing "We can compile a cljs project"
-    (let [compiler-opts {:output-to "out/main.js"
-                         :output-dir "out"
-                         :main 'example.runner}
+    (let [compiler-opts {:output-to "target/testable.js"
+                         :output-dir "target"
+                         :asset-path "../target"
+                         :main 'example.runner
+                         :optimizations :none}
           srcs (cljs/inputs "../example/src" "../example/test")]
       (cljs/build srcs compiler-opts)
-      (is (doo-ok? (doo/run-script :slimer compiler-opts))))))
+      (is (doo-ok? (doo/run-script :phantom compiler-opts))))))
