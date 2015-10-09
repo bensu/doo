@@ -5,7 +5,7 @@ var p = require('webpage').create();
 var fs = require('fs');
 var sys = require('system');
 
-var pagePath = fs.absolute(sys.args[sys.args.length-1] + ".html");
+var pagePath = fs.absolute("doo-index.html");
 
 var scripts = "";
 
@@ -44,7 +44,7 @@ p.onError = function(msg) {
 };
 
 p.open("file://" + pagePath, function (status) {
-    // fs.remove(pagePath);
+    fs.remove(pagePath);
     if (status == "fail") {
         // TODO: improve error reporting
         console.log("Slimer or Phantom have failed to open the script. Try manually running it in a browser to see the errors");
