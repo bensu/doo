@@ -52,22 +52,9 @@
 (deftest js-env
   (testing "We know which js-envs we support"
     (are [js-env] (not (doo/valid-js-env? js-env))
-         :spidermonkey
-         :browser
-         :browsers
-         :v8
-         :d8
-         :something-else)
+         :spidermonkey :browser :browsers :v8 :d8 :something-else)
     (are [js-env] (doo/valid-js-env? js-env)
-         :rhino
-         :slimer
-         :phantom
-         :node
-         :chrome
-         :safari
-         :firefox
-         :opera
-         :ie))
+         :rhino :slimer :phantom :node :chrome :safari :firefox :opera :ie))
   (testing "We can resolve aliases"
     (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
          :phantom [:phantom]
@@ -76,20 +63,19 @@
          :rhino [:rhino]
          :headless [:slimer :phantom]
          :not-an-alias [])
-    (are [alias js-envs] (= (doo/resolve-alias alias
-                              {:browsers [:chrome :firefox]
-                               :engines [:rhino]
-                               :all [:browsers :engines]})
-                            js-envs)
-         :browsers [:chrome :firefox]
-         :engines [:rhino]
-         :all [:chrome :firefox :rhino]
-         :phantom [:phantom]
-         :slimer [:slimer]
-         :node [:node]
-         :rhino [:rhino]
-         :headless [:slimer :phantom]
-         :not-an-alias []))
+    (let [alias-map {:browsers [:chrome :firefox]
+                     :engines [:rhino]
+                     :all [:browsers :engines]}]
+      (are [alias js-envs] (= (doo/resolve-alias alias alias-map) js-envs)
+           :browsers [:chrome :firefox]
+           :engines [:rhino]
+           :all [:chrome :firefox :rhino]
+           :phantom [:phantom]
+           :slimer [:slimer]
+           :node [:node]
+           :rhino [:rhino]
+           :headless [:slimer :phantom]
+           :not-an-alias [])))
   (testing "we warn against circular dependencies"
     (is (thrown-with-msg? java.lang.Exception #"circular" 
           (doo/resolve-alias :all {:browsers [:chrome :engines]
