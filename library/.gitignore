@@ -2,6 +2,8 @@
 cljs.jar
 /classes
 /checkouts
+/test/resources/out
+out
 pom.xml
 pom.xml.asc
 *.jar

@@ -1,5 +1,6 @@
 (ns test.doo.core
   (:require [clojure.test :refer [deftest are is testing]]
+            [cljs.build.api :as cljs]
             [doo.core :as doo]))
 
 (defn prepare [opts]
@@ -98,3 +99,15 @@
                                    {:paths {:karma "karma"}}))
            :slimer "slimerjs"
            :karma "karma"))))
+
+(defn doo-ok? [doo-output]
+  (zero? (:exit doo-output)))
+
+(deftest integration
+  (testing "We can compile a cljs project"
+    (let [compiler-opts {:output-to "out/main.js"
+                         :output-dir "out"
+                         :main 'example.runner}
+          srcs (cljs/inputs "../example/src" "../example/test")]
+      (cljs/build srcs compiler-opts)
+      (is (doo-ok? (doo/run-script :slimer compiler-opts))))))
