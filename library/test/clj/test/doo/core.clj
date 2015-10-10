@@ -109,10 +109,14 @@
                          :main 'example.runner
                          :optimizations :none}
           srcs (cljs/inputs "../example/src" "../example/test")]
-      (cljs/build srcs compiler-opts)
-      (is (doo-ok? (doo/run-script :phantom compiler-opts)))
-      (let [compiler-opts' (-> compiler-opts
-                             (dissoc :asset-path)
-                             (assoc :target :nodejs))]
-        (cljs/build srcs compiler-opts')
-        (is (doo-ok? (doo/run-script :node compiler-opts)))))))
+      (are [opts envs] (let [compiler-opts' (merge compiler-opts opts)]
+                         (cljs/build srcs compiler-opts')
+                         (->> envs
+                           (mapv #(doo-ok? (doo/run-script % compiler-opts')))
+                           (every? true?)))  
+           {} [:phantom] 
+           {:target :nodejs} [:node] 
+           {:optimizations :whitespace} [:rhino :phantom]
+           {:optimizations :simple :target :nodejs} [:node]
+           {:optimizations :advanced :target :nodejs} [:node]
+           {:optimizations :advanced} [:phantom :rhino]))))

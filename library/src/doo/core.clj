@@ -146,12 +146,13 @@
   {:pre [(keyword? js-env) (map? compiler)]}
   (let [optimization (:optimizations compiler)]
     (when (and (not= :node js-env) (= :none optimization))
+      ;; TODO: might not be longer necessary
       (assert (.isAbsolute (File. (:output-dir compiler)))
         ":phantom and :slimer do not support relative :output-dir when used with :none. Specify an absolute path or leave it blank."))
     (when (= :node js-env)
       (assert (= :nodejs (:target compiler))
         "node should be used with :target :nodejs")
-      ;; TODO: this is probably a cljs bug
+      ;; TODO: this is probably a cljs vs cljsbuild-opts bug
       (when (= :none optimization)
         (assert (not (.isAbsolute (File. (:output-dir compiler))))
           "to use :none with node you need to provide a relative :output-dir")))
@@ -186,6 +187,7 @@ If it does work, file an issue and we'll sort it together!")
      (assert (valid-opts? opts))
      (try
        (let [r (apply sh cmd)]
+         ;; TODO: include silent/verbose options
          (println (:out r))
          r)
        (catch java.io.IOException e
