@@ -72,6 +72,10 @@
 ;; ====================================================================== 
 ;; Runners
 
+;; doo createst the files necessary for the runners and cleans them up
+;; when the JVM is shut down which is not ideal when scripting, since
+;; it can be called several times in one JVM session. 
+
 (def base-dir "runners/")
 
 (defn runner-path!
@@ -86,10 +90,12 @@
 (defn karma-runner! 
   "Creates a file for the given runner resource file in the users dir"
   [js-env compiler-opts]
+  {:pre [(some? (:output-dir compiler-opts))]}
   (let [resource-path (str base-dir "karma.conf.js.tmpl")
         tmpl-opts (assoc compiler-opts
                     js-env true
                     :none (= :none (:optimizations compiler-opts)))]
+    ;; TODO: get karma to work with an absolute path instead
     (.getPath
       (doto (io/file "doo_karma_runner.js")
         (.deleteOnExit)
@@ -141,12 +147,15 @@
 (defn assert-compiler-opts
   "Raises an exception if the compiler options are not valid.
    See valid-compiler-opts?"
-  [js-env compiler]
-  {:pre [(keyword? js-env) (map? compiler)]}
-  (let [optimization (:optimizations compiler)]
+  [js-env compiler-opts]
+  {:pre [(keyword? js-env) (map? compiler-opts)]}
+  (let [optimization (:optimizations compiler-opts)]
     (when (= :node js-env)
-      (assert (= :nodejs (:target compiler))
+      (assert (= :nodejs (:target compiler-opts))
         "node should be used with :target :nodejs"))
+    (when (contains? karma-envs js-env)
+      (assert (some? (:output-dir compiler-opts))
+        "Karma runners need :output-dir specified"))
     (when (= :rhino js-env)
       (assert (not= :none optimization)
         "rhino doesn't support :optimizations :none"))
@@ -174,7 +183,7 @@ If it does work, file an issue and we'll sort it together!")
    {:pre [(valid-js-env? js-env)]}
    (let [doo-opts (merge default-opts opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
-               (:output-to compiler-opts))]
+                   (:output-to compiler-opts))]
      (assert (valid-opts? opts))
      (try
        (let [r (apply sh cmd)]
