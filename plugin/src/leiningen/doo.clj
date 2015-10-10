@@ -5,10 +5,12 @@
             [clojure.string :as str]
             [doo.core :as doo]
             [leiningen.core.main :as lmain]
-            [leiningen.cljsbuild.config :as config]
             [leiningen.cljsbuild.subproject :as subproject]
             [leiningen.core.eval :as leval]
             [clojure.pprint :refer [pprint]]))
+
+;; ====================================================================== 
+;; Leiningen Boilerplate
 
 ;; Assumes the project is packaged in the same jar
 (defn get-lib-version [proj-name]
@@ -26,22 +28,22 @@
         " is not a string: " version))
     version))
 
+;; TODO: what's this for? 
 ;; Needed to ensure cljsbuild compatibility
 (defn make-subproject [project builds]
-  (with-meta
-    (merge
-      (select-keys project [:checkout-deps-shares
-                            :eval-in
-                            :jvm-opts
-                            :local-repo
-                            :repositories
-                            :resource-paths])
-      {:local-repo-classpath true
-       :dependencies (subproject/merge-dependencies (:dependencies project))
-       :source-paths (concat
-                       (:source-paths project)
-                       (mapcat :source-paths builds))})
-    (meta project)))
+  (-> project
+    (select-keys [:checkout-deps-shares
+                  :eval-in
+                  :jvm-opts
+                  :local-repo
+                  :repositories
+                  :resource-paths])
+    (merge {:local-repo-classpath true
+            :dependencies (subproject/merge-dependencies (:dependencies project))
+            :source-paths (concat
+                            (:source-paths project)
+                            (mapcat :source-paths builds))})
+    (with-meta (meta project))))
 
 (defn add-dep
   "Adds one dependency (needs to be a vector with a quoted symbol)
@@ -68,6 +70,21 @@
              (.printStackTrace e#)
              (System/exit 1))))
       requires)))
+
+;; ====================================================================== 
+;; cljsbuild opts
+
+(defn convert-builds-map
+  "Converts the cljsbuild opts into a common format [{:id \"build-id\"}]"
+  [options]
+  (update-in options [:builds]
+    #(if (map? %)
+       (for [[id build] %]
+         (assoc build :id (name id)))
+       %)))
+
+;; ====================================================================== 
+;; doo
 
 (def help-string
 "
@@ -131,7 +148,7 @@ Usage:
          project' (-> project
                       correct-builds
                       (add-dep ['doo "0.1.6-SNAPSHOT"]))
-         builds (-> project' config/extract-options :builds)
+         builds (-> project' :cljsbuild convert-builds-map :builds)
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)
      (doseq [js-env js-envs]
