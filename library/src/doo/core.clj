@@ -93,18 +93,17 @@
         (.deleteOnExit)
         (#(io/copy (selmer/render-file resource-path tmpl-opts) %))))))
 
-;; TODO: should be configurable
+(def default-command-table
+  {:phantom "phantomjs"
+   :slimer "slimerjs" 
+   :rhino "rhino"
+   :node "node"
+   :karma "./node_modules/karma/bin/karma"})
+
 (defn command-table [js-env opts]
   {:post [(some? %)]}
-  (get (merge {:phantom "phantomjs"
-               :slimer "slimerjs" 
-               :rhino "rhino"
-               :node "node"
-               :karma "./node_modules/karma/bin/karma"}
-         (:paths opts))
-    js-env))
+  (get (merge default-command-table (:paths opts)) js-env))
 
-;; Define in terms of multimethods to allow user extensibility
 (defmulti js->command
   (fn [js _ _]
     (if (contains? karma-envs js)
@@ -128,9 +127,7 @@
 
 (defmethod js->command :node
   [_ _ opts]
-  [(command-table :node opts)
-   ;; (runner-path! :node "node-runner.js")
-   ])
+  [(command-table :node opts)])
 
 (defmethod js->command :karma
   [js-env compiler-opts opts]

@@ -60,5 +60,6 @@
 (defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
   (let [success? (successful? m)]
     (if (node?)
-      (.exit js/process (if success? 0 1))
+      (let [process-exit (gobj/get js/process "exit")]
+        (process-exit (if success? 0 1)))
       (*exit-fn* success?))))
