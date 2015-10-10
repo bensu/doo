@@ -201,9 +201,7 @@ where:
     :verbose - bool (default true) that determines if the scripts
                output should be printed and returned (verbose false)
                or only returned (verbose true).
-    :paths - a map from runners (keywords) to string commands for bash.
-    :alias - a map from aliases (keywords) to vectors of aliases and
-             runners. See doo.core/resolve-alias"
+    :paths - a map from runners (keywords) to string commands for bash."
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
