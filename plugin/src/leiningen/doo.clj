@@ -155,8 +155,9 @@ Usage:
                   (doo.core/run-script js-env# ~compiler ~doo-opts)))))
          `(do (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) ~compiler)
-              (let [rs# (map #(do (doo.core/print-env %)
-                                  (doo.core/run-script % ~compiler ~doo-opts))
-                             ~js-envs)
-                    exit-code# (if (some (comp not zero? :exit) rs#) 1 0)]
-                (System/exit exit-code#))))))))
+              (let [ok# (->> ~js-envs
+                          (map (fn [e#]
+                                 (doo.core/print-env e#)
+                                 (doo.core/run-script e# ~compiler ~doo-opts)))
+                          (every? (comp zero? :exit)))]
+                (System/exit (if ok# 0 1)))))))))
