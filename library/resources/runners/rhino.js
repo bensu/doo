@@ -31,8 +31,7 @@ var setTimeout, clearTimeout, setInterval, clearInterval;
 
 var haveCljsTest = function () {
     return (typeof doo !== "undefined" &&
-            typeof cljs !== "undefined" &&
-            typeof cljs.test !== "undefined" &&
+            typeof doo.runner !== "undefined" &&
             typeof doo.runner.run_BANG_ === "function");
 };
 
