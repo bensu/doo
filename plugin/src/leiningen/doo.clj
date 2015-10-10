@@ -118,8 +118,8 @@ Usage:
          js-envs (doo/resolve-alias (keyword js-env-alias) (:alias doo-opts))
          ;; FIX: get the version dynamically
          project' (-> project
-                      correct-builds
-                      (add-dep ['doo "0.1.6-SNAPSHOT"]))
+                    correct-builds
+                    (add-dep ['doo "0.1.6-SNAPSHOT"]))
          builds (get-in project' [:cljsbuild :builds])
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)
@@ -128,25 +128,27 @@ Usage:
      (assert (not (empty? build))
        (str "The given build (" build-id ") was not found in these options: "
          (str/join ", " (map :id builds))))
-     (doseq [js-env js-envs]
-       (doo/assert-compiler-opts js-env compiler))
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      (run-local-project project' [builds]
        '(require 'cljs.build.api 'doo.core)
-       (if (= "auto" watch-mode)
-         `(cljs.build.api/watch
-            (apply cljs.build.api/inputs ~source-paths)
-            (assoc ~compiler
-              :watch-fn
-              (fn []
-                (doseq [js-env# ~js-envs]
-                  (doo.core/print-env js-env#)
-                  (doo.core/run-script js-env# ~compiler ~doo-opts)))))
-         `(do (cljs.build.api/build
-                (apply cljs.build.api/inputs ~source-paths) ~compiler)
+       `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)] 
+          (doseq [js-env# ~js-envs]
+            (doo.core/assert-compiler-opts js-env# compiler#))
+          (if (= "auto" ~watch-mode)
+            (cljs.build.api/watch
+              (apply cljs.build.api/inputs ~source-paths)
+              (assoc compiler#
+                :watch-fn
+                (fn []
+                  (doseq [js-env# ~js-envs]
+                    (doo.core/print-env js-env#)
+                    (doo.core/run-script js-env# compiler# ~doo-opts)))))
+            (do
+              (cljs.build.api/build
+                (apply cljs.build.api/inputs ~source-paths) compiler#)
               (let [ok# (->> ~js-envs
                           (map (fn [e#]
                                  (doo.core/print-env e#)
-                                 (doo.core/run-script e# ~compiler ~doo-opts)))
+                                 (doo.core/run-script e# compiler# ~doo-opts)))
                           (every? (comp zero? :exit)))]
-                (System/exit (if ok# 0 1)))))))))
+                (System/exit (if ok# 0 1))))))))))
