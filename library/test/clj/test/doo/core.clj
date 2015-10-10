@@ -18,7 +18,7 @@
        :node {:output-to "target/testable.js"
               :main 'example.runner
               :optimizations :none})
-  (are [js-env opts] (doo/assert-compiler-opts js-env (prepare opts))
+  (are [js-env opts] (doo/assert-compiler-opts js-env opts)
        :node {:output-to "target/testable.js"
               :main 'example.runner
               :optimizations :none
@@ -89,9 +89,10 @@
 
 (deftest integration
   (testing "We can compile a cljs project"
-    (let [doo-opts {:silent? true 
+    (let [doo-opts {:verbose false  
                     :paths {:karma "karma"}}
           compiler-opts {:output-to "out/testable.js"
+                         :output-dir "out"
                          :main 'example.runner
                          :optimizations :none}
           srcs (cljs/inputs "../example/src" "../example/test")]

@@ -170,7 +170,7 @@
 If it doesn't work you need to install %s, see https://github.com/bensu/doo#setting-up-environments\n
 If it does work, file an issue and we'll sort it together!")
 
-(def default-opts {:silent? false})
+(def default-opts {:verbose true})
 
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
@@ -186,9 +186,9 @@ where:
   compiler-opts - the options passed to the ClojureScript when it
                   compiled the script that doo should run
   opts - a map that can contain:
-    :silent? - bool (default false) that determines if the scripts
-               output should be printed and returned (silent? false)
-               or only returned (silent? true).
+    :verbose - bool (default true) that determines if the scripts
+               output should be printed and returned (verbose false)
+               or only returned (verbose true).
     :paths - a map from runners (keywords) to string commands for bash.
     :alias - a map from aliases (keywords) to vectors of aliases and
              runners. See doo.core/resolve-alias"
@@ -201,7 +201,7 @@ where:
                    (:output-to compiler-opts))]
      (try
        (let [r (apply sh cmd)]
-         (when-not (:silent? doo-opts)
+         (when (:verbose doo-opts)
            (println (:out r)))
          r)
        (catch java.io.IOException e
