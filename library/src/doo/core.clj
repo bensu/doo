@@ -64,8 +64,10 @@
          " and we got: " js-env)))
 
 (defn print-env [js-env]
+  (println "")
   (println ";;" (str/join "" (take 70 (repeat "="))))
-  (println (str ";; Testing with " (str/capitalize (name js-env)) ":")))
+  (println (str ";; Testing with " (str/capitalize (name js-env)) ":")) 
+  (println ""))
 
 ;; ====================================================================== 
 ;; Runners
