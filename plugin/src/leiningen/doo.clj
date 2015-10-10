@@ -5,41 +5,27 @@
             [clojure.string :as str]
             [doo.core :as doo]
             [leiningen.core.main :as lmain]
-            [leiningen.cljsbuild.subproject :as subproject]
             [leiningen.core.eval :as leval]
             [clojure.pprint :refer [pprint]]))
 
 ;; ====================================================================== 
 ;; Leiningen Boilerplate
 
-;; Assumes the project is packaged in the same jar
-(defn get-lib-version [proj-name]
-  {:pre [(string? proj-name)]}
-  (let [[_ coords version]
-        (-> (io/resource (str "META-INF/leiningen/" proj-name 
-                           "/" proj-name "/project.clj"))
-          slurp
-          read-string)]
-    (assert (= coords (symbol proj-name))
-      (str "Something very wrong, could not find " proj-name
-        "'s project.clj, actually found: " coords))
-    (assert (string? version)
-      (str "Something went wrong, version of " proj-name
-        " is not a string: " version))
-    version))
-
-;; TODO: what's this for? 
-;; Needed to ensure cljsbuild compatibility
+;; TODO: what's this for?
+;; I think it is to ensure that the source paths are in the classpath 
+;; Then it might resolved to (update-in [:source-paths] concat)
 (defn make-subproject [project builds]
   (-> project
+    ;; This might be protecting against something, remove?
     (select-keys [:checkout-deps-shares
                   :eval-in
                   :jvm-opts
                   :local-repo
                   :repositories
-                  :resource-paths])
+                  :resource-paths
+                  :dependencies])
+    ;; This might be the important function
     (merge {:local-repo-classpath true
-            :dependencies (subproject/merge-dependencies (:dependencies project))
             :source-paths (concat
                             (:source-paths project)
                             (mapcat :source-paths builds))})

@@ -15,8 +15,6 @@
                  [org.clojure/clojurescript "0.0-3308" :scope "provided"]
                  [doo "0.1.6-SNAPSHOT"]]
 
-  :plugins [[lein-cljsbuild "1.0.5"]]
-
   :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
 
   :cljsbuild
