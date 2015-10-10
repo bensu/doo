@@ -102,13 +102,9 @@ Paths.
 
 > Remember that Rhino and Node don't come with a DOM so you can't call the
 > window or document objects. They are meant to test functions and
-> business logic, not rendering.
+> logic, not rendering.
 
 ### Slimer & Phantom
-
-When using `slimer` and `phantom` with `:none` make sure your
-`:output-dir` is either unspecified or an absolute path. `doo` will
-bark otherwise.
 
 If you want to run both, use `lein doo headless {build-id} {watch-mode}`.
 
@@ -285,6 +281,14 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
+* `0.1.6-SNAPSHOT` (not yet released) includes many internal changes.
+  While no major API changes where made, breakage is expected:
+      ** Adds the `:verbose` option to `doo.core/run-script`
+      ** Removes `cljsbuild` as a dependency.
+      ** Supports `'example.runner` `"example.runner"`, and
+         `example.runner` as options to `:main`.
+      ** Removes limitations around absolute and relative paths for
+         `doo.core/run-script` and the `compiler-options`.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
