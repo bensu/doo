@@ -87,17 +87,29 @@
         (.deleteOnExit)
         (#(io/copy (slurp (io/resource full-path)) %))))))
 
+;; In Karma all paths (including config.files) are normalized to
+;; absolute paths using the base path, extracted from the
+;; karma.conf.js file passed (if it's relative the current directory
+;; becomes the basePath).
+;; To avoid this, we need to ensure the paths passed to Karma are
+;; already absolute. 
+;; https://github.com/karma-runner/karma/blob/master/lib/config.js#L80
+
+(defn ->absolute [path]
+  (.getAbsolutePath (io/file path)))
+
 (defn karma-runner! 
   "Creates a file for the given runner resource file in the users dir"
   [js-env compiler-opts]
   {:pre [(some? (:output-dir compiler-opts))]}
   (let [resource-path (str base-dir "karma.conf.js.tmpl")
-        tmpl-opts (assoc compiler-opts
-                    js-env true
-                    :none (= :none (:optimizations compiler-opts)))]
-    ;; TODO: get karma to work with an absolute path instead
-    (.getPath
-      (doto (io/file "doo_karma_runner.js")
+        tmpl-opts (-> compiler-opts
+                    (update :output-to ->absolute)
+                    (update :output-dir ->absolute)
+                    (assoc js-env true
+                      :none (= :none (:optimizations compiler-opts))))]
+    (.getAbsolutePath
+      (doto (File/createTempFile "doo_karma_runner" ".js")
         (.deleteOnExit)
         (#(io/copy (selmer/render-file resource-path tmpl-opts) %))))))
 
