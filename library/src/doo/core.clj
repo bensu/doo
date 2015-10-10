@@ -176,7 +176,21 @@ If it does work, file an issue and we'll sort it together!")
 
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
-   and runs it in the selected js-env."
+   in the selected js-env.
+
+  (run-script js-env compiler-opts)
+  (run-script js-env compiler-opts opts)
+
+where: 
+
+  js-env - any of :phantom, :slimer, :node, :rhino, :chrome, :firefox, 
+           :ie, :safari, or :opera
+  compiler-opts - the options passed to the ClojureScript when it
+                  compiled the script that doo should run
+  opts - a map that can contain:
+    :paths - a map from runners (keywords) to string commands for bash.
+    :alias - a map from aliases (keywords) to vectors of aliases and
+             runners. See doo.core/resolve-alias"
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
