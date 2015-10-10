@@ -27,7 +27,7 @@
             :test {:source-paths ["src" "test"]
                    :compiler {:output-to "target/testable.js"
                               :main 'example.runner
-                              :optimizations :whitespace}}
+                              :optimizations :simple}}
             :advanced {:source-paths ["src" "test"]
                        :compiler {:output-to "target/testable.js"
                                   :main "example.runner"
