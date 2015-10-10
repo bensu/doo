@@ -3,10 +3,9 @@
    See the main function: doo"
   (:require [clojure.java.io :as io] 
             [clojure.string :as str]
-            [doo.core :as doo]
             [leiningen.core.main :as lmain]
             [leiningen.core.eval :as leval]
-            [clojure.pprint :refer [pprint]]))
+            [doo.core :as doo]))
 
 ;; ====================================================================== 
 ;; Leiningen Boilerplate
@@ -60,14 +59,30 @@
 ;; ====================================================================== 
 ;; cljsbuild opts
 
-(defn convert-builds-map
-  "Converts the cljsbuild opts into a common format [{:id \"build-id\"}]"
-  [options]
-  (update-in options [:builds]
-    #(if (map? %)
-       (for [[id build] %]
-         (assoc build :id (name id)))
-       %)))
+(defn correct-main [compiler-opts]
+  (cond-> compiler-opts
+    (and (some? (:main compiler-opts))
+         (not (seq? (:main compiler-opts))))
+    (update-in [:main] name)))
+
+(defn correct-builds [project]
+  (update-in project [:cljsbuild :builds]
+    (fn [builds]
+      (cond
+        (map? builds)
+        (mapv (fn [[k v]]
+                (-> (assoc v :id (name k))
+                  (update-in [:compiler] correct-main)))
+          builds)
+
+        (vector? builds) (mapv #(update-in % [:compiler] correct-main) builds)
+
+        :else (throw (Exception. ":cljsbuild :builds needs to be either a vector or a map"))))))
+
+(defn find-by-id
+  "Out of a seq of builds, returns the one with the given id"
+  [builds id]
+  (first (filter #(= id (:id %)) builds)))
 
 ;; ====================================================================== 
 ;; doo
@@ -86,35 +101,6 @@ Usage:
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode (optional): either auto (default) or once\n")
 
-(defprotocol ->Main
-  (main->str [main]))
-
-(extend-protocol ->Main
-  clojure.lang.Symbol
-  (main->str [main] (name main))
-  java.lang.String
-  (main->str [main] main)
-  Object
-  (main->str [main] main))
-
-(defn correct-main [compiler-opts]
-  (cond-> compiler-opts
-    (some? (:main compiler-opts)) (update-in [:main] main->str)))
-
-(defn correct-builds [project]
-  (update-in project [:cljsbuild :builds]
-    (fn [builds]
-      (cond
-        (map? builds) (->> builds
-                        (map (fn [[k v]] [k (update-in v [:compiler] correct-main)]))
-                        (into {}))
-        (vector? builds) (mapv #(update-in % [:compiler] correct-main) builds)
-        :else (throw (Exception. ":cljsbuild :builds needs to be either a vector or a map"))))))
-
-(defn find-by-id
-  "Out of a seq of builds, returns the one with the given id"
-  [builds id]
-  (first (filter #(= id (:id %)) builds)))
 
 (defn ^{:doc help-string}
   doo 
@@ -134,7 +120,7 @@ Usage:
          project' (-> project
                       correct-builds
                       (add-dep ['doo "0.1.6-SNAPSHOT"]))
-         builds (-> project' :cljsbuild convert-builds-map :builds)
+         builds (get-in project' [:cljsbuild :builds])
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
      (doo/assert-alias js-env-alias js-envs)
      (doseq [js-env js-envs]
