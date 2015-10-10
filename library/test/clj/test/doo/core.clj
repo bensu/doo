@@ -112,8 +112,11 @@
       (are [opts envs] (let [compiler-opts' (merge compiler-opts opts)]
                          (cljs/build srcs compiler-opts')
                          (->> envs
-                           (mapv #(doo-ok? (doo/run-script % compiler-opts')))
-                           (every? true?)))  
+                           (mapv (fn [env]
+                                   (-> env
+                                     (doo/run-script compiler-opts' {:silent? true})
+                                     doo-ok?)))
+                           (every? true?)))
            {} [:phantom] 
            {:target :nodejs} [:node] 
            {:optimizations :whitespace} [:rhino :phantom]

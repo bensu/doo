@@ -184,8 +184,8 @@ If it does work, file an issue and we'll sort it together!")
      (assert (valid-opts? opts))
      (try
        (let [r (apply sh cmd)]
-         ;; TODO: include silent/verbose options
-         (println (:out r))
+         (when-not (:silent? opts)
+           (println (:out r)))
          r)
        (catch java.io.IOException e
          (let [js-path (first cmd)
