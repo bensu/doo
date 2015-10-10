@@ -105,7 +105,9 @@
 
 (deftest integration
   (testing "We can compile a cljs project"
-    (let [compiler-opts {:output-to "target/testable.js"
+    (let [doo-opts {:silent? true 
+                    :paths {:karma "karma"}}
+          compiler-opts {:output-to "out/testable.js"
                          :main 'example.runner
                          :optimizations :none}
           srcs (cljs/inputs "../example/src" "../example/test")]
@@ -114,12 +116,12 @@
                          (->> envs
                            (mapv (fn [env]
                                    (-> env
-                                     (doo/run-script compiler-opts' {:silent? true})
+                                     (doo/run-script compiler-opts' doo-opts)
                                      doo-ok?)))
                            (every? true?)))
-           {} [:phantom] 
+           {} [:phantom :chrome :firefox]
            {:target :nodejs} [:node] 
-           {:optimizations :whitespace} [:rhino :phantom]
+           {:optimizations :whitespace} [:rhino :phantom :chrome :firefox]
            {:optimizations :simple :target :nodejs} [:node]
            {:optimizations :advanced :target :nodejs} [:node]
-           {:optimizations :advanced} [:phantom :rhino]))))
+           {:optimizations :advanced} [:phantom :rhino :chrome :firefox]))))

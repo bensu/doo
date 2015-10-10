@@ -1,7 +1,8 @@
 // karma.conf.js
 module.exports = function(config) {
-  // same as :output-dir
-  var root = '{{ output-dir }}';
+  // FIX: this depends on cljs internals
+  // same as :output-dir, with 'out' as default
+  var root = '{{ output-dir }}' || 'out';
 
   config.set({
     frameworks: ['cljs-test'],
