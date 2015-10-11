@@ -283,12 +283,12 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 * `0.1.6-SNAPSHOT` (not yet released) includes many internal changes.
   While no major API changes where made, breakage is expected:
-..** Adds the `:verbose` option to `doo.core/run-script`
-..** Removes `cljsbuild` as a dependency.
-..** Swaps `selmer` for `data.json`.
-..** Supports `'example.runner` `"example.runner"`, and
-     `example.runner` as options to `:main`.
-..** Removes limitations around absolute and relative paths for
+..* Adds the `:verbose` option to `doo.core/run-script`
+..* Removes `cljsbuild` as a dependency.
+..* Swaps `selmer` for `data.json`.
+..* Supports `'example.runner` `"example.runner"`, and
+    `example.runner` as options to `:main`.
+..* Removes limitations around absolute and relative paths for
      `doo.core/run-script` and the `compiler-options`.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
