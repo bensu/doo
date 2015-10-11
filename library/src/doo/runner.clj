@@ -1,19 +1,19 @@
 (ns doo.runner
   (:require [cljs.test]
-            [cljs.analyzer.api]))
+            [cljs.analyzer.api :as ana-api]))
 
-(defmacro count-tests [namespaces]
-  `(+ ~@(map (fn [ns]
-               (count (filter #(:test (nth % 1) false)
-                        (cljs.analyzer.api/ns-publics ns))))
-          namespaces)))
+(defn count-tests [namespaces]
+  (->> namespaces
+    (map (fn [ns]
+           (count (filter (fn [[_ v]] (:test v)) (ana-api/ns-interns ns)))))
+    (reduce +)))
 
 (defmacro doo-all-tests []
   `(doo.runner/set-entry-point!
      (if (doo.runner/karma?)
        (fn [tc#]
-         (jx.reporter.karma/start tc# 0)
-         (cljs.test/run-all-tests #".*"
+         (jx.reporter.karma/start tc# ~(count-tests (ana-api/all-ns)))
+         (cljs.test/run-all-tests nil
            (cljs.test/empty-env :jx.reporter.karma/karma)))
        (fn []
          (cljs.test/run-all-tests)))))
@@ -22,8 +22,7 @@
   `(doo.runner/set-entry-point!
      (if (doo.runner/karma?)
        (fn [tc#]
-         (jx.reporter.karma/start tc#
-           (doo.runner/count-tests ~(map second namespaces)))
+         (jx.reporter.karma/start tc# ~(count-tests (map second namespaces)))
          (cljs.test/run-tests
            (cljs.test/empty-env :jx.reporter.karma/karma)
            ~@namespaces))

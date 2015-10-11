@@ -89,7 +89,7 @@
 
 (deftest integration
   (testing "We can compile a cljs project"
-    (let [doo-opts {:verbose false 
+    (let [doo-opts {:verbose false
                     :paths {:karma "karma"}}
           compiler-opts {:output-to "out/testable.js"
                          :output-dir "out"
