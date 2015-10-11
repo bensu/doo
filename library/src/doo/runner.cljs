@@ -29,23 +29,6 @@
   (println "Testing" (name (:ns m))))
 
 ;; ====================================================================== 
-;; Start Testing
-
-(def ^:dynamic *run-fn* nil)
-
-;; Karma starts the runner with arguments
-(defn ^:export run! [a]
-  (*run-fn* a))
-
-(defn set-entry-point!
-  "Sets the function to be run when starting the script"
-  [f]
-  {:pre [(ifn? f)]}
-  (if (node?)
-    (set! *main-cli-fn* f)
-    (set! *run-fn* f)))
-
-;; ====================================================================== 
 ;; Finish Testing 
 
 (def ^:dynamic *exit-fn* nil)
@@ -54,12 +37,36 @@
   "Sets the fn to be called when exiting the script.
    It should take one bool argument: successful?"
   [f]
-  {:pre [(ifn? f)]}
+  {:pre [(fn? f)]}
   (set! *exit-fn* f))
 
+(defn exit! [success?]
+  (if (node?)
+    (let [process-exit (gobj/get js/process "exit")]
+      (process-exit (if success? 0 1)))
+    (try 
+      (*exit-fn* success?)
+      (catch :default e
+        (println "WARNING: doo's exit function was not properly set")
+        (println e)))))
+
 (defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
-  (let [success? (successful? m)]
-    (if (node?)
-      (let [process-exit (gobj/get js/process "exit")]
-        (process-exit (if success? 0 1)))
-      (*exit-fn* success?))))
+  (exit! (successful? m)))
+    
+;; ====================================================================== 
+;; Start Testing
+
+;; Karma starts the runner with arguments
+(defn ^:export run! [a]
+  (try
+    (*main-cli-fn* a)
+    (catch :default e
+      (println "WARNING: doo's init function was not set")
+      (println e)
+      (exit! false))))
+
+(defn set-entry-point!
+  "Sets the function to be run when starting the script"
+  [f]
+  {:pre [(fn? f)]}
+  (set! *main-cli-fn* f))
