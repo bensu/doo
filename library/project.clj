@@ -12,6 +12,8 @@
   :test-paths ["test/clj"]
 
   :resource-paths ["resources"]
+  
+  :clean-targets ^{:protect false} [:target-path "out"]
 
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [org.clojure/data.json "0.2.6"]
