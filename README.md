@@ -246,6 +246,16 @@ environment. You can configure that paths like so:
 :cljsbuild { your-builds }
 ```
 
+Paths can also be used to pass command line arguments to the runners:
+
+```clj
+:doo {:paths {:phantom "phantomjs --web-security=false"
+              :slimer "slimerjs --ignore-ssl-errors=true"
+              :karma "karma --port=9881 --no-colors"
+              :rhino "rhino -strict"
+              :node "node --trace-gc --trace-gc-verbose"}}
+```
+
 ## Aliases
 
 You might want to group runners and call
@@ -290,6 +300,7 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
     `example.runner` as options to `:main`.
   * Removes limitations around absolute and relative paths for
      `doo.core/run-script` and the `compiler-options`.
+  * Pass command line arguments to runners through `:paths`.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
