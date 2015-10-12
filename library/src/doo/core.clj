@@ -157,36 +157,46 @@
 
 (defn command-table [js-env opts]
   {:post [(some? %)]}
-  (get (merge default-command-table (:paths opts)) js-env))
+  (some-> default-command-table
+    (merge (:paths opts))
+    (get js-env)
+    (str/split #" ")))
 
-(defmulti js->command
+(defmulti js->command*
   (fn [js _ _]
     (if (contains? karma-envs js)
       :karma
       js)))
 
-(defmethod js->command :phantom
+(defmethod js->command* :phantom
   [_ _ opts]
   [(command-table :phantom opts)
    (runner-path! :phantom "unit-test.js") 
    (runner-path! :phantom-shim "phantomjs-shims.js")])
 
-(defmethod js->command :slimer
+(defmethod js->command* :slimer
   [_ _ opts]
   [(command-table :slimer opts)
    (runner-path! :slimer "unit-test.js")])
 
-(defmethod js->command :rhino
+(defmethod js->command* :rhino
   [_ _ opts]
   [(command-table :rhino opts) "-opt" "-1" (runner-path! :rhino "rhino.js")])
 
-(defmethod js->command :node
+(defmethod js->command* :node
   [_ _ opts]
   [(command-table :node opts)])
 
-(defmethod js->command :karma
+(defmethod js->command* :karma
   [js-env compiler-opts opts]
   [(command-table :karma opts) "start" (karma-runner! js-env compiler-opts)])
+
+(defn js->command [js-env compiler-opts opts]
+  {:post [(every? string? %)]}
+  (->> (js->command* js-env compiler-opts opts)
+    (mapcat #(cond-> % 
+               (string? %) vector))
+    vec))
 
 ;; ====================================================================== 
 ;; Compiler options
@@ -243,12 +253,19 @@ where:
    {:pre [(valid-js-env? js-env)]}
    (let [doo-opts (merge default-opts opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
-                   (:output-to compiler-opts))]
+               (:output-to compiler-opts))]
      (try
        (let [r (apply sh cmd)]
          (when (:verbose doo-opts)
-           (println (:out r)))
-         r)
+           (println (:out r))
+           (when-not (empty? (:err r))
+             (println (:err r))))
+         ;; Phantom/Slimer don't return correct exit code when
+         ;; provided bad opts
+         ;; Try `phantomjs --bad-opts=asdfasdf main.js` followed by
+         ;; `echo $?` for phantomjs 1.9.0 / slimerjs 0.9.6
+         (cond-> r
+           (and (not (empty? (:err r))) (zero? (:exit r))) (assoc :exit 1)))
        (catch java.io.IOException e
          (let [js-path (first cmd)
                error-msg (format cmd-not-found js-path 

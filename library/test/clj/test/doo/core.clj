@@ -70,17 +70,18 @@
 (deftest resolve-path
   (testing "When given a js-env, it gets the correct path"
     (testing "with the defaults"
-      (are [js-env path] (= path (doo/command-table js-env {}))
+      (are [js-env path] (= path (first (doo/command-table js-env {})))
            :slimer "slimerjs"
            :phantom "phantomjs"
            :rhino "rhino"
            :node "node"
            :karma "./node_modules/karma/bin/karma")
-      (is (thrown? java.lang.AssertionError
-            (doo/command-table :unknown {}))))
+      (testing "unless we don't have it"
+        (is (thrown? java.lang.AssertionError
+              (doo/command-table :unknown {})))))
     (testing "when passing options"
-      (are [js-env path] (= path (doo/command-table js-env
-                                   {:paths {:karma "karma"}}))
+      (are [js-env path] (= path (first (doo/command-table js-env
+                                          {:paths {:karma "karma"}})))
            :slimer "slimerjs"
            :karma "karma"))))
 
@@ -110,3 +111,18 @@
            {:optimizations :simple :target :nodejs} [:node]
            {:optimizations :advanced :target :nodejs} [:node]
            {:optimizations :advanced} [:phantom :rhino :chrome :firefox]))))
+
+(deftest paths-with-options 
+  (testing "We can pass paths with options"
+    (let [phantom-cmd "phantomjs --ignore-ssl-errors=true --web-security=false"
+          doo-opts {:verbose false 
+                    :paths {:phantom phantom-cmd}}
+          compiler-opts {:output-to "out/testable.js"
+                         :main 'example.runner}
+          srcs (cljs/inputs "../example/src" "../example/test")]
+      (cljs/build srcs compiler-opts)
+      (is (doo-ok? (doo/run-script :phantom compiler-opts doo-opts)))
+      (testing "but there are problems with bad options"
+        (is (not (doo-ok? (->> {:phantom "phantomjs --bad-opts=asdfa"}
+                            (assoc doo-opts :paths)
+                            (doo/run-script :phantom compiler-opts)))))))))
