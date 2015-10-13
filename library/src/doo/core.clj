@@ -139,7 +139,7 @@
   [js-env compiler-opts opts]
   [(command-table :karma opts)
    "start"
-   (karma/runner! js-env compiler-opts opts)])
+   (karma/runner! [js-env] compiler-opts opts)])
 
 (defn js->command [js-env compiler-opts opts]
   {:post [(every? string? %)]}
@@ -151,19 +151,23 @@
 ;; ====================================================================== 
 ;; Karma Server
 
-(defn install!
-  "Installs a karma server"
-  [js-env compiler-opts opts]
-  (let [cmd (->> (assoc-in opts [:karma :install?] true)
-                 (js->command js-env compiler-opts))
-        process (shell/exec! cmd)]
-    (shell/capture-process! process opts)
-    process))
-
 (defn uninstall!
   "Uninstalls the Karma server"
   [p]
   (.destroy p))
+
+(defn install!
+  "Installs a karma server"
+  [js-envs compiler-opts opts]
+  (let [cmd (->> (assoc-in opts [:karma :install?] true)
+              (js->command (first js-envs) compiler-opts))
+        process (shell/exec! cmd)]
+    (shell/capture-process! process opts)
+    (.addShutdownHook (Runtime/getRuntime)
+      (Thread. (fn []
+                 (println "Shutdown Karma Server")
+                 (uninstall! process))))
+    process))
 
 ;; ====================================================================== 
 ;; Compiler options
@@ -177,7 +181,7 @@
     (when (= :node js-env)
       (assert (= :nodejs (:target compiler-opts))
         "node should be used with :target :nodejs"))
-    (when (contains? karma-envs js-env)
+    (when (karma/env? js-env)
       (assert (some? (:output-dir compiler-opts))
         "Karma runners need :output-dir specified"))
     (when (= :rhino js-env)

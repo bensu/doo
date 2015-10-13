@@ -130,19 +130,23 @@ Usage:
          (str/join ", " (map :id builds))))
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      (run-local-project project' [builds]
-       '(require 'cljs.build.api 'doo.core)
+       '(require 'cljs.build.api 'doo.core 'doo.karma)
        `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)] 
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# compiler#))
           (if (= "auto" ~watch-mode)
-            (cljs.build.api/watch
-              (apply cljs.build.api/inputs ~source-paths)
-              (assoc compiler#
-                :watch-fn
-                (fn []
-                  (doseq [js-env# ~js-envs]
-                    (doo.core/print-env js-env#)
-                    (doo.core/run-script js-env# compiler# ~doo-opts)))))
+            (do
+              #_(when (some doo.karma/env? ~js-envs)
+                (doo.core/install! (set (filter doo.karma/env? ~js-env))
+                                   ~compiler# ~doo-opts))
+              (cljs.build.api/watch
+                (apply cljs.build.api/inputs ~source-paths)
+                (assoc compiler#
+                  :watch-fn
+                  (fn []
+                    (doseq [js-env# (remove doo.karma/env? ~js-envs)]
+                      (doo.core/print-env js-env#)
+                      (doo.core/run-script js-env# compiler# ~doo-opts))))))
             (do
               (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) compiler#)

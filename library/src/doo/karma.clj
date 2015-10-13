@@ -36,7 +36,7 @@
     "IE"
     (str/capitalize (name js-env))))
 
-(defn ->karma-opts [js-env compiler-opts]
+(defn ->karma-opts [js-envs compiler-opts]
   (let [->out-dir (fn [path]
                     (str (:output-dir compiler-opts) path))
         base-files (->> ["/*.js" "/**/*.js"]
@@ -49,8 +49,8 @@
                 (concat (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"])))]
     {"frameworks" ["cljs-test"]
      "basePath" (System/getProperty "user.dir") 
-     "plugins" [(js-env->plugin js-env) "karma-cljs-test"]
-     "browsers" [(js-env->browser js-env)]
+     "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin (set js-envs)))
+     "browsers" (mapv js-env->browser js-envs)
      "files" files
      "autoWatchBatchDelay" 1000
      "client" {"args" ["doo.runner.run_BANG_"]}
@@ -64,10 +64,10 @@
 
 (defn runner! 
   "Creates a file for the given runner resource file in the users dir"
-  [js-env compiler-opts opts]
+  [js-envs compiler-opts opts]
   {:pre [(some? (:output-dir compiler-opts))]}
   (let [karma-tmpl (slurp (io/resource (str shell/base-dir "karma.conf.js")))
-        karma-opts (cond-> (->karma-opts js-env compiler-opts)
+        karma-opts (cond-> (->karma-opts js-envs compiler-opts)
                      (:install? (:karma opts)) (assoc "singleRun" false))
         f (File/createTempFile "karma_conf" ".js")]
     (.deleteOnExit f)
