@@ -5,6 +5,7 @@
             [clojure.set :as set]
             [clojure.java.io :as io]
             [clojure.data.json :as json]
+            [doo.karma :as karma]
             [doo.shell :as shell]))
 
 ;; ====================================================================== 
@@ -12,11 +13,9 @@
 
 ;; All js-envs are keywords.
 
-(def karma-envs #{:chrome :firefox :safari :opera :ie})
-
 (def doo-envs #{:phantom :slimer :node :rhino})
 
-(def js-envs (set/union doo-envs karma-envs))
+(def js-envs (set/union doo-envs karma/envs))
 
 (def default-aliases {:headless [:slimer :phantom]})
 
@@ -78,8 +77,6 @@
 ;; Sadly, we can't just point Phantom to the file inside the jar
 ;; http://stackoverflow.com/questions/25307667/launching-phantomjs-as-a-local-resource-when-using-an-executable-jar
 
-(def base-dir "runners/")
-
 ;; TODO: runner arg is not necessary
 (defn runner-path!
   "Creates a temp file for the given runner resource file."
@@ -87,7 +84,7 @@
    (runner-path! runner filename {:common? false}))
   ([runner filename {:keys [common?]}]
    (letfn [(slurp-resource [res]
-             (slurp (io/resource (str base-dir res))))
+             (slurp (io/resource (str shell/base-dir res))))
            (add-common [file]
              (when common?
                (spit file (slurp-resource "common.js"))))]
@@ -96,68 +93,6 @@
          .deleteOnExit
          add-common
          (spit (slurp-resource filename) :append true))))))
-
-;; In Karma all paths (including config.files) are normalized to
-;; absolute paths using the basePath.
-;; It's important to pass it as an option and it should be the same
-;; path from where the compiler was executed. Othwerwise it's extracted
-;; from the karma.conf.js file passed (if it's relative the current directory
-;; becomes the basePath).
-;; http://karma-runner.github.io/0.10/config/configuration-file.html
-;; https://github.com/karma-runner/karma/blob/master/lib/config.js#L80
-
-;; TODO: cljs_deps.js is not being served by karma's server which
-;; triggers a warning. It's not a problem because it was already
-;; included, but it would be better to reproduce the server behavior
-;; expected by the none shim
-;; https://github.com/clojure/clojurescript/blob/master/src/main/clojure/cljs/closure.clj#L1152
-
-(defn js-env->plugin [js-env]
-  (str "karma-" (name js-env) "-launcher"))
-
-(defn js-env->browser [js-env]
-  (if (= :ie js-env)
-    "IE"
-    (str/capitalize (name js-env))))
-
-(defn ->karma-opts [js-env compiler-opts]
-  (let [->out-dir (fn [path]
-                    (str (:output-dir compiler-opts) path))
-        base-files (->> ["/*.js" "/**/*.js"]
-                     (mapv (fn [pattern]
-                             {"pattern" (->out-dir pattern) "included" false}))
-                     (concat [(:output-to compiler-opts)]))
-        ;; The files get loaded into the browser in this order.
-        files (cond->> base-files 
-                (= :none (:optimizations compiler-opts))
-                (concat (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"])))]
-    {"frameworks" ["cljs-test"]
-     "basePath" (System/getProperty "user.dir") 
-     "plugins" [(js-env->plugin js-env) "karma-cljs-test"]
-     "browsers" [(js-env->browser js-env)]
-     "files" files
-     "autoWatchBatchDelay" 1000
-     "client" {"args" ["doo.runner.run_BANG_"]}
-     "singleRun" true}))
-
-(defn write-var [writer var-name var-value]
-  (.write writer (str "var " var-name " = "))
-  (.write writer (with-out-str
-                   (json/pprint var-value :escape-slash false)))
-  (.write writer ";\n"))
-
-(defn karma-runner! 
-  "Creates a file for the given runner resource file in the users dir"
-  [js-env compiler-opts]
-  {:pre [(some? (:output-dir compiler-opts))]}
-  (let [karma-tmpl (slurp (io/resource (str base-dir "karma.conf.js")))
-        karma-opts (->karma-opts js-env compiler-opts)
-        f (File/createTempFile "karma_conf" ".js")]
-    (.deleteOnExit f)
-    (with-open [w (io/writer f)]
-      (write-var w "configData" karma-opts)
-      (io/copy karma-tmpl w))
-    (.getAbsolutePath f)))
 
 (def default-command-table
   {:phantom "phantomjs"
@@ -175,7 +110,7 @@
 
 (defmulti js->command*
   (fn [js _ _]
-    (if (contains? karma-envs js)
+    (if (karma/env? js)
       :karma
       js)))
 
@@ -202,7 +137,9 @@
 
 (defmethod js->command* :karma
   [js-env compiler-opts opts]
-  [(command-table :karma opts) "start" (karma-runner! js-env compiler-opts)])
+  [(command-table :karma opts)
+   "start"
+   (karma/runner! js-env compiler-opts opts)])
 
 (defn js->command [js-env compiler-opts opts]
   {:post [(every? string? %)]}
@@ -210,6 +147,23 @@
     (mapcat #(cond-> % 
                (string? %) vector))
     vec))
+
+;; ====================================================================== 
+;; Karma Server
+
+(defn install!
+  "Installs a karma server"
+  [js-env compiler-opts opts]
+  (let [cmd (->> (assoc-in opts [:karma :install?] true)
+                 (js->command js-env compiler-opts))
+        process (shell/exec! cmd)]
+    (shell/capture-process! process opts)
+    process))
+
+(defn uninstall!
+  "Uninstalls the Karma server"
+  [p]
+  (.destroy p))
 
 ;; ====================================================================== 
 ;; Compiler options
@@ -240,7 +194,8 @@
 If it doesn't work you need to install %s, see https://github.com/bensu/doo#setting-up-environments\n
 If it does work, file an issue and we'll sort it together!")
 
-(def default-opts {:verbose true})
+(def default-opts {:verbose true
+                   :karma {:install? false}})
 
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
@@ -282,7 +237,8 @@ where:
                              "rhino -help"
                              (str js-path " -v"))
                            js-path)]
-           (println error-msg)
+           (when (:verbose doo-opts)
+             (println error-msg))
            {:exit 127
             :err error-msg
             :out ""}))))))

@@ -4,6 +4,8 @@
   (:import (java.io StringWriter BufferedReader InputStreamReader)
            (java.nio.charset Charset)))
 
+(def base-dir "runners/")
+
 (defn- stream-to-string
   ([in] (stream-to-string in (.name (Charset/defaultCharset))))
   ([in enc]
@@ -22,18 +24,24 @@
       (.close r)
       (.toString out))))
 
+(defn exec! [cmd]
+  (.exec (Runtime/getRuntime) ^"[Ljava.lang.String;" (into-array cmd)))
+
+(defn capture-process! [process opts]
+  (letfn [(capture! [stream]
+            (future
+              (if (:verbose opts)
+                (print-stream! stream)
+                (stream-to-string stream))))]
+    {:out (capture! (.getInputStream process))
+     :err (capture! (.getErrorStream process))}))
+
 (defn sh
   "Rewrite of clojure.java.shell/sh that writes output to console,
    as it happens by default."
   ([cmd] (sh cmd {:verbose true}))
   ([cmd opts]
-   (let [capture! #(future
-                     (if (:verbose opts)
-                       (print-stream! %)
-                       (stream-to-string %)))
-         proc (.exec (Runtime/getRuntime) 
-                ^"[Ljava.lang.String;" (into-array cmd))
-         out (capture! (.getInputStream proc))
-         err (capture! (.getErrorStream proc))
+   (let [proc (exec! cmd)
+         {:keys [out err]} (capture-process! proc opts)
          exit-code (.waitFor proc)]
      {:exit exit-code :out @out :err @err})))
