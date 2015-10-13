@@ -3,9 +3,9 @@
   (:import java.io.File)
   (:require [clojure.string :as str]
             [clojure.set :as set]
-            [clojure.java.shell :refer [sh]]
             [clojure.java.io :as io]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [doo.shell :as shell]))
 
 ;; ====================================================================== 
 ;; JS Environments
@@ -266,13 +266,9 @@ where:
    {:pre [(valid-js-env? js-env)]}
    (let [doo-opts (merge default-opts opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
-               (:output-to compiler-opts))]
+                   (:output-to compiler-opts))]
      (try
-       (let [r (apply sh cmd)]
-         (when (:verbose doo-opts)
-           (println (:out r))
-           (when-not (empty? (:err r))
-             (println (:err r))))
+       (let [r (shell/sh cmd doo-opts)]
          ;; Phantom/Slimer don't return correct exit code when
          ;; provided bad opts
          ;; Try `phantomjs --bad-opts=asdfasdf main.js` followed by
@@ -288,4 +284,5 @@ where:
                            js-path)]
            (println error-msg)
            {:exit 127
-            :out error-msg}))))))
+            :err error-msg
+            :out ""}))))))
