@@ -1,4 +1,4 @@
-# doo 
+# doo
 
 A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
