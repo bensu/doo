@@ -75,16 +75,27 @@
 ;; when the JVM is shut down which is not ideal when scripting, since
 ;; it can be called several times in one JVM session. 
 
+;; Sadly, we can't just point Phantom to the file inside the jar
+;; http://stackoverflow.com/questions/25307667/launching-phantomjs-as-a-local-resource-when-using-an-executable-jar
+
 (def base-dir "runners/")
 
+;; TODO: runner arg is not necessary
 (defn runner-path!
-  "Creates a temp file for the given runner resource file"
-  [runner filename]
-  (let [full-path (str base-dir filename)]
-    (.getAbsolutePath
-      (doto (File/createTempFile (name runner) ".js")
-        (.deleteOnExit)
-        (#(io/copy (slurp (io/resource full-path)) %))))))
+  "Creates a temp file for the given runner resource file."
+  ([runner filename]
+   (runner-path! runner filename {:common? false}))
+  ([runner filename {:keys [common?]}]
+   (letfn [(slurp-resource [res]
+             (slurp (io/resource (str base-dir res))))
+           (add-common [file]
+             (when common?
+               (spit file (slurp-resource "common.js"))))]
+     (.getAbsolutePath
+       (doto (File/createTempFile (name runner) ".js")
+         .deleteOnExit
+         add-common
+         (spit (slurp-resource filename) :append true))))))
 
 ;; In Karma all paths (including config.files) are normalized to
 ;; absolute paths using the basePath.
@@ -171,17 +182,19 @@
 (defmethod js->command* :phantom
   [_ _ opts]
   [(command-table :phantom opts)
-   (runner-path! :phantom "headless.js") 
+   (runner-path! :phantom "headless.js" {:common? true})
    (runner-path! :phantom-shim "phantomjs-shims.js")])
 
 (defmethod js->command* :slimer
   [_ _ opts]
   [(command-table :slimer opts)
-   (runner-path! :slimer "headless.js")])
+   (runner-path! :slimer "headless.js" {:common? true})])
 
 (defmethod js->command* :rhino
   [_ _ opts]
-  [(command-table :rhino opts) "-opt" "-1" (runner-path! :rhino "rhino.js")])
+  [(command-table :rhino opts)
+   "-opt" "-1"
+   (runner-path! :rhino "rhino.js" {:common? true})])
 
 (defmethod js->command* :node
   [_ _ opts]
