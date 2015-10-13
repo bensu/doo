@@ -219,20 +219,6 @@ which makes it harder for new contributors to setup.
 > as root:
 > 	sudo npm install karma --save-dev
 
-#### Troubleshooting Karma
-
-When Karma fails to found a launcher (e.g., chrome), it asks the user
-for feedback on what to do next. I haven't figured out a way to show
-their error, so right now it looks like this:
-
-```
-;; ======================================================================
-;; Testing with Chrome:
-```
-
-and it hangs. So if your tests hang right after starting, make sure
-your specified launchers have been installed.
-
 ## Paths
 
 You might want to use a different version of node, or the global
