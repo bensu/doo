@@ -2,7 +2,7 @@
   (:require [cljs.test :refer-macros [async deftest is testing]]))
 
 (deftest sync-test 
-  (is (= 2 1)))
+  (is (= 1 1)))
 
 ;; Only works in browsers because it uses setTimeout
 (deftest async-test
@@ -10,6 +10,6 @@
     (is (= 1 1))
     (let [a 1]
       (js/setTimeout (fn []
-                       (is (= a 2))
+                       (is (= a 1))
                        (done))
         500))))
