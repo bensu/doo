@@ -287,6 +287,8 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
   * Removes limitations around absolute and relative paths for
      `doo.core/run-script` and the `compiler-options`.
   * Pass command line arguments to runners through `:paths`.
+  * In auto mode, run karma as a server to avoid starting/stopping the
+    browsers.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
