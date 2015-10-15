@@ -61,11 +61,12 @@
          (str/join ", " (map name js-envs))
          " and we got: " js-env)))
 
-(defn print-env [js-env]
-  (println "")
-  (println ";;" (str/join "" (take 70 (repeat "="))))
-  (println (str ";; Testing with " (str/capitalize (name js-env)) ":")) 
-  (println ""))
+(defn print-envs [& js-envs]
+  (let [env-name (str/join ", " (mapv (comp str/capitalize name) js-envs))]
+    (println "")
+    (println ";;" (str/join "" (take 70 (repeat "="))))
+    (println (str ";; Testing with " env-name ":")) 
+    (println "")))
 
 ;; ====================================================================== 
 ;; Runners
@@ -156,16 +157,18 @@
   (let [opts' (assoc-in opts [:karma :install?] true)
         cmd (shell/flatten-cmd [(command-table :karma opts')
                                 "start"
-                                (karma/runner! js-envs compiler-opts opts')])]
-    (doto (shell/exec! cmd)
-      (shell/capture-process! opts)
-      (shell/set-cleanup! opts "Shutdown Karma Server"))))
+                                (karma/runner! js-envs compiler-opts opts')])
+        process (shell/exec! cmd)]
+    (shell/set-cleanup! process opts "Shutdown Karma Server")
+    (shell/capture-process! process (assoc opts :verbose true))
+    process))
 
 (defn karma-run! [opts]
   (let [cmd (shell/flatten-cmd [(command-table :karma opts)
-                                "run" "--" "doo.runner.run_BANG_"])]
-    (doto (shell/exec! cmd)
-      (shell/set-cleanup! opts "Close Karma run"))))
+                                "run" "--" "doo.runner.run_BANG_"])
+        process (shell/exec! cmd)]
+    (shell/set-cleanup! process opts "Close Karma run")
+    process))
 
 ;; ====================================================================== 
 ;; Compiler options
