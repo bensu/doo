@@ -52,7 +52,7 @@
      "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin js-envs))
      "browsers" (mapv js-env->browser js-envs)
      "files" files
-     "autoWatchBatchDelay" 1000
+     "autoWatch" false 
      "client" {"args" ["doo.runner.run_BANG_"]}
      "singleRun" true}))
 
