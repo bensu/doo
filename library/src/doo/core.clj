@@ -45,12 +45,16 @@
   {:pre [(keyword? js-env)]}
   (contains? js-envs js-env))
 
-(defn assert-alias [js-env-alias resolved-js-envs]
-  (assert (not (empty? resolved-js-envs))
-    (str "The given alias: " js-env-alias
-      " didn't resolve to any runners. Try any of: "
-       (str/join ", " (map name js-envs)) ", or "
-       (str/join ", " (map name (keys default-aliases))))))
+(defn assert-alias
+  ([js-env-alias resolved-js-envs]
+   (assert-alias js-env-alias resolved-js-envs {}))
+  ([js-env-alias resolved-js-envs user-aliases]
+   (assert (not (empty? resolved-js-envs))
+     (str "The given alias: " js-env-alias
+       " didn't resolve to any runners. Try any of: "
+       (str/join ", " (map name (concat js-envs
+                                  (keys default-aliases)
+                                  (keys user-aliases))))))))
 
 (defn assert-js-env
   "Throws an exception if the js-env is not valid.

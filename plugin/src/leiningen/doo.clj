@@ -122,7 +122,7 @@ Usage:
                     (add-dep ['doo "0.1.6-SNAPSHOT"]))
          builds (get-in project' [:cljsbuild :builds])
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
-     (doo/assert-alias js-env-alias js-envs)
+     (doo/assert-alias js-env-alias js-envs (:alias doo-opts))
      (doseq [js-env js-envs]
        (doo/assert-js-env js-env))
      (assert (not (empty? build))
