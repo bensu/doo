@@ -15,9 +15,11 @@
                  [org.clojure/clojurescript "0.0-3308" :scope "provided"]
                  [doo "0.1.6-SNAPSHOT"]]
 
-  :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
+  :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
 
-  :doo {:paths {:karma "karma"}}
+  :doo {:paths {:karma "karma"}
+        :alias {:browsers [:chrome :firefox]
+                :dom [:browsers :headless]}}
 
   :cljsbuild
   {:builds {:test {:source-paths ["src" "test"]
