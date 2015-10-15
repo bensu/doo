@@ -49,7 +49,7 @@
   (assert (not (empty? resolved-js-envs))
     (str "The given alias: " js-env-alias
       " didn't resolve to any runners. Try any of: "
-       (str/join ", " (map name js-envs)) " or "
+       (str/join ", " (map name js-envs)) ", or "
        (str/join ", " (map name (keys default-aliases))))))
 
 (defn assert-js-env
