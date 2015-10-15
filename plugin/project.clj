@@ -12,7 +12,7 @@
   :eval-in-leiningen true
   
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "0.0-3308" :scope "provided"]
+
                  [doo "0.1.6-SNAPSHOT"]]
 
   :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
@@ -20,6 +20,9 @@
   :doo {:paths {:karma "karma"}
         :alias {:browsers [:chrome :firefox]
                 :dom [:browsers :headless]}}
+
+  :profiles {:dev {:dependencies [[org.clojure/clojurescript "0.0-3308"
+                                   :scope "provided"]]}}
 
   :cljsbuild
   {:builds {:test {:source-paths ["src" "test"]
