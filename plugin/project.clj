@@ -17,6 +17,8 @@
 
   :clean-targets ^{:protect false} [:target-path "resources/public/js/"]
 
+  :doo {:paths {:karma "karma"}}
+
   :cljsbuild
   {:builds {:test {:source-paths ["src" "test"]
                    :compiler {:output-to "resources/public/js/testable.js"
