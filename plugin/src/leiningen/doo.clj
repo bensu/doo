@@ -135,24 +135,26 @@ Usage:
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# compiler#))
           (if (= "auto" ~watch-mode)
-            (do
-              #_(when (some doo.karma/env? ~js-envs)
-                (doo.core/install! (set (filter doo.karma/env? ~js-env))
-                                   ~compiler# ~doo-opts))
+            (let [karma-envs# (vec (filter doo.karma/env? ~js-envs))
+                  non-karma-envs# (vec (remove doo.karma/env? ~js-envs))]
+              (when-not (empty? karma-envs#)
+                (doo.core/install! karma-envs# compiler# ~doo-opts))
               (cljs.build.api/watch
                 (apply cljs.build.api/inputs ~source-paths)
                 (assoc compiler#
                   :watch-fn
                   (fn []
-                    (doseq [js-env# (remove doo.karma/env? ~js-envs)]
-                      (doo.core/print-env js-env#)
-                      (doo.core/run-script js-env# compiler# ~doo-opts))))))
+                    (doseq [js-env# non-karma-envs#]
+                      (doo.core/print-envs js-env#)
+                      (doo.core/run-script js-env# compiler# ~doo-opts))
+                    (apply doo.core/print-envs karma-envs#)
+                    (doo.core/karma-run! ~doo-opts)))))
             (do
               (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) compiler#)
               (let [ok# (->> ~js-envs
                           (map (fn [e#]
-                                 (doo.core/print-env e#)
+                                 (doo.core/print-envs e#)
                                  (doo.core/run-script e# compiler# ~doo-opts)))
                           (every? (comp zero? :exit)))]
                 (System/exit (if ok# 0 1))))))))))
