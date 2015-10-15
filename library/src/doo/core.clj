@@ -143,31 +143,29 @@
 
 (defn js->command [js-env compiler-opts opts]
   {:post [(every? string? %)]}
-  (->> (js->command* js-env compiler-opts opts)
-    (mapcat #(cond-> % 
-               (string? %) vector))
-    vec))
+  (shell/flatten-cmd (js->command* js-env compiler-opts opts)))
 
 ;; ====================================================================== 
 ;; Karma Server
 
-(defn uninstall!
-  "Uninstalls the Karma server"
-  [p]
-  (.destroy p))
+;; Only here to keep command-table in doo.core
 
 (defn install!
   "Installs a karma server"
   [js-envs compiler-opts opts]
-  (let [cmd (->> (assoc-in opts [:karma :install?] true)
-              (js->command (first js-envs) compiler-opts))
-        process (shell/exec! cmd)]
-    (shell/capture-process! process opts)
-    (.addShutdownHook (Runtime/getRuntime)
-      (Thread. (fn []
-                 (println "Shutdown Karma Server")
-                 (uninstall! process))))
-    process))
+  (let [opts' (assoc-in opts [:karma :install?] true)
+        cmd (shell/flatten-cmd [(command-table :karma opts')
+                                "start"
+                                (karma/runner! js-envs compiler-opts opts')])]
+    (doto (shell/exec! cmd)
+      (shell/capture-process! opts)
+      (shell/set-cleanup! opts "Shutdown Karma Server"))))
+
+(defn karma-run! [opts]
+  (let [cmd (shell/flatten-cmd [(command-table :karma opts)
+                                "run" "--" "doo.runner.run_BANG_"])]
+    (doto (shell/exec! cmd)
+      (shell/set-cleanup! opts "Close Karma run"))))
 
 ;; ====================================================================== 
 ;; Compiler options

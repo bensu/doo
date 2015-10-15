@@ -49,7 +49,7 @@
                 (concat (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"])))]
     {"frameworks" ["cljs-test"]
      "basePath" (System/getProperty "user.dir") 
-     "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin (set js-envs)))
+     "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin js-envs))
      "browsers" (mapv js-env->browser js-envs)
      "files" files
      "autoWatchBatchDelay" 1000

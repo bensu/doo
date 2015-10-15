@@ -4,7 +4,19 @@
   (:import (java.io StringWriter BufferedReader InputStreamReader)
            (java.nio.charset Charset)))
 
+;; ====================================================================== 
+;; Util
+
+(defn flatten-cmd [cmd]
+  (vec (mapcat #(cond-> % (string? %) vector) cmd)))
+
+;; ====================================================================== 
+;; Config
+
 (def base-dir "runners/")
+
+;; ====================================================================== 
+;; Shell
 
 (defn- stream-to-string
   ([in] (stream-to-string in (.name (Charset/defaultCharset))))
@@ -35,6 +47,15 @@
                 (stream-to-string stream))))]
     {:out (capture! (.getInputStream process))
      :err (capture! (.getErrorStream process))}))
+
+(defn set-cleanup!
+  ([process opts]
+   (set-cleanup! process opts "Shutdown Process"))
+  ([process opts msg]
+   (.addShutdownHook (Runtime/getRuntime)
+     (Thread. (fn []
+                (println msg)
+                (.destroy process))))))
 
 (defn sh
   "Rewrite of clojure.java.shell/sh that writes output to console,
