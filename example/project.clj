@@ -25,24 +25,24 @@
                              :main example.core
                              :optimizations :none}}
             :test {:source-paths ["src" "test"]
-                   :compiler {:output-to "target/testable.js"
+                   :compiler {:output-to "out/testable.js"
                               :main 'example.runner
                               :optimizations :simple}}
             :advanced {:source-paths ["src" "test"]
-                       :compiler {:output-to "target/testable.js"
+                       :compiler {:output-to "out/testable.js"
                                   :main "example.runner"
                                   :optimizations :advanced}}
             :none-test {:source-paths ["src" "test"]
-                        :compiler {:output-to "target/testable.js"
+                        :compiler {:output-to "out/testable.js"
                                    :main example.runner
                                    :optimizations :none}}
             :node-none {:source-paths ["src" "test"]
-                        :compiler {:output-to "target/testable.js"
+                        :compiler {:output-to "out/testable.js"
                                    :main example.runner
                                    :optimizations :none
                                    :target :nodejs}}
             :node-advanced {:source-paths ["src" "test"]
-                            :compiler {:output-to "target/testable.js"
+                            :compiler {:output-to "out/testable.js"
                                        :main example.runner
                                        :optimizations :advanced
                                        :target :nodejs}}}})
