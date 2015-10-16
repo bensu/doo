@@ -12,7 +12,6 @@
   :eval-in-leiningen true
   
   :dependencies [[org.clojure/clojure "1.7.0"]
-
                  [doo "0.1.6-SNAPSHOT"]]
 
   :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
@@ -25,7 +24,7 @@
                                    :scope "provided"]]}}
 
   :cljsbuild
-  {:builds {:test {:source-paths ["src" "test"]
+  {:builds {:test {:source-paths ["test/cljs"]
                    :compiler {:output-to "resources/public/js/testable.js"
                               :main lein-doo.runner
                               :optimizations :whitespace}}}})
