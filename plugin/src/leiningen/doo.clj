@@ -114,9 +114,8 @@
   [{cli-alias :alias} {alias-map :alias}]
   (assert (not (and (default? cli-alias) (not (contains? alias-map :default))))
     "\n
- To call lein doo without a js-env you
- need to a :default :alias in your project.clj
- and a default build. For example:
+ To call lein doo without a js-env you need to a :default :alias in
+ your project.clj and a default build. For example:
 
    {:doo {:build {:source-paths [\"src\" \"test\"]}
           :alias {:default [:firefox]}}}
@@ -135,11 +134,20 @@
   [{cli-build :build} builds {opts-build :build}]
   {:post [(contains? % :source-paths)
           (not (empty? (:source-paths %)))]}
+  (assert (or (nil? opts-build) (string? opts-build))
+    (str "\n\n Incorrect value for :doo :build " opts-build "\n" 
+      "
+ The default build under :doo :build should either be a string with
+ the build-id of a build under :cljsbuild or a map with the actual
+ build. For example:
+
+ {:doo {:build \"test-build\"}}
+
+ {:doo {:build {:source-paths [\"src\" \"test\"]}}}\n"))
   (assert (not (and (default? cli-build) (empty? opts-build)))
     "\n
- To call lein doo without a build id,
- you need to configure a build in your
- project.clj. For example:
+ To call lein doo without a build id, you need to configure a build
+ in your project.clj. For example:
 
  {:doo {:build {:source-paths [\"src\" \"test\"]}}}
 
