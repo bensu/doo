@@ -6,7 +6,7 @@
             [leiningen.core.main :as lmain]
             [leiningen.core.eval :as leval]
             [doo.core :as doo]))
-
+ 
 ;; ====================================================================== 
 ;; Leiningen Boilerplate
 
@@ -82,7 +82,76 @@
 (defn find-by-id
   "Out of a seq of builds, returns the one with the given id"
   [builds id]
-  (first (filter #(= id (:id %)) builds)))
+  (let [build (first (filter #(= id (:id %)) builds))]
+    (assert (not (empty? build))
+      (str "The given build (" id ") was not found in these options: "
+        (str/join ", " (map :id builds))))
+    build))
+
+;; ====================================================================== 
+;; CLI
+
+(defn default? [cli-opt]
+  (or (nil? cli-opt) (= :default cli-opt)))
+
+(defn watch-mode? [arg]
+  (contains? #{"auto" "once"} arg))
+
+(defn args->cli
+  "Parses & validates the cli arguments into a consistent format"
+  [args]
+  (let [[js-env build-id & xs] (remove watch-mode? args)]
+    (assert (empty? xs)
+      (str "We couldn't parse " xs " as a watch-mode,"
+        " only auto or once are supported"))
+    {:alias (keyword (or js-env "default"))
+     :build (or build-id :default)
+     :watch-mode (keyword (or (first (filter watch-mode? args)) "auto"))}))
+
+(defn cli->js-envs
+  "Returns the js-envs where doo should be run from the cli arguments
+   and the project.clj options"
+  [{cli-alias :alias} {alias-map :alias}]
+  (assert (not (and (default? cli-alias) (not (contains? alias-map :default))))
+    "\n
+ To call lein doo without a js-env you
+ need to a :default :alias in your project.clj
+ and a default build. For example:
+
+   {:doo {:build {:source-paths [\"src\" \"test\"]}
+          :alias {:default [:firefox]}}}
+
+ then you can simply use
+
+   lein doo\n")
+  (doo/resolve-alias cli-alias alias-map))
+
+(def default-build
+  {:compiler {:optimizations :none
+              :output-to "out/doo-testable.js"}})
+
+(defn cli->build
+  "Returns the build form the cli arguments and the project options"
+  [{cli-build :build} builds {opts-build :build}]
+  {:post [(contains? % :source-paths)
+          (not (empty? (:source-paths %)))]}
+  (assert (not (and (default? cli-build) (empty? opts-build)))
+    "\n
+ To call lein doo without a build id,
+ you need to configure a build in your
+ project.clj. For example:
+
+ {:doo {:build {:source-paths [\"src\" \"test\"]}}}
+
+ then you can call that build with:
+
+   lein doo phantom\n")
+  (let [build (if (default? cli-build) 
+                opts-build
+                cli-build)]
+    (if (or (nil? build) (map? build))
+      (merge default-build build)
+      (find-by-id builds build))))
 
 ;; ====================================================================== 
 ;; doo
@@ -93,51 +162,48 @@ doo - run cljs.test in any JS environment.
 
 Usage:
 
+  lein doo
+
+  lein doo {js-env}
+
   lein doo {js-env} {build-id}
 
   lein doo {js-env} {build-id} {watch-mode}
 
-  - js-env: slimer, phantom, rhino, node, chrome, firefox, safari, ie, or opera.
+  - js-env: slimer, phantom, node, chrome, firefox, or an alias like headless 
   - build-id: any of the ids under the :cljsbuild map in your project.clj
-  - watch-mode (optional): either auto (default) or once\n")
+  - watch-mode: either auto (default) or once\n
+
+All arguments are optional provided there is a corresponding default
+under :doo in the project.clj.")
 
 (defn ^{:doc help-string}
   doo 
-  ([project] (lmain/info help-string))
-  ([project js-env]
-   (lmain/info
-     (str "We have the JavaScript Environment (" js-env
-       ") but we are missing the build-id. See `lein doo` for help.")))
-  ([project alias build-id] (doo project alias build-id "auto"))
-  ([project alias build-id watch-mode]
-   (assert (contains? #{"auto" "once"} watch-mode)
-     (str "Possible watch-modes are auto or once, " watch-mode " was given."))
+  ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
-   (let [doo-opts (:doo project)
-         js-envs (doo/resolve-alias (keyword alias) (:alias doo-opts))
+   (let [{:keys [watch-mode] :as cli} (args->cli args)
+         opts (:doo project)
+         js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
          project' (-> project
                     correct-builds
                     (add-dep ['doo "0.1.6-SNAPSHOT"]))
          builds (get-in project' [:cljsbuild :builds])
-         {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
-     (doo/assert-alias alias js-envs (:alias doo-opts))
+         {:keys [source-paths compiler] :as build} (cli->build cli builds opts)]
+     (doo/assert-alias alias js-envs (:alias opts))
      (doseq [js-env js-envs]
        (doo/assert-js-env js-env))
-     (assert (not (empty? build))
-       (str "The given build (" build-id ") was not found in these options: "
-         (str/join ", " (map :id builds))))
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      (run-local-project project' [builds]
        '(require 'cljs.build.api 'doo.core 'doo.karma)
        `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)] 
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# compiler#))
-          (if (= "auto" ~watch-mode)
+          (if (= :auto ~watch-mode)
             (let [karma-envs# (vec (filter doo.karma/env? ~js-envs))
                   non-karma-envs# (vec (remove doo.karma/env? ~js-envs))]
               (when-not (empty? karma-envs#)
-                (doo.core/install! karma-envs# compiler# ~doo-opts))
+                (doo.core/install! karma-envs# compiler# ~opts))
               (cljs.build.api/watch
                 (apply cljs.build.api/inputs ~source-paths)
                 (assoc compiler#
@@ -145,15 +211,15 @@ Usage:
                   (fn []
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
-                      (doo.core/run-script js-env# compiler# ~doo-opts))
+                      (doo.core/run-script js-env# compiler# ~opts))
                     (apply doo.core/print-envs karma-envs#)
-                    (doo.core/karma-run! ~doo-opts)))))
+                    (doo.core/karma-run! ~opts)))))
             (do
               (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) compiler#)
               (let [ok# (->> ~js-envs
                           (map (fn [e#]
                                  (doo.core/print-envs e#)
-                                 (doo.core/run-script e# compiler# ~doo-opts)))
+                                 (doo.core/run-script e# compiler# ~opts)))
                           (every? (comp zero? :exit)))]
                 (System/exit (if ok# 0 1))))))))))
