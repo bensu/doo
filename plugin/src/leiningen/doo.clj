@@ -101,28 +101,27 @@ Usage:
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode (optional): either auto (default) or once\n")
 
-
 (defn ^{:doc help-string}
   doo 
   ([project] (lmain/info help-string))
   ([project js-env]
    (lmain/info
-     (str "We have the js-env (" js-env
+     (str "We have the JavaScript Environment (" js-env
        ") but we are missing the build-id. See `lein doo` for help.")))
-  ([project js-env-alias build-id] (doo project js-env-alias build-id "auto"))
-  ([project js-env-alias build-id watch-mode]
+  ([project alias build-id] (doo project alias build-id "auto"))
+  ([project alias build-id watch-mode]
    (assert (contains? #{"auto" "once"} watch-mode)
      (str "Possible watch-modes are auto or once, " watch-mode " was given."))
    ;; FIX: execute in a try catch like the one in run-local-project
    (let [doo-opts (:doo project)
-         js-envs (doo/resolve-alias (keyword js-env-alias) (:alias doo-opts))
+         js-envs (doo/resolve-alias (keyword alias) (:alias doo-opts))
          ;; FIX: get the version dynamically
          project' (-> project
                     correct-builds
                     (add-dep ['doo "0.1.6-SNAPSHOT"]))
          builds (get-in project' [:cljsbuild :builds])
          {:keys [source-paths compiler] :as build} (find-by-id builds build-id)]
-     (doo/assert-alias js-env-alias js-envs (:alias doo-opts))
+     (doo/assert-alias alias js-envs (:alias doo-opts))
      (doseq [js-env js-envs]
        (doo/assert-js-env js-env))
      (assert (not (empty? build))
