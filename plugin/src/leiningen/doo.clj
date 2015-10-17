@@ -189,10 +189,11 @@ Usage:
   - watch-mode: either auto (default) or once\n
 
 All arguments are optional provided there is a corresponding default
-under :doo in the project.clj.")
+under :doo in the project.clj.\n")
 
 (defn ^{:doc help-string}
   doo 
+  ([project] (lmain/info help-string))
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
    (let [{:keys [watch-mode] :as cli} (args->cli args)
