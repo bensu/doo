@@ -18,6 +18,8 @@ newer.
 
 ### Plugin
 
+    lein doo {js-env}
+    
     lein doo {js-env} {build-id}
 
     lein doo {js-env} {build-id} {watch-mode}
@@ -31,10 +33,11 @@ is planned to support `v8`, `jscore`, and others.
 
 ```clj
 :cljsbuild
-  {:builds {:test {:source-paths ["src" "test"]
-                   :compiler {:output-to "resources/public/js/testable.js"
-                              :main your-project.runner
-                              :optimizations :none}}}}
+  {:builds [{:id "test"
+             :source-paths ["src" "test"]
+             :compiler {:output-to "resources/public/js/testable.js"
+                        :main your-project.runner
+                        :optimizations :none}}]}
 ```
 
 Notice that `:main` is set to the namespace `your-project.runner`
@@ -64,22 +67,26 @@ Then you can run:
 which starts an ClojureScript autobuilder for the `test` profile and
 runs `slimerjs` on it when it's done.
 
+You can also call `doo` without a `build-id` (as in `lein doo phantom`) as
+long as you specify a [Default Build](#Default Build) in your `project.clj`.
+
 ### Boot
 
 `doo` is packaged as a Boot task in [boot-cljs-test](https://github.com/crisptrutski/boot-cljs-test).
 
 ### Library
 
-To run a JS file in your preferred runner you can directly call
+To run a JavaScript file in your preferred runner you can directly call
 `doo.core/run-script` from Clojure:
 
 ```clj
 (require '[doo.core :as doo])
 
-(doo/run-script :phantom {:output-to "/path/to/the/file"})
+(let [doo-opts {:paths {:karma "karma"}}
+      compiler-opts {:output-to "out/testable.js"
+                     :optimizations :none}] 
+  (doo/run-script :phantom compiler-opts doo-opts))
 ```
-
-In general, the path to the file should be absolute.
 
 ## Setting up Environments
 
@@ -268,6 +275,24 @@ As you can see, aliases can be recursively defined: watch for circular
 dependencies or `doo` will bark.
 
 The only built-in alias is `:headless [:phantom :slimer]`.
+
+## Default Build
+
+To save you one command line argument, `lein-doo` lets you specify a
+default build in your `project.clj`:
+
+```clj
+:doo {:build "some-build-id"
+      :paths { ... }
+      :alias { ... }}
+
+:cljsbuild
+  {:builds [{:id "some-build-id"
+             :source-paths ["src" "test"]
+             :compiler {:output-to "out/testable.js"
+                        :optimizations :none
+                        :main example.runner}}]}
+```
 
 ## Travis CI
 

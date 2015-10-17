@@ -178,8 +178,6 @@ doo - run cljs.test in any JS environment.
 
 Usage:
 
-  lein doo
-
   lein doo {js-env}
 
   lein doo {js-env} {build-id}
