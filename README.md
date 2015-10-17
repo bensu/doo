@@ -302,8 +302,8 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 ## Changes
 
-* `0.1.6-SNAPSHOT` includes many internal changes.
-  While no major API changes where made, breakage is expected:
+* `0.1.6-SNAPSHOT` includes many internal changes. While all the
+  changes are backwards compatible, regressions are expected:
   * Adds the `:verbose` option to `doo.core/run-script`
   * Removes `cljsbuild` as a dependency.
   * Swaps `selmer` for `data.json`.
@@ -314,6 +314,8 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
   * Pass command line arguments to runners through `:paths`.
   * In auto mode, run karma as a server to avoid starting/stopping the
     browsers.
+  * Add the Default Builds under `:doo {:build "build-id"}` in
+    `project.clj`.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
