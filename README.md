@@ -68,7 +68,7 @@ which starts an ClojureScript autobuilder for the `test` profile and
 runs `slimerjs` on it when it's done.
 
 You can also call `doo` without a `build-id` (as in `lein doo phantom`) as
-long as you specify a [Default Build](#Default Build) in your `project.clj`.
+long as you specify a [Default Build](#default-build) in your `project.clj`.
 
 ### Boot
 
