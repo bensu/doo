@@ -14,6 +14,8 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [doo "0.1.6-SNAPSHOT"]]
 
+  :test-paths ["test/clj" "test/cljs"]
+
   :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
 
   :doo {:build "test" 
