@@ -2,6 +2,7 @@
   "Provides a command line wrapper around doo.core/run-script.
    See the main function: doo"
   (:require [clojure.java.io :as io] 
+            [clojure.set :as set]
             [clojure.string :as str]
             [leiningen.core.main :as lmain]
             [leiningen.core.eval :as leval]
@@ -10,10 +11,13 @@
 ;; ====================================================================== 
 ;; Leiningen Boilerplate
 
+(defn project->builds [project]
+  (get-in project [:cljsbuild :builds]))
+
 ;; TODO: what's this for?
 ;; I think it is to ensure that the source paths are in the classpath 
 ;; Then it might resolved to (update-in [:source-paths] concat)
-(defn make-subproject [project builds]
+(defn make-subproject [project]
   (-> project
     ;; This might be protecting against something, remove?
     (select-keys [:checkout-deps-shares
@@ -27,7 +31,7 @@
     (merge {:local-repo-classpath true
             :source-paths (concat
                             (:source-paths project)
-                            (mapcat :source-paths builds))})
+                            (mapcat :source-paths (project->builds project)))})
     (with-meta (meta project))))
 
 (defn add-dep
@@ -40,9 +44,9 @@
 ;; well this is private in the leiningen.cljsbuild ns & figwheel!
 (defn run-local-project
   "Runs both forms (requires and form) in the context of the project"
-  [project builds requires form]
+  [project requires form]
   (let [project' (-> project
-                   (make-subproject builds)
+                   make-subproject 
                    ;; just for use inside the plugin
                    (dissoc :eval-in))]
     (leval/eval-in-project project'
@@ -82,6 +86,7 @@
 (defn find-by-id
   "Out of a seq of builds, returns the one with the given id"
   [builds id]
+  {:pre [(not (empty? builds))]}
   (let [build (first (filter #(= id (:id %)) builds))]
     (assert (not (empty? build))
       (str "The given build (" id ") was not found in these options: "
@@ -125,41 +130,44 @@
    lein doo\n")
   (doo/resolve-alias cli-alias alias-map))
 
-(def default-build
-  {:compiler {:optimizations :none
-              :output-to "out/doo-testable.js"}})
+;; Not being used
+(defn project->test-build [project]
+  {:source-paths (set/union (set (:source-paths project))
+                            (set (:test-paths project)))
+   :compiler {:output-to "out/doo-testable.js"
+              :optimizations :simple}})
 
 (defn cli->build
   "Returns the build form the cli arguments and the project options"
-  [{cli-build :build} builds {opts-build :build}]
-  {:post [(contains? % :source-paths)
-          (not (empty? (:source-paths %)))]}
+  [{cli-build :build} project {opts-build :build}]
+  {:post [(not (empty? (:source-paths %)))]}
   (assert (or (nil? opts-build) (string? opts-build))
-    (str "\n\n Incorrect value for :doo :build " opts-build "\n" 
-      "
- The default build under :doo :build should either be a string with
- the build-id of a build under :cljsbuild or a map with the actual
- build. For example:
+    (let [build-ids (map :id (project->builds project))]
+      (str "\n\n Incorrect value for :doo :build: " opts-build "\n" 
+        "
+ The default build under :doo :build should be a string with
+ the build-id of a build under :cljsbuild build"
+        (if (empty? build-ids)
+        ". For example:
 
- {:doo {:build \"test-build\"}}
-
- {:doo {:build {:source-paths [\"src\" \"test\"]}}}\n"))
+ {:doo {:build \"test-build\"}\n"
+        (str " like " (str/join ", " (map pr-str build-ids)))) "\n")))
   (assert (not (and (default? cli-build) (empty? opts-build)))
     "\n
  To call lein doo without a build id, you need to configure a build
  in your project.clj. For example:
 
- {:doo {:build {:source-paths [\"src\" \"test\"]}}}
+ {:doo {:build \"test-build\"}}
 
- then you can call that build with:
+ where \"test-build\" can be found under :cljsbuild. Then you can 
+ call that build with:
 
    lein doo phantom\n")
-  (let [build (if (default? cli-build) 
-                opts-build
-                cli-build)]
-    (if (or (nil? build) (map? build))
-      (merge default-build build)
-      (find-by-id builds build))))
+  (if-let [build-id (if (default? cli-build) 
+                      opts-build
+                      cli-build)]
+    (find-by-id (project->builds project) build-id)
+    (project->test-build project)))
 
 ;; ====================================================================== 
 ;; doo
@@ -196,13 +204,13 @@ under :doo in the project.clj.")
          project' (-> project
                     correct-builds
                     (add-dep ['doo "0.1.6-SNAPSHOT"]))
-         builds (get-in project' [:cljsbuild :builds])
-         {:keys [source-paths compiler] :as build} (cli->build cli builds opts)]
+         {:keys [source-paths compiler]}
+         (cli->build cli project' opts)]
      (doo/assert-alias alias js-envs (:alias opts))
      (doseq [js-env js-envs]
        (doo/assert-js-env js-env))
      ;; FIX: there is probably a bug regarding the incorrect use of builds
-     (run-local-project project' [builds]
+     (run-local-project project'
        '(require 'cljs.build.api 'doo.core 'doo.karma)
        `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)] 
           (doseq [js-env# ~js-envs]

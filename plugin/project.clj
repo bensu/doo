@@ -18,7 +18,8 @@
 
   :doo {:build "test" 
         :paths {:karma "karma"}
-        :alias {:browsers [:chrome :firefox]
+        :alias {:default [:chrome]
+                :browsers [:chrome :firefox]
                 :dom [:browsers :headless]}}
 
   :profiles {:dev {:dependencies [[org.clojure/clojurescript "0.0-3308"

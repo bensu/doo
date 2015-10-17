@@ -56,34 +56,29 @@
                    :source-paths ["src" "test"]
                    :compiler {:optimizations :simple
                               :output-to "out/testable.js"}}
-                  {:id "advanced"
+                  {:id "production"
                    :source-paths ["src" "test"]
                    :compiler {:optimizations :advanced
                               :output-to "out/testable.js"}}]
+          project {:source-paths ["src" "src/main/clj"]
+                   :test-paths ["test" "src/test/clj"]
+                   :cljsbuild {:builds builds}}
           string-opts {:build "test" 
                        :alias {:default [:firefox]}}
-          empty-opts {}
-          map-opts {:build {:source-paths ["src" "test"]
-                            :compiler {:optimizations :whitespace
-                                       :output-to "out/testable.js"}}}]
+          empty-opts {}]
       (are [opts args opt-level] (= opt-level (-> (doo/args->cli args)
-                                                (doo/cli->build builds opts)
+                                                (doo/cli->build project opts)
                                                 :compiler
                                                 :optimizations))
            string-opts [] :simple 
            string-opts ["chrome"] :simple 
-           string-opts ["chrome" "advanced"] :advanced 
+           string-opts ["chrome" "production"] :advanced 
            string-opts ["chrome" "once"]  :simple 
            string-opts ["chrome" "test" "once"] :simple
-           map-opts [] :whitespace
-           map-opts ["chrome"] :whitespace
-           map-opts ["chrome" "advanced"] :advanced 
-           map-opts ["chrome" "once"]  :whitespace
-           map-opts ["chrome" "test" "once"] :simple
-           empty-opts ["chrome" "advanced"] :advanced 
+           empty-opts ["chrome" "production"] :advanced 
            empty-opts ["chrome" "test" "once"] :simple)
       (are [args] (is (thrown? java.lang.AssertionError
-                        (doo/cli->build (doo/args->cli args) builds empty-opts)))
+                        (doo/cli->build (doo/args->cli args) project empty-opts)))
            []
            ["chrome"]
            ["chrome" "once"]))))
