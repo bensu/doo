@@ -39,7 +39,7 @@
 (defn ->karma-opts [js-envs compiler-opts]
   (let [->out-dir (fn [path]
                     (str (:output-dir compiler-opts) path))
-        base-files (->> ["/*.js" "/**/*.js"]
+        base-files (->> ["/*.js" "/**/*.js" "/*.js.map" "/**/*.js.map"]
                      (mapv (fn [pattern]
                              {"pattern" (->out-dir pattern) "included" false}))
                      (concat [(:output-to compiler-opts)]))

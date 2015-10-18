@@ -36,6 +36,7 @@
             :none-test {:source-paths ["src" "test"]
                         :compiler {:output-to "out/testable.js"
                                    :main example.runner
+                                   :source-map true
                                    :optimizations :none}}
             :node-none {:source-paths ["src" "test"]
                         :compiler {:output-to "out/testable.js"
