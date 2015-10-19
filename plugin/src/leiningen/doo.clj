@@ -216,14 +216,18 @@ under :doo in the project.clj.\n")
             (doo.core/assert-compiler-opts js-env# compiler#))
           (if (= :auto ~watch-mode)
             (let [karma-envs# (vec (filter doo.karma/env? ~js-envs))
+                  karma-on?# (atom false)
                   non-karma-envs# (vec (remove doo.karma/env? ~js-envs))]
-              (when-not (empty? karma-envs#)
-                (doo.core/install! karma-envs# compiler# ~opts))
               (cljs.build.api/watch
                 (apply cljs.build.api/inputs ~source-paths)
                 (assoc compiler#
                   :watch-fn
                   (fn []
+                    (when (and (not (empty? karma-envs#)) (not @karma-on?#))
+                      ;; Karma needs to be installed after
+                      ;; compilation, so that the files to be included exist
+                      (swap! karma-on?# not)
+                      (doo.core/install! karma-envs# compiler# ~opts))
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
                       (doo.core/run-script js-env# compiler# ~opts))

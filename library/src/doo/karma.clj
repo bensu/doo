@@ -37,21 +37,22 @@
     (str/capitalize (name js-env))))
 
 (defn ->karma-opts [js-envs compiler-opts]
-  (let [->out-dir (fn [path]
-                    (str (:output-dir compiler-opts) path))
-        base-files (->> ["/*.js" "/**/*.js" "/*.js.map" "/**/*.js.map"]
-                     (mapv (fn [pattern]
-                             {"pattern" (->out-dir pattern) "included" false}))
-                     (concat [(:output-to compiler-opts)]))
-        ;; The files get loaded into the browser in this order.
-        files (cond->> base-files 
-                (= :none (:optimizations compiler-opts))
-                (concat (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"])))]
+  (letfn [(->out-dir [p]
+            (str (:output-dir compiler-opts) p))]
     {"frameworks" ["cljs-test"]
+     ;; basePath should be the path from where the compiler thinks the
+     ;; resources will be served: :asset-path or :output-dir
      "basePath" (System/getProperty "user.dir") 
      "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin js-envs))
      "browsers" (mapv js-env->browser js-envs)
-     "files" files
+     ;; All this assumes that the output-dir is relative to the user.dir
+     ;; base path
+     "files" (concat
+               [(:output-to compiler-opts)
+                {"pattern" (->out-dir "/**") "included" false}]
+               (when (= :none (:optimizations compiler-opts))
+                 [{"pattern" (->out-dir "/goog/base.js") "included" true}
+                  {"pattern" (->out-dir "/cljs_deps.js") "included" true}]))
      "autoWatch" false 
      "client" {"args" ["doo.runner.run_BANG_"]}
      "singleRun" true}))

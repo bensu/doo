@@ -5,7 +5,7 @@
             [example.core :as core]))
 
 (deftest adding
-  (is (= 2 (core/adder 1 1))))
+  (is (= 1 (core/adder 1 1))))
 
 (deftest async-test
   (async done

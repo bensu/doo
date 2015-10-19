@@ -37,6 +37,7 @@
                         :compiler {:output-to "out/testable.js"
                                    :main example.runner
                                    :source-map true
+                                   :asset-path "base/out"
                                    :optimizations :none}}
             :node-none {:source-paths ["src" "test"]
                         :compiler {:output-to "out/testable.js"
