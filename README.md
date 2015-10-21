@@ -59,6 +59,9 @@ is a macro that will be calling said namespaces, you need to require
 them in `your-project.runner` even if you don't call any of their
 functions. You can also call `(doo.runner/doo-all-tests)` which wraps
 `cljs.test/run-all-tests` to run tests in all loaded namespaces.
+Notice that `doo-tests` needs to be called in the top level and can't
+be called inside a function (unless you explicitly call that function
+in the top level).
 
 Then you can run:
 
