@@ -231,8 +231,9 @@ under :doo in the project.clj.\n")
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
                       (doo.core/run-script js-env# compiler# ~opts))
-                    (apply doo.core/print-envs karma-envs#)
-                    (doo.core/karma-run! ~opts)))))
+                    (when @karma-on?#
+                      (apply doo.core/print-envs karma-envs#)
+                      (doo.core/karma-run! ~opts))))))
             (do
               (cljs.build.api/build
                 (apply cljs.build.api/inputs ~source-paths) compiler#)
