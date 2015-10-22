@@ -170,16 +170,26 @@ We'll **need** a "framework" plugin:
 
     - karma-cljs-test
 
-Karma and its plugins are installed with `npm`, globally
-with `npm install -g karma`, or locally to
-the project with `npm install karma`. These alternatives can't be
-combined: you can't install `karma` globally and then install
-`karma-chrome-launcher` locally. The local option is recommended.
+
+Karma and its plugins are installed with `npm`. It is
+[recommended](http://karma-runner.github.io/0.13/intro/installation.html)
+that you install Karma and it's plugins locally in the projects directory
+with `npm install karma --save-dev`. It is possible to install Karma and
+its plugins globally with `npm install -g karma`, but this is not recommended.
+It is not possible to run mix local and global Karma and Karma plugins.
+
+Karma provides a [CLI tool](https://github.com/karma-runner/karma-cli)
+to make running Karma simpler and to ease cross platform compatibility.
+
 For local installation run:
 
     npm install karma karma-cljs-test --save-dev
 
-and then install any of the launchers you'll use:
+and install the Karma CLI tool globally with
+
+    npm install -g karma-cli
+
+then install any of the launchers you'll use:
 
     npm install karma-chrome-launcher karma-firefox-launcher --save-dev
     npm install karma-safari-launcher karma-opera-launcher --save-dev
@@ -194,6 +204,8 @@ installed modules. It is recommended to add `node-modules` to your
 
 If you are using `lein-npm`, follow their
 [instructions](https://github.com/RyanMcG/lein-npm).
+
+#### Non-standard Karma configuration
 
 If you are using a local installation and `node_modules` is not located
 at the project root, you need to tell `doo` about it. Add this to your

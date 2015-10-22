@@ -104,7 +104,7 @@
    :slimer "slimerjs" 
    :rhino "rhino"
    :node "node"
-   :karma "./node_modules/karma/bin/karma"})
+   :karma "karma"})
 
 (defn command-table [js-env opts]
   {:post [(some? %)]}
