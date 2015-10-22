@@ -43,9 +43,9 @@ arguments.forEach(function (arg) {
         try {
             load(arg);
         } catch (e) {
-            assertDoo();
-            print("Error in file: \"" + arg + "\"");
+            print("Error while loading file: \"" + arg + "\"");
             print(e);
+            print("At line " + e.lineNumber);
         }
     } else {
         print(noScriptMsg("Rhino"));
