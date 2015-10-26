@@ -319,6 +319,8 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
     browsers.
   * Add the Default Builds under `:doo {:build "build-id"}` in
     `project.clj`.
+  * Add an optional regex argument to `doo-all-tests` to mirror
+    `run-all-test`'s behavior.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
