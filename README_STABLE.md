@@ -1,4 +1,6 @@
-# doo 
+# doo
+
+[![Circle CI](https://circleci.com/gh/bensu/doo.svg?style=svg)](https://circleci.com/gh/bensu/doo)
 
 A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
