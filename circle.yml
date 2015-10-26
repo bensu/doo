@@ -1,0 +1,53 @@
+dependencies:
+  pre:
+    - cd example && npm install
+    - cd example && npm install karma-cli -g
+    - cd example && lein deps
+    - cd library && lein deps
+  cache_directories:
+    - example/node_modules
+    - ~/.m2
+test:
+  override:
+    # Passing tests
+    # Karma
+    - cd example && lein doo browsers test once
+    - cd example && lein doo browsers advanced once
+    - cd example && lein doo browsers none-test once
+    # Phantom
+    - cd example && lein doo phantom test once
+    - cd example && lein doo phantom advanced once
+    - cd example && lein doo phantom none-test once
+    # Slimer
+    - cd example && lein doo slimer test once
+    - cd example && lein doo slimer advanced once
+    - cd example && lein doo slimer none-test once
+    # Rhino
+    - cd example && lein doo rhino test once
+    - cd example && lein doo rhino advanced once
+    # rhino doesn't support :none optimisations
+    # Node
+    - cd example && lein doo node node-none once
+    - cd example && lein doo node node-advanced once
+    # These ones should fail
+    # Karma
+    - cd example && lein doo browsers test-fail once && exit 1 || exit 0
+    - cd example && lein doo browsers advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo browsers none-test-fail once && exit 1 || exit 0
+    # Phantom
+    - cd example && lein doo phantom test-fail once && exit 1 || exit 0
+    - cd example && lein doo phantom advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo phantom none-test-fail once && exit 1 || exit 0
+    # Slimer
+    - cd example && lein doo slimer test-fail once && exit 1 || exit 0
+    - cd example && lein doo slimer advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo slimer none-test-fail once && exit 1 || exit 0
+    # Rhino
+    - cd example && lein doo rhino test-fail once && exit 1 || exit 0
+    - cd example && lein doo rhino advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo rhino none-test-fail once && exit 1 || exit 0
+    # Node
+    - cd example && lein doo node node-none-fail once && exit 1 || exit 0
+    - cd example && lein doo node node-advanced-fail once && exit 1 || exit 0
+    # Test the actual library itself
+    - cd library && lein test

@@ -1,0 +1,13 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {},
+  "devDependencies": {
+    "karma": "^0.13.14",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-cljs-test": "^0.1.0",
+    "karma-firefox-launcher": "^0.1.6",
+    "slimerjs": "^0.9.6"
+  }
+}
