@@ -47,12 +47,14 @@
      "browsers" (mapv js-env->browser js-envs)
      ;; All this assumes that the output-dir is relative to the user.dir
      ;; base path
+     ;; WARNING: the order of the files is important, don't change it.
      "files" (concat
-               [(:output-to compiler-opts)
-                {"pattern" (->out-dir "/**") "included" false}]
                (when (= :none (:optimizations compiler-opts))
-                 [{"pattern" (->out-dir "/goog/base.js") "included" true}
-                  {"pattern" (->out-dir "/cljs_deps.js") "included" true}]))
+                 (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
+               [(:output-to compiler-opts)
+                {"pattern" (->out-dir "/**") "included" false}
+                {"pattern" (->out-dir "/**/*.js") "included" false}
+                {"pattern" (->out-dir "/*.js") "included" false}]) 
      "autoWatch" false 
      "client" {"args" ["doo.runner.run_BANG_"]}
      "singleRun" true}))
