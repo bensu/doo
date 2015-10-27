@@ -3,8 +3,8 @@
   (:require [cljs.test :refer [successful?]]
             [goog.object :as gobj]
             [jx.reporter.karma :as karma :include-macros true]))
-            
-;; ====================================================================== 
+
+;; ======================================================================
 ;; Printing
 
 (enable-console-print!)
@@ -12,13 +12,13 @@
 (defn ^:export set-print-fn! [f]
   (set! cljs.core.*print-fn* f))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Node
 
 (defn node? []
   (exists? js/process))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Karma Helpers
 
 (defn karma? []
@@ -28,8 +28,8 @@
 (defmethod cljs.test/report [:jx.reporter.karma/karma :begin-test-ns] [m]
   (println "Testing" (name (:ns m))))
 
-;; ====================================================================== 
-;; Finish Testing 
+;; ======================================================================
+;; Finish Testing
 
 (def ^:dynamic *exit-fn* nil)
 
@@ -44,7 +44,7 @@
   (if (node?)
     (let [process-exit (gobj/get js/process "exit")]
       (process-exit (if success? 0 1)))
-    (try 
+    (try
       (*exit-fn* success?)
       (catch :default e
         (println "WARNING: doo's exit function was not properly set")
@@ -52,8 +52,8 @@
 
 (defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
   (exit! (successful? m)))
-    
-;; ====================================================================== 
+
+;; ======================================================================
 ;; Start Testing
 
 ;; Karma starts the runner with arguments

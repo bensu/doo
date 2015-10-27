@@ -5,7 +5,7 @@
             [clojure.data.json :as json]
             [doo.shell :as shell]))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Karma Clients
 
 (def envs #{:chrome :firefox :safari :opera :ie})
@@ -42,7 +42,7 @@
     {"frameworks" ["cljs-test"]
      ;; basePath should be the path from where the compiler thinks the
      ;; resources will be served: :asset-path or :output-dir
-     "basePath" (System/getProperty "user.dir") 
+     "basePath" (System/getProperty "user.dir")
      "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin js-envs))
      "browsers" (mapv js-env->browser js-envs)
      ;; All this assumes that the output-dir is relative to the user.dir
@@ -53,7 +53,7 @@
                (when (= :none (:optimizations compiler-opts))
                  [{"pattern" (->out-dir "/goog/base.js") "included" true}
                   {"pattern" (->out-dir "/cljs_deps.js") "included" true}]))
-     "autoWatch" false 
+     "autoWatch" false
      "client" {"args" ["doo.runner.run_BANG_"]}
      "singleRun" true}))
 
@@ -63,7 +63,7 @@
                    (json/pprint var-value :escape-slash false)))
   (.write writer ";\n"))
 
-(defn runner! 
+(defn runner!
   "Creates a file for the given runner resource file in the users dir"
   [js-envs compiler-opts opts]
   {:pre [(some? (:output-dir compiler-opts))]}
