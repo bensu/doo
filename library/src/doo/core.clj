@@ -13,7 +13,7 @@
 
 ;; All js-envs are keywords.
 
-(def doo-envs #{:phantom :slimer :node :rhino})
+(def doo-envs #{:phantom :slimer :node :rhino :nashorn})
 
 (def js-envs (set/union doo-envs karma/envs))
 
@@ -103,6 +103,7 @@
   {:phantom "phantomjs"
    :slimer "slimerjs" 
    :rhino "rhino"
+   :nashorn "jrunscript"
    :node "node"
    :karma "./node_modules/karma/bin/karma"})
 
@@ -135,6 +136,11 @@
   [(command-table :rhino opts)
    "-opt" "-1"
    (runner-path! :rhino "rhino.js" {:common? true})])
+
+(defmethod js->command* :nashorn
+  [_ _ opts]
+  [(command-table :nashorn opts)
+   (runner-path! :nashorn "nashorn.js" {:common? true})])
 
 (defmethod js->command* :node
   [_ _ opts]
@@ -192,6 +198,9 @@
     (when (= :rhino js-env)
       (assert (not= :none optimization)
         "rhino doesn't support :optimizations :none"))
+    (when (= :nashorn js-env)
+      (assert (not= :none optimization)
+        "Nashorn doesn't support :optimizations :none"))
     true))
 
 ;; ====================================================================== 
@@ -215,8 +224,8 @@ If it does work, file an issue and we'll sort it together!")
 
 where: 
 
-  js-env - any of :phantom, :slimer, :node, :rhino, :chrome, :firefox, 
-           :ie, :safari, or :opera
+  js-env - any of :phantom, :slimer, :node, :rhino, :nashorn,
+                  :chrome, :firefox, :ie, :safari, or :opera
   compiler-opts - the options passed to the ClojureScript when it
                   compiled the script that doo should run
   opts - a map that can contain:
@@ -242,9 +251,10 @@ where:
        (catch java.io.IOException e
          (let [js-path (first cmd)
                error-msg (format cmd-not-found js-path 
-                           (if (= js-env :rhino)
-                             "rhino -help"
-                             (str js-path " -v"))
+                           (cond
+                            (= js-env :rhino) "rhino -help"
+                            (= js-env :nashorn) "jrunscript -help"
+                            :else (str js-path " -v"))
                            js-path)]
            (when (:verbose doo-opts)
              (println error-msg))
