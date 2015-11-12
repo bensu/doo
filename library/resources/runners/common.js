@@ -1,5 +1,5 @@
 // Common code to all runners 
-// Should be kept in sync between rhino.js & headless.js
+// Should be kept in sync between rhino.js, nashorn.js & headless.js
 
 function hasDoo () {
     return (typeof doo !== "undefined" &&

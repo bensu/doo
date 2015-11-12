@@ -25,7 +25,7 @@ newer.
     lein doo {js-env} {build-id} {watch-mode}
 
 * `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
-`slimer`, `phantom`, `node`, or `rhino`. In the future it 
+`slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it 
 is planned to support `v8`, `jscore`, and others. 
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
@@ -106,6 +106,12 @@ so that these commands work on the command line:
     node -v
 
     rhino -help
+
+If you want to use
+[Nashorn](http://openjdk.java.net/projects/nashorn/), that ships with
+JDK 8, and the following command should work:
+
+    jrunscript -help
 
 If you want to use a different command to run a certain runner, see
 Paths.
@@ -321,6 +327,7 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
     `project.clj`.
   * Add an optional regex argument to `doo-all-tests` to mirror
     `run-all-test`'s behavior.
+  * Adds a `nashorn` runner.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with

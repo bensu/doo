@@ -10,6 +10,10 @@
        :rhino {:output-to "target/testable.js"
                :main 'example.runner
                :optimizations :none}
+       ":nashorn doesn't support :none"
+       :nashorn {:output-to "target/testable.js"
+               :main 'example.runner
+               :optimizations :none}
        "karma needs :output-dir"
        :chrome {:output-to "target/testable.js"
                 :main 'example.runner
@@ -39,32 +43,34 @@
     (are [js-env] (not (doo/valid-js-env? js-env))
          :spidermonkey :browser :browsers :v8 :d8 :something-else)
     (are [js-env] (doo/valid-js-env? js-env)
-         :rhino :slimer :phantom :node :chrome :safari :firefox :opera :ie))
+         :rhino :nashorn :slimer :phantom :node :chrome :safari :firefox :opera :ie))
   (testing "We can resolve aliases"
     (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
          :phantom [:phantom]
          :slimer [:slimer]
          :node [:node]
          :rhino [:rhino]
+         :nashorn [:nashorn]
          :headless [:slimer :phantom]
          :not-an-alias [])
     (let [alias-map {:browsers [:chrome :firefox]
-                     :engines [:rhino]
+                     :engines [:rhino :nashorn]
                      :all [:browsers :engines]}]
       (are [alias js-envs] (= (doo/resolve-alias alias alias-map) js-envs)
            :browsers [:chrome :firefox]
-           :engines [:rhino]
-           :all [:chrome :firefox :rhino]
+           :engines [:rhino :nashorn]
+           :all [:chrome :firefox :rhino :nashorn]
            :phantom [:phantom]
            :slimer [:slimer]
            :node [:node]
            :rhino [:rhino]
+           :nashorn [:nashorn]
            :headless [:slimer :phantom]
            :not-an-alias [])))
   (testing "we warn against circular dependencies"
     (is (thrown-with-msg? java.lang.Exception #"circular" 
           (doo/resolve-alias :all {:browsers [:chrome :engines]
-                                   :engines [:rhino :browsers]
+                                   :engines [:rhino :nashorn :browsers]
                                    :all [:browsers :engines]})))))
 
 (deftest resolve-path
@@ -74,6 +80,7 @@
            :slimer "slimerjs"
            :phantom "phantomjs"
            :rhino "rhino"
+           :nashorn "jrunscript"
            :node "node"
            :karma "./node_modules/karma/bin/karma")
       (testing "unless we don't have it"
@@ -107,10 +114,10 @@
                            (every? true?)))
            {} [:phantom :chrome :firefox]
            {:target :nodejs} [:node] 
-           {:optimizations :whitespace} [:rhino :phantom :chrome :firefox]
+           {:optimizations :whitespace} [:rhino :nashorn :phantom :chrome :firefox]
            {:optimizations :simple :target :nodejs} [:node]
            {:optimizations :advanced :target :nodejs} [:node]
-           {:optimizations :advanced} [:phantom :rhino :chrome :firefox]))))
+           {:optimizations :advanced} [:phantom :rhino :nashorn :chrome :firefox]))))
 
 (deftest paths-with-options 
   (testing "We can pass paths with options"
