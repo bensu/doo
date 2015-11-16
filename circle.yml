@@ -39,9 +39,9 @@ test:
     - cd example && lein doo phantom advanced-fail once && exit 1 || exit 0
     - cd example && lein doo phantom none-test-fail once && exit 1 || exit 0
     # Slimer
-    - cd example && lein doo slimer test-fail once && exit 1 || exit 0
-    - cd example && lein doo slimer advanced-fail once && exit 1 || exit 0
-    - cd example && lein doo slimer none-test-fail once && exit 1 || exit 0
+    # - cd example && lein doo slimer test-fail once && exit 1 || exit 0
+    # - cd example && lein doo slimer advanced-fail once && exit 1 || exit 0
+    # - cd example && lein doo slimer none-test-fail once && exit 1 || exit 0
     # Rhino
     - cd example && lein doo rhino test-fail once && exit 1 || exit 0
     - cd example && lein doo rhino advanced-fail once && exit 1 || exit 0
