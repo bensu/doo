@@ -80,7 +80,7 @@
            :slimer "slimerjs"
            :phantom "phantomjs"
            :rhino "rhino"
-           :nashorn "jrunscript"
+           :nashorn "jjs"
            :node "node"
            :karma "./node_modules/karma/bin/karma")
       (testing "unless we don't have it"

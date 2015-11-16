@@ -103,7 +103,7 @@
   {:phantom "phantomjs"
    :slimer "slimerjs" 
    :rhino "rhino"
-   :nashorn "jrunscript"
+   :nashorn "jjs"
    :node "node"
    :karma "./node_modules/karma/bin/karma"})
 
@@ -140,7 +140,8 @@
 (defmethod js->command* :nashorn
   [_ _ opts]
   [(command-table :nashorn opts)
-   (runner-path! :nashorn "nashorn.js" {:common? true})])
+   (runner-path! :nashorn "nashorn.js" {:common? true})
+   "--"])
 
 (defmethod js->command* :node
   [_ _ opts]
