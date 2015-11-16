@@ -1,6 +1,7 @@
 (ns doo.shell
   "Rewrite of clojure.java.shell to have access to the output stream."
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [doo.utils :as utils])
   (:import (java.io StringWriter BufferedReader InputStreamReader)
            (java.nio.charset Charset)))
 
@@ -37,7 +38,12 @@
       (.toString out))))
 
 (defn exec! [cmd]
-  (.exec (Runtime/getRuntime) ^"[Ljava.lang.String;" (into-array cmd)))
+  (let [windows? (= :windows (utils/get-os))
+        windows-cmd (when windows? ["cmd" "/c"])]
+    (->> cmd
+         (concat windows-cmd)
+         ^"[Ljava.lang.String;" (into-array String)
+         (.exec (Runtime/getRuntime)))))
 
 (defn capture-process! [process opts]
   (letfn [(capture! [stream]
