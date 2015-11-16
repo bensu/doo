@@ -1,21 +1,21 @@
 (ns leiningen.doo
   "Provides a command line wrapper around doo.core/run-script.
    See the main function: doo"
-  (:require [clojure.java.io :as io] 
+  (:require [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.string :as str]
             [leiningen.core.main :as lmain]
             [leiningen.core.eval :as leval]
             [doo.core :as doo]))
- 
-;; ====================================================================== 
+
+;; ======================================================================
 ;; Leiningen Boilerplate
 
 (defn project->builds [project]
   (get-in project [:cljsbuild :builds]))
 
 ;; TODO: what's this for?
-;; I think it is to ensure that the source paths are in the classpath 
+;; I think it is to ensure that the source paths are in the classpath
 ;; Then it might resolved to (update-in [:source-paths] concat)
 (defn make-subproject [project]
   (-> project
@@ -46,7 +46,7 @@
   "Runs both forms (requires and form) in the context of the project"
   [project requires form]
   (let [project' (-> project
-                   make-subproject 
+                   make-subproject
                    ;; just for use inside the plugin
                    (dissoc :eval-in))]
     (leval/eval-in-project project'
@@ -60,7 +60,7 @@
              (System/exit 1))))
       requires)))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; cljsbuild opts
 
 (defn correct-main [compiler-opts]
@@ -93,7 +93,7 @@
         (str/join ", " (map :id builds))))
     build))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; CLI
 
 (defn default? [cli-opt]
@@ -143,7 +143,7 @@
   {:post [(not (empty? (:source-paths %)))]}
   (assert (or (nil? opts-build) (string? opts-build))
     (let [build-ids (map :id (project->builds project))]
-      (str "\n\n Incorrect value for :doo :build: " opts-build "\n" 
+      (str "\n\n Incorrect value for :doo :build: " opts-build "\n"
         "
  The default build under :doo :build should be a string with
  the build-id of a build under :cljsbuild build"
@@ -159,17 +159,17 @@
 
  {:doo {:build \"test-build\"}}
 
- where \"test-build\" can be found under :cljsbuild. Then you can 
+ where \"test-build\" can be found under :cljsbuild. Then you can
  call that build with:
 
    lein doo phantom\n")
-  (if-let [build-id (if (default? cli-build) 
+  (if-let [build-id (if (default? cli-build)
                       opts-build
                       cli-build)]
     (find-by-id (project->builds project) build-id)
     (project->test-build project)))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; doo
 
 (def help-string
@@ -184,7 +184,7 @@ Usage:
 
   lein doo {js-env} {build-id} {watch-mode}
 
-  - js-env: slimer, phantom, node, chrome, firefox, or an alias like headless 
+  - js-env: slimer, phantom, node, chrome, firefox, or an alias like headless
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode: either auto (default) or once\n
 
@@ -192,7 +192,7 @@ All arguments are optional provided there is a corresponding default
 under :doo in the project.clj.\n")
 
 (defn ^{:doc help-string}
-  doo 
+  doo
   ([project] (lmain/info help-string))
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
@@ -211,7 +211,7 @@ under :doo in the project.clj.\n")
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      (run-local-project project'
        '(require 'cljs.build.api 'doo.core 'doo.karma)
-       `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)] 
+       `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# compiler#))
           (if (= :auto ~watch-mode)

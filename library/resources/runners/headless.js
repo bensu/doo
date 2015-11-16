@@ -88,7 +88,7 @@ p.open("file://" + pagePath, function (status) {
                 window.alert(exitCodePrefix + (isSuccess ? 0 : 1));
 	    }
             if (hasDoo()) {
-                // If doo is present, set up printing and exit, and start! 
+                // If doo is present, set up printing and exit, and start!
 	        doo.runner.set_print_fn_BANG_(function(x) {
 	            // using callPhantom to work around
                     // https://github.com/laurentj/slimerjs/issues/223

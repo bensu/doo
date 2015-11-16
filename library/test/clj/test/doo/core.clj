@@ -62,7 +62,7 @@
            :headless [:slimer :phantom]
            :not-an-alias [])))
   (testing "we warn against circular dependencies"
-    (is (thrown-with-msg? java.lang.Exception #"circular" 
+    (is (thrown-with-msg? java.lang.Exception #"circular"
           (doo/resolve-alias :all {:browsers [:chrome :engines]
                                    :engines [:rhino :browsers]
                                    :all [:browsers :engines]})))))
@@ -90,7 +90,7 @@
 
 (deftest integration
   (testing "We can compile a cljs project"
-    (let [doo-opts {:verbose false 
+    (let [doo-opts {:verbose false
                     :paths {:karma "karma"}}
           compiler-opts {:output-to "out/testable.js"
                          :output-dir "out"
@@ -106,16 +106,16 @@
                                      doo-ok?)))
                            (every? true?)))
            {} [:phantom :chrome :firefox]
-           {:target :nodejs} [:node] 
+           {:target :nodejs} [:node]
            {:optimizations :whitespace} [:rhino :phantom :chrome :firefox]
            {:optimizations :simple :target :nodejs} [:node]
            {:optimizations :advanced :target :nodejs} [:node]
            {:optimizations :advanced} [:phantom :rhino :chrome :firefox]))))
 
-(deftest paths-with-options 
+(deftest paths-with-options
   (testing "We can pass paths with options"
     (let [phantom-cmd "phantomjs --ignore-ssl-errors=true --web-security=false"
-          doo-opts {:verbose false 
+          doo-opts {:verbose false
                     :paths {:phantom phantom-cmd}}
           compiler-opts {:output-to "out/testable.js"
                          :main 'example.runner}

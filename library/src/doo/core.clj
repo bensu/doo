@@ -8,7 +8,7 @@
             [doo.karma :as karma]
             [doo.shell :as shell]))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; JS Environments
 
 ;; All js-envs are keywords.
@@ -21,7 +21,7 @@
 
 (defn resolve-alias
   "Given an alias it resolves to a list of the js-envs it represents,
-   or an empty list if it represents not js-envs. js-envs resolve to 
+   or an empty list if it represents not js-envs. js-envs resolve to
    themselves.
 
    Ex: (resolve-alias :headless {}) => [:phantom :slimer]
@@ -69,15 +69,15 @@
   (let [env-name (str/join ", " (mapv (comp str/capitalize name) js-envs))]
     (println "")
     (println ";;" (str/join "" (take 70 (repeat "="))))
-    (println (str ";; Testing with " env-name ":")) 
+    (println (str ";; Testing with " env-name ":"))
     (println "")))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Runners
 
 ;; doo createst the files necessary for the runners and cleans them up
 ;; when the JVM is shut down which is not ideal when scripting, since
-;; it can be called several times in one JVM session. 
+;; it can be called several times in one JVM session.
 
 ;; Sadly, we can't just point Phantom to the file inside the jar
 ;; http://stackoverflow.com/questions/25307667/launching-phantomjs-as-a-local-resource-when-using-an-executable-jar
@@ -101,7 +101,7 @@
 
 (def default-command-table
   {:phantom "phantomjs"
-   :slimer "slimerjs" 
+   :slimer "slimerjs"
    :rhino "rhino"
    :node "node"
    :karma "./node_modules/karma/bin/karma"})
@@ -150,7 +150,7 @@
   {:post [(every? string? %)]}
   (shell/flatten-cmd (js->command* js-env compiler-opts opts)))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Karma Server
 
 ;; Only here to keep command-table in doo.core
@@ -174,7 +174,7 @@
     (shell/set-cleanup! process opts "Close Karma run")
     process))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Compiler options
 
 (defn assert-compiler-opts
@@ -194,7 +194,7 @@
         "rhino doesn't support :optimizations :none"))
     true))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Bash
 
 (def cmd-not-found
@@ -213,9 +213,9 @@ If it does work, file an issue and we'll sort it together!")
   (run-script js-env compiler-opts)
   (run-script js-env compiler-opts opts)
 
-where: 
+where:
 
-  js-env - any of :phantom, :slimer, :node, :rhino, :chrome, :firefox, 
+  js-env - any of :phantom, :slimer, :node, :rhino, :chrome, :firefox,
            :ie, :safari, or :opera
   compiler-opts - the options passed to the ClojureScript when it
                   compiled the script that doo should run
@@ -241,7 +241,7 @@ where:
            (and (not (empty? (:err r))) (zero? (:exit r))) (assoc :exit 1)))
        (catch java.io.IOException e
          (let [js-path (first cmd)
-               error-msg (format cmd-not-found js-path 
+               error-msg (format cmd-not-found js-path
                            (if (= js-env :rhino)
                              "rhino -help"
                              (str js-path " -v"))

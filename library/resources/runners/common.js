@@ -1,4 +1,4 @@
-// Common code to all runners 
+// Common code to all runners
 // Should be kept in sync between rhino.js & headless.js
 
 function hasDoo () {
@@ -7,7 +7,7 @@ function hasDoo () {
             typeof doo.runner.run_BANG_ === "function");
 };
 
-function noDooMsg() { 
+function noDooMsg() {
     var msgLines = [
             "",
             "ERROR: doo was not loaded from the compiled script.",
@@ -17,7 +17,7 @@ function noDooMsg() {
             ""
         ];
     return msgLines.join("\n");
-}; 
+};
 
 function noScriptMsg(env) {
     var msgLines = [

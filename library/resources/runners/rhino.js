@@ -54,7 +54,7 @@ arguments.forEach(function (arg) {
 });
 
 // check this before trying to call set_print_fn_BANG_
-assertDoo(); 
+assertDoo();
 
 doo.runner.set_print_fn_BANG_(function(x) {
     // since console.log *itself* adds a newline

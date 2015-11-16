@@ -16,7 +16,7 @@
         100)
       (is (= 1 a)))))
 
-(deftest csp-test 
+(deftest csp-test
   (async done
     (let [val 1
           ch (chan)]
