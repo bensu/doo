@@ -340,6 +340,10 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 code reflecting if the tests failed, to be used in CI builds. It also
 **requires [org.clojure/clojurescript "0.0-3308"]** or newer.
 
+## Developing
+
+To run the tests for doo, you need to have installed rhino, phantomjs, slimer, chrome, node, and firefox. You will also need to run `npm install` in the `library` directory.
+
 ## License
 
 Most code in this project is a repackaging of
