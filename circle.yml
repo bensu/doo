@@ -4,6 +4,8 @@ dependencies:
     - cd example && npm install karma-cli -g
     - cd example && lein deps
     - cd library && lein deps
+    - cd library && npm install
+    - sudo apt-get update; sudo apt-get install rhino
   cache_directories:
     - example/node_modules
     - ~/.m2
