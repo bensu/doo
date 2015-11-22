@@ -221,8 +221,8 @@ where:
                   compiled the script that doo should run
   opts - a map that can contain:
     :verbose - bool (default true) that determines if the scripts
-               output should be printed and returned (verbose false)
-               or only returned (verbose true).
+               output should be printed and returned (verbose true)
+               or only returned (verbose false).
     :paths - a map from runners (keywords) to string commands for bash."
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
