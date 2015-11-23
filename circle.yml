@@ -5,6 +5,9 @@ dependencies:
     - cd example && lein deps
     - cd library && lein deps
     - cd library && npm install
+    - cd library && lein install
+    - cd plugin && lein deps
+    - cd plugin && lein install
     - sudo apt-get update; sudo apt-get install rhino
   cache_directories:
     - example/node_modules
@@ -59,5 +62,7 @@ test:
     # Node
     - cd example && lein doo node node-none-fail once && exit 1 || exit 0
     - cd example && lein doo node node-advanced-fail once && exit 1 || exit 0
-    # Test the actual library itself
+    # Test the library code
     - cd library && lein test
+    # Test the plugin code
+    - cd plugin && lein test
