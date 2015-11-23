@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [0.1.6-SNAPSHOT] - 2015-11-23
+## [0.1.6-rc.1] - 2015-11-23
 
 ### Changed
 - **BREAKING CHANGE:** changes the default `:karma` path to

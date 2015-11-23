@@ -8,7 +8,7 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
 This README is for the latest release:
 
-`[lein-doo "0.1.6-SNAPSHOT"]`
+`[lein-doo "0.1.6-rc.1"]`
 
 which contains experimental features. The latest stable version is:
 `[lein-doo "0.1.4"]` and the docs are [here](https://github.com/bensu/doo/blob/master/README_STABLE.md).
@@ -174,7 +174,6 @@ We also need to properly report `cljs.test` results inside Karma.
 We'll **need** a "framework" plugin:
 
     - karma-cljs-test
-
 
 Karma and its plugins are installed with `npm`. It is
 [recommended](http://karma-runner.github.io/0.13/intro/installation.html)
