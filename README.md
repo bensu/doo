@@ -323,6 +323,10 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 * `0.1.6-SNAPSHOT` includes many internal changes. While all the
   changes are backwards compatible, regressions are expected:
+  * **BREAKING CHANGE:** changes the default `:karma` path to
+    `"karma"` to use the CLI tool. If you were using the local
+    installation, add `{:path {:karma "./node_modules/karma/bin/karma"}}`
+    to your `doo` config in `project.clj`.
   * Adds the `:verbose` option to `doo.core/run-script`
   * Removes `cljsbuild` as a dependency.
   * Swaps `selmer` for `data.json`.
