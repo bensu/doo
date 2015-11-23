@@ -319,46 +319,6 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
 
 (Currently only tested with PhantomJS.)
 
-## Changes
-
-* `0.1.6-SNAPSHOT` includes many internal changes. While all the
-  changes are backwards compatible, regressions are expected:
-  * **BREAKING CHANGE:** changes the default `:karma` path to
-    `"karma"` to use the CLI tool. If you were using the local
-    installation, add `{:path {:karma "./node_modules/karma/bin/karma"}}`
-    to your `doo` config in `project.clj`.
-  * Adds the `:verbose` option to `doo.core/run-script`
-  * Removes `cljsbuild` as a dependency.
-  * Swaps `selmer` for `data.json`.
-  * Supports `'example.runner` `"example.runner"`, and
-    `example.runner` as options to `:main`.
-  * Removes limitations around absolute and relative paths for
-     `doo.core/run-script` and the `compiler-options`.
-  * Pass command line arguments to runners through `:paths`.
-  * In auto mode, run karma as a server to avoid starting/stopping the
-    browsers.
-  * Add the Default Builds under `:doo {:build "build-id"}` in
-    `project.clj`.
-  * Add an optional regex argument to `doo-all-tests` to mirror
-    `run-all-test`'s behavior.
-  * Adds a `nashorn` runner.
-* `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
-  `opera`, and `ie` as runners, adds custom `:paths` for the runners,
-  adds custom `:alias`, deletes the `browser` alias and replaces it with
-  `headless` for `slimer` and `phantom`, and changes once again the
-  signature for `doo.core/run-script`.
-* `0.1.4-SNAPSHOT` allows `:optimizations :none` for all platforms but
-  `rhino`, changes `valid-compiler-options?`'s signature to take
-  `js-env`, adds the `browsers` alias, and changes many of the
-  compiler requirements.
-* `0.1.3-SNAPSHOT` adds support for absolute paths in the runners and
-  allows projects to use node dependencies through `lein-npm`.
-  Requires `node => 0.12`.
-* `0.1.2-SNAPSHOT` adds `node` support and changed `run-script`'s interface.
-* `0.1.1-SNAPSHOT` adds the option for `once` and returns an UNIX exit
-code reflecting if the tests failed, to be used in CI builds. It also
-**requires [org.clojure/clojurescript "0.0-3308"]** or newer.
-
 ## Developing
 
 To run the tests for doo, you need to have installed rhino, phantomjs, slimer, chrome, node, and firefox. You will also need to run `npm install` in the `library` directory.
