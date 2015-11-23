@@ -19,7 +19,6 @@
   :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
 
   :doo {:build "test"
-        :paths {:karma "karma"}
         :alias {:default [:chrome]
                 :browsers [:chrome :firefox]
                 :dom [:browsers :headless]}}
