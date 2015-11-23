@@ -5,6 +5,9 @@ dependencies:
     - cd example && lein deps
     - cd library && lein deps
     - cd library && npm install
+    - cd library && lein install
+    - cd plugin && lein deps
+    - cd plugin && lein install
     - sudo apt-get update; sudo apt-get install rhino
   cache_directories:
     - example/node_modules
@@ -25,9 +28,13 @@ test:
     - cd example && lein doo slimer advanced once
     - cd example && lein doo slimer none-test once
     # Rhino
+    # rhino doesn't support :optimizations :none
     - cd example && lein doo rhino test once
     - cd example && lein doo rhino advanced once
-    # rhino doesn't support :none optimisations
+    # Nashorn
+    # nashorn doesn't support :optimizations :none
+    - cd example && lein doo nashorn test once
+    - cd example && lein doo nashorn advanced once
     # Node
     - cd example && lein doo node node-none once
     - cd example && lein doo node node-advanced once
@@ -48,8 +55,14 @@ test:
     - cd example && lein doo rhino test-fail once && exit 1 || exit 0
     - cd example && lein doo rhino advanced-fail once && exit 1 || exit 0
     - cd example && lein doo rhino none-test-fail once && exit 1 || exit 0
+    # Nashorn
+    - cd example && lein doo nashorn test-fail once && exit 1 || exit 0
+    - cd example && lein doo nashorn advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo nashorn none-test-fail once && exit 1 || exit 0
     # Node
     - cd example && lein doo node node-none-fail once && exit 1 || exit 0
     - cd example && lein doo node node-advanced-fail once && exit 1 || exit 0
-    # Test the actual library itself
+    # Test the library code
     - cd library && lein test
+    # Test the plugin code
+    - cd plugin && lein test
