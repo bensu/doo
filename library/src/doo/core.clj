@@ -254,7 +254,7 @@ where:
                error-msg (format cmd-not-found js-path
                            (cond
                             (= js-env :rhino) "rhino -help"
-                            (= js-env :nashorn) "jrunscript -help"
+                            (= js-env :nashorn) "jjs -h"
                             :else (str js-path " -v"))
                            js-path)]
            (when (:verbose doo-opts)
