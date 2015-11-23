@@ -27,7 +27,7 @@ newer.
     lein doo {js-env} {build-id} {watch-mode}
 
 * `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
-`slimer`, `phantom`, `node`, or `rhino`. In the future it 
+`slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it 
 is planned to support `v8`, `jscore`, and others. 
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
@@ -98,14 +98,17 @@ To run a JavaScript file in your preferred runner you can directly call
 This is the hardest part and `doo` doesn't do it for you (yet?). Right
 now if you want to run
 [`slimer`](http://docs.slimerjs.org/current/installation.html),
-[`phantom`](http://phantomjs.org/download.html), or [`node`](https://github.com/joyent/node/wiki/Installation) you need to install them
-so that these commands work on the command line:
+[`phantom`](http://phantomjs.org/download.html), [`node`](https://github.com/joyent/node/wiki/Installation)
+or [nashorn](http://openjdk.java.net/projects/nashorn/) that ships with the JDK 8, 
+you need to install them so that these commands work on the command line:
 
     phantomjs -v
 
     slimerjs -v
 
     node -v
+
+    jjs -h
 
     rhino -help
 
@@ -323,6 +326,7 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
     `project.clj`.
   * Add an optional regex argument to `doo-all-tests` to mirror
     `run-all-test`'s behavior.
+  * Adds a `nashorn` runner.
 * `0.1.5-SNAPSHOT` adds Karma with `chrome`, `firefox`, `safari`,
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
