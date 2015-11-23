@@ -21,14 +21,14 @@ newer.
 ### Plugin
 
     lein doo {js-env}
-    
+
     lein doo {js-env} {build-id}
 
     lein doo {js-env} {build-id} {watch-mode}
 
 * `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
-`slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it 
-is planned to support `v8`, `jscore`, and others. 
+`slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it
+is planned to support `v8`, `jscore`, and others.
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
@@ -89,7 +89,7 @@ To run a JavaScript file in your preferred runner you can directly call
 
 (let [doo-opts {:paths {:karma "karma"}}
       compiler-opts {:output-to "out/testable.js"
-                     :optimizations :none}] 
+                     :optimizations :none}]
   (doo/run-script :phantom compiler-opts doo-opts))
 ```
 
@@ -99,7 +99,7 @@ This is the hardest part and `doo` doesn't do it for you (yet?). Right
 now if you want to run
 [`slimer`](http://docs.slimerjs.org/current/installation.html),
 [`phantom`](http://phantomjs.org/download.html), [`node`](https://github.com/joyent/node/wiki/Installation)
-or [nashorn](http://openjdk.java.net/projects/nashorn/) that ships with the JDK 8, 
+or [nashorn](http://openjdk.java.net/projects/nashorn/) that ships with the JDK 8,
 you need to install them so that these commands work on the command line:
 
     phantomjs -v
@@ -164,11 +164,11 @@ which start a browser on command. You might **want** any of:
     - karma-firefox-launcher
     - karma-safari-launcher
     - karma-opera-launcher
-    - karma-ie-launcher 
+    - karma-ie-launcher
 
 Alternatively, if you don't want `doo` to launch the browsers for you,
 you can always launch them yourself and navigate to
-[http://localhost:9876](http://localhost:9876) 
+[http://localhost:9876](http://localhost:9876)
 
 We also need to properly report `cljs.test` results inside Karma.
 We'll **need** a "framework" plugin:
@@ -185,6 +185,8 @@ It is not possible to run mix local and global Karma and Karma plugins.
 
 Karma provides a [CLI tool](https://github.com/karma-runner/karma-cli)
 to make running Karma simpler and to ease cross platform compatibility.
+doo uses the CLI tool as the default runner, if you don't install it you will
+need to configure doo.
 
 For local installation run:
 
@@ -205,14 +207,14 @@ during development and not when packaging artifacts.
 
 The installation will generate a `node-modules` folder with all the
 installed modules. It is recommended to add `node-modules` to your
-`.gitignore`. 
+`.gitignore`.
 
 If you are using `lein-npm`, follow their
 [instructions](https://github.com/RyanMcG/lein-npm).
 
 #### Non-standard Karma configuration
 
-If you are using a local installation and `node_modules` is not located
+If you are using a local installation and/or `node_modules` is not located
 at the project root, you need to tell `doo` about it. Add this to your
 `project.clj`:
 
@@ -223,14 +225,11 @@ at the project root, you need to tell `doo` about it. Add this to your
 ```
 
 and make sure that the file `karma/bin/karma` exists inside
-`node_modules`.
-
-For global installation, run the same commands but add the `-g` option
-as in `npm install -g karma`. Then, you need to inform `doo`, add this
-to your `project.clj`:
+`node_modules`. If your `package.json` and `node_modules` folder are in the
+same directory than your `project.clj`, then you should use:
 
 ```clj
-:doo {:paths {:karma "karma"}} ;; => resolve :karma's path to "karma"
+:doo {:paths {:karma "./node_modules/karma/bin/karma"}}
 
 :cljsbuild { your-builds }
 ```
@@ -343,7 +342,7 @@ To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file 
   `opera`, and `ie` as runners, adds custom `:paths` for the runners,
   adds custom `:alias`, deletes the `browser` alias and replaces it with
   `headless` for `slimer` and `phantom`, and changes once again the
-  signature for `doo.core/run-script`. 
+  signature for `doo.core/run-script`.
 * `0.1.4-SNAPSHOT` allows `:optimizations :none` for all platforms but
   `rhino`, changes `valid-compiler-options?`'s signature to take
   `js-env`, adds the `browsers` alias, and changes many of the
