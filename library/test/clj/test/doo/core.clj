@@ -82,15 +82,15 @@
            :rhino "rhino"
            :nashorn "jjs"
            :node "node"
-           :karma "./node_modules/karma/bin/karma")
+           :karma "karma")
       (testing "unless we don't have it"
         (is (thrown? java.lang.AssertionError
               (doo/command-table :unknown {})))))
     (testing "when passing options"
-      (are [js-env path] (= path (first (doo/command-table js-env
-                                          {:paths {:karma "karma"}})))
-           :slimer "slimerjs"
-           :karma "karma"))))
+      (let [opts {:paths {:karma "./node_modules/karma/bin/karma"}}]
+        (are [js-env path] (= path (first (doo/command-table js-env opts)))
+             :slimer "slimerjs"
+             :karma "./node_modules/karma/bin/karma")))))
 
 (defn doo-ok? [doo-output]
   (zero? (:exit doo-output)))
@@ -98,8 +98,7 @@
 (deftest integration
   (testing "We can compile a cljs project"
     (let [doo-opts {:verbose false
-                    :paths {:karma "karma"
-                            :slimer "../example/node_modules/.bin/slimerjs"}}
+                    :paths {:slimer "../example/node_modules/.bin/slimerjs"}}
           compiler-opts {:output-to "out/testable.js"
                          :output-dir "out"
                          :main 'example.runner

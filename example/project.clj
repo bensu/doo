@@ -16,8 +16,7 @@
   :clean-targets ^{:protect false} [:target-path "resources/public/js/" "out"]
 
   :doo {:build "test"
-        :paths {:karma "karma"
-                :slimer "./node_modules/.bin/slimerjs"}
+        :paths {:slimer "./node_modules/.bin/slimerjs"}
         :alias {:browsers [:chrome :firefox]
                 :all [:browsers :headless]}}
 
