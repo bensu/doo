@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
   `doo.core/run-script` and the `compiler-options`.
 - In auto mode, run karma as a server to avoid starting/stopping the
   browsers.
+- Print the output of the script as it comes.
 
 ### Added
 - `:verbose` option to `doo.core/run-script`
@@ -24,7 +25,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Option to pass command line arguments to runners through `:paths`.
 - Option to pass the Default Builds under `:doo {:build "build-id"}`
   in `project.clj`.
-- Option to pass `'example.runner` `"example.runner"`, or
+- Option to pass `'example.runner`, `"example.runner"`, or
   `example.runner` to `:main`.
 
 ## [0.1.5] - 2015-10-09
