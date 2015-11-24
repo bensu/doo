@@ -238,7 +238,7 @@ where:
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
    {:pre [(valid-js-env? js-env)]}
-   (let [doo-opts (merge default-opts opts)
+   (let [doo-opts (merge default-opts {:base-dir (:output-to compiler-opts)} opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
                    (:output-to compiler-opts))]
      (try
