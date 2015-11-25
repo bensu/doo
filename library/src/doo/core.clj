@@ -6,7 +6,8 @@
             [clojure.java.io :as io]
             [clojure.data.json :as json]
             [doo.karma :as karma]
-            [doo.shell :as shell]))
+            [doo.shell :as shell]
+            [doo.utils :as utils]))
 
 ;; ======================================================================
 ;; JS Environments
@@ -170,6 +171,7 @@
                                 "start"
                                 (karma/runner! js-envs compiler-opts opts')])
         process (shell/exec! cmd)]
+    (utils/debug-log "Started karma server")
     (shell/set-cleanup! process opts "Shutdown Karma Server")
     (shell/capture-process! process (assoc opts :verbose true))
     process))
@@ -178,6 +180,7 @@
   (let [cmd (shell/flatten-cmd [(command-table :karma opts)
                                 "run" "--" "doo.runner.run_BANG_"])
         process (shell/exec! cmd)]
+    (utils/debug-log "Started karma run")
     (shell/set-cleanup! process opts "Close Karma run")
     process))
 
@@ -214,6 +217,7 @@ If it doesn't work you need to install %s, see https://github.com/bensu/doo#sett
 If it does work, file an issue and we'll sort it together!")
 
 (def default-opts {:verbose true
+                   :debug false
                    :karma {:install? false}})
 
 (defn run-script
@@ -233,6 +237,8 @@ where:
     :verbose - bool (default true) that determines if the scripts
                output should be printed and returned (verbose true)
                or only returned (verbose false).
+    :debug - bool (default false) to log to standard-out internal events
+             to aid debugging
     :paths - a map from runners (keywords) to string commands for bash."
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
@@ -241,6 +247,8 @@ where:
    (let [doo-opts (merge default-opts opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
                    (:output-to compiler-opts))]
+     (when (:debug doo-opts)
+       (utils/debug-log "Command to run script:" cmd))
      (try
        (let [r (shell/sh cmd doo-opts)]
          ;; Phantom/Slimer don't return correct exit code when
@@ -250,6 +258,7 @@ where:
          (cond-> r
            (and (not (empty? (:err r))) (zero? (:exit r))) (assoc :exit 1)))
        (catch java.io.IOException e
+         (utils/debug-log "Failed to run command: " (pr-str e))
          (let [js-path (first cmd)
                error-msg (format cmd-not-found js-path
                            (cond

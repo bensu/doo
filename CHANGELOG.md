@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased - 2015-11-25
+
+### Added
+- `:debug` option to `doo.core/run-script`.
+
 ## [0.1.6-rc.1] - 2015-11-23
 
 ### Changed
@@ -18,7 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Print the output of the script as it comes.
 
 ### Added
-- `:verbose` option to `doo.core/run-script`
+- `:verbose` option to `doo.core/run-script`.
 - Optional regex argument to `doo-all-tests` to mirror
   `run-all-test`'s behavior.
 - `nashorn` runner.

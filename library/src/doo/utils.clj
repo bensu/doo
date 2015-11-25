@@ -28,3 +28,6 @@
   "Returns a keyword naming the host OS."
   []
   (get-with-pattern-fallback native-names (System/getProperty "os.name")))
+
+(defn debug-log [& args]
+  (apply println "[doo]" args))

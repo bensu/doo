@@ -3,7 +3,8 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.data.json :as json]
-            [doo.shell :as shell]))
+            [doo.shell :as shell]
+            [doo.utils :as utils]))
 
 ;; ======================================================================
 ;; Karma Clients
@@ -77,4 +78,6 @@
     (with-open [w (io/writer f)]
       (write-var w "configData" karma-opts)
       (io/copy karma-tmpl w))
+    (when (:debug opts)
+      (utils/debug-log "Created karma conf file:" (.getAbsolutePath f)))
     (.getAbsolutePath f)))
