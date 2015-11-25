@@ -2,7 +2,7 @@
   "Rewrite of clojure.java.shell to have access to the output stream."
   (:require [clojure.java.io :as io]
             [doo.utils :as utils])
-  (:import (java.io StringWriter BufferedReader InputStreamReader)
+  (:import (java.io StringWriter BufferedReader InputStreamReader File)
            (java.nio.charset Charset)))
 
 ;; ====================================================================== 
@@ -37,13 +37,19 @@
       (.close r)
       (.toString out))))
 
-(defn exec! [cmd]
+(defn exec* [base-dir command-arr]
+  (if base-dir
+    (.exec (Runtime/getRuntime) command-arr nil base-dir)
+    (.exec (Runtime/getRuntime) command-arr)))
+
+(defn exec! [cmd path]
   (let [windows? (= :windows (utils/get-os))
-        windows-cmd (when windows? ["cmd" "/c"])]
+        windows-cmd (when windows? ["cmd" "/c"])
+        base-dir (when path (.getParentFile (File. path)))]
     (->> cmd
          (concat windows-cmd)
          ^"[Ljava.lang.String;" (into-array String)
-         (.exec (Runtime/getRuntime)))))
+         (exec* base-dir))))
 
 (defn capture-process! [process opts]
   (letfn [(capture! [stream]
@@ -68,7 +74,7 @@
    as it happens by default."
   ([cmd] (sh cmd {:verbose true}))
   ([cmd opts]
-   (let [proc (exec! cmd)
+   (let [proc (exec! cmd (:base-dir opts))
          {:keys [out err]} (capture-process! proc opts)
          exit-code (.waitFor proc)]
      {:exit exit-code :out @out :err @err})))

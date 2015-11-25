@@ -216,6 +216,9 @@ If it does work, file an issue and we'll sort it together!")
 (def default-opts {:verbose true
                    :karma {:install? false}})
 
+(defn- abs-path [path]
+  (.getAbsolutePath (File. path)))
+
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
    in the selected js-env.
@@ -238,9 +241,9 @@ where:
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
    {:pre [(valid-js-env? js-env)]}
-   (let [doo-opts (merge default-opts opts)
+   (let [doo-opts (merge default-opts {:base-dir (:output-to compiler-opts)} opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
-                   (:output-to compiler-opts))]
+                   (abs-path (:output-to compiler-opts)))]
      (try
        (let [r (shell/sh cmd doo-opts)]
          ;; Phantom/Slimer don't return correct exit code when
