@@ -1,0 +1,27 @@
+version: 1.0.{build}
+install:
+- ps: >-
+    New-Item c:\scripts -type directory
+
+    $env:Path += ";C:\scripts"
+
+    Invoke-WebRequest -Uri https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein.bat -OutFile "C:\scripts\lein.bat"
+
+    lein self-install
+
+    lein version
+build_script:
+- cmd: >-
+    cd example
+
+    npm install
+
+    npm install karma-cli -g
+
+    lein deps
+
+    karma --version
+
+    cd ..
+test_script:
+- cmd: "cd example \nlein doo browsers test once\nlein doo browsers advanced once\nlein doo browsers none-test once"
