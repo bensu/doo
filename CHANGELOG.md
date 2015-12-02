@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - `:debug` option to `doo.core/run-script`.
+- Support for running Chrome Canary. Call it from the command line as `lein doo chrome-canary test once` or add it to `:browsers` as `:chrome-canary`. [#73](https://github.com/bensu/doo/pull/73)
 
 ## [0.1.6-rc.1] - 2015-11-23
 
