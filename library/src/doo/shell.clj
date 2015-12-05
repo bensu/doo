@@ -5,18 +5,18 @@
   (:import (java.io StringWriter BufferedReader InputStreamReader File)
            (java.nio.charset Charset)))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Util
 
 (defn flatten-cmd [cmd]
   (vec (mapcat #(cond-> % (string? %) vector) cmd)))
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Config
 
 (def base-dir "runners/")
 
-;; ====================================================================== 
+;; ======================================================================
 ;; Shell
 
 (defn- stream-to-string
@@ -46,11 +46,11 @@
 (defn exec! [cmd exec-dir]
   (let [windows? (= :windows (utils/get-os))
         windows-cmd (when windows? ["cmd" "/c"])
-        -exec (if exec-dir #(-exec % exec-dir) -exec)]
+        exec* (if exec-dir #(-exec % exec-dir) -exec)]
     (->> cmd
          (concat windows-cmd)
          ^"[Ljava.lang.String;" (into-array String)
-         -exec)))
+         exec*)))
 
 (defn capture-process! [process opts]
   (letfn [(capture! [stream]
