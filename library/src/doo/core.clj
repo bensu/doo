@@ -239,7 +239,9 @@ where:
                or only returned (verbose false).
     :debug - bool (default false) to log to standard-out internal events
              to aid debugging
-    :paths - a map from runners (keywords) to string commands for bash."
+    :paths - a map from runners (keywords) to string commands for bash.
+    :exec-dir - string (default nil) that overrides working directory
+                for execution, if present."
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
