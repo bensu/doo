@@ -170,16 +170,19 @@
         cmd (shell/flatten-cmd [(command-table :karma opts')
                                 "start"
                                 (karma/runner! js-envs compiler-opts opts')])
-        process (shell/exec! cmd)]
+        process (shell/exec! cmd (:exec-dir opts))]
     (utils/debug-log "Started karma server")
     (shell/set-cleanup! process opts "Shutdown Karma Server")
     (shell/capture-process! process (assoc opts :verbose true))
     process))
 
-(defn karma-run! [opts]
+(defn karma-run!
+  "Runs karma once, assuming there is a karma server already running.
+  Takes doo-options as passed to run-script."
+  [opts]
   (let [cmd (shell/flatten-cmd [(command-table :karma opts)
                                 "run" "--" "doo.runner.run_BANG_"])
-        process (shell/exec! cmd)]
+        process (shell/exec! cmd (:exec-dir opts))]
     (utils/debug-log "Started karma run")
     (shell/set-cleanup! process opts "Close Karma run")
     process))
