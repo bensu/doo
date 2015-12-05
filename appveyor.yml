@@ -12,7 +12,15 @@ install:
     lein version
 build_script:
 - cmd: >-
-    cd example
+    cd library
+
+    lein install
+
+    cd ../plugin
+
+    lein install
+
+    cd ../example
 
     npm install
 
