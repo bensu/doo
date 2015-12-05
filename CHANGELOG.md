@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `:debug` option to `doo.core/run-script`.
 - Support for Chrome Canary from Karma.
 - Add AppVeyor CI.
+- `:exec-dir` option to `doo.core/run-script`.
 
 ## [0.1.6] - 2015-12-05
 
