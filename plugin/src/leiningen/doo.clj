@@ -202,7 +202,7 @@ under :doo in the project.clj.\n")
          ;; FIX: get the version dynamically
          project' (-> project
                     correct-builds
-                    (add-dep ['doo "0.1.6-rc.1"]))
+                    (add-dep ['doo "0.1.6"]))
          {:keys [source-paths compiler]}
          (cli->build cli project' opts)]
      (doo/assert-alias alias js-envs (:alias opts))

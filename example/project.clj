@@ -1,4 +1,4 @@
-(defproject lein-doo-example "0.1.6-rc.1"
+(defproject lein-doo-example "0.1.6"
   :description "Project to test lein-doo. Do not take it as an example"
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"
@@ -9,7 +9,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
-            [lein-doo "0.1.6-rc.1"]]
+            [lein-doo "0.1.6"]]
 
   :source-paths ["src" "test" "failing-tests"]
 
