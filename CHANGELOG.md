@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased - 2015-12-05
+
+### Added
+- `:debug` option to `doo.core/run-script`.
+- Support for Chrome Canary from Karma.
+
 ## [0.1.6] - 2015-12-05
 
 ### Changed
