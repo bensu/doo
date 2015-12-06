@@ -9,6 +9,7 @@ dependencies:
     - cd example && npm install
     - cd example && npm install karma-cli -g
     - cd example && lein deps
+    - cd example && boot deps
   cache_directories:
     - example/node_modules
     - ~/.m2
@@ -38,6 +39,9 @@ test:
     # Node
     - cd example && lein doo node node-none once
     - cd example && lein doo node node-advanced once
+    # Boot
+    - cd example && boot add-tests test-cljs -e phantom -x
+    - cd example && boot add-tests test-cljs -e phantom -x -O advanced
     # These ones should fail
     # Karma
     - cd example && lein doo browsers test-fail once && exit 1 || exit 0
@@ -62,6 +66,9 @@ test:
     # Node
     - cd example && lein doo node node-none-fail once && exit 1 || exit 0
     - cd example && lein doo node node-advanced-fail once && exit 1 || exit 0
+    # Boot
+    - cd example && boot add-failures test-cljs -e phantom -x && exit 1 || exit 0
+    - cd example && boot add-failures test-cljs -e phantom -x -O advanced && exit 1 || exit 0
     # Test the library code
     - cd library && lein test
     # Test the plugin code
