@@ -1,9 +1,12 @@
+machine:
+  java:
+    version: oraclejdk8
+
 dependencies:
   pre:
     - sudo apt-get update; sudo apt-get install rhino
-    - wget -O boot "https://github.com/boot-clj/boot/releases/download/2.4.0/boot.sh"
-    - chmod a+x boot
-    - mv boot /home/ubuntu/bin
+    - wget https://github.com/boot-clj/boot-bin/releases/download/2.4.2/boot.sh
+    - mv boot.sh boot && chmod a+x boot && sudo mv boot /usr/local/bin
     - cd library && lein deps
     - cd library && npm install
     - cd library && lein install
@@ -13,8 +16,6 @@ dependencies:
     - cd example && npm install karma-cli -g
     - cd example && lein deps
     - cd example && boot deps
-  override:
-    - boot checkout
   cache_directories:
     - example/node_modules
     - ~/.m2
