@@ -37,20 +37,16 @@
       (.close r)
       (.toString out))))
 
-(defn -exec
-  ([command-arr]
-    (.exec (Runtime/getRuntime) command-arr))
-  ([command-arr working-dir]
-   (.exec (Runtime/getRuntime) command-arr nil working-dir)))
+(defn- ^"[Ljava.lang.String;" str-array [xs]
+  (into-array String xs))
 
-(defn exec! [cmd exec-dir]
+(defn exec! [cmd ^File exec-dir]
   (let [windows? (= :windows (utils/get-os))
         windows-cmd (when windows? ["cmd" "/c"])
-        exec* (if exec-dir #(-exec % exec-dir) -exec)]
-    (->> cmd
-         (concat windows-cmd)
-         ^"[Ljava.lang.String;" (into-array String)
-         exec*)))
+        command-arr (str-array (concat windows-cmd cmd))]
+    (if exec-dir
+      (.exec (Runtime/getRuntime) command-arr nil exec-dir)
+      (.exec (Runtime/getRuntime) command-arr))))
 
 (defn capture-process! [process opts]
   (letfn [(capture! [stream]
