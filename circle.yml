@@ -1,6 +1,12 @@
+machine:
+  java:
+    version: oraclejdk8
+
 dependencies:
   pre:
     - sudo apt-get update; sudo apt-get install rhino
+    - wget https://github.com/boot-clj/boot-bin/releases/download/2.4.2/boot.sh
+    - mv boot.sh boot && chmod a+x boot && sudo mv boot /usr/local/bin
     - cd library && lein deps
     - cd library && npm install
     - cd library && lein install
