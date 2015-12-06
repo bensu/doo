@@ -62,7 +62,8 @@
    (set-cleanup! process opts "Shutdown Process"))
   ([process opts msg]
    (.addShutdownHook (Runtime/getRuntime)
-     (Thread. (fn []
+     (Thread. ^Runnable
+              (fn []
                 (println msg)
                 (.destroy process))))))
 
