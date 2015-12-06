@@ -243,7 +243,7 @@ where:
     :debug - bool (default false) to log to standard-out internal events
              to aid debugging
     :paths - a map from runners (keywords) to string commands for bash.
-    :exec-dir - a directory path (string) from where runner should be
+    :exec-dir - a directory path (file) from where runner should be
                 exectuted. Defaults to nil which resolves to the current dir"
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
