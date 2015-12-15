@@ -14,25 +14,23 @@
 (defn project->builds [project]
   (get-in project [:cljsbuild :builds]))
 
+(defn add-sources [project sources]
+  (update-in project [:source-paths] #(into % sources)))
+
 ;; TODO: what's this for?
-;; I think it is to ensure that the source paths are in the classpath
-;; Then it might resolved to (update-in [:source-paths] concat)
 (defn make-subproject [project]
   (-> project
-    ;; This might be protecting against something, remove?
-    (select-keys [:checkout-deps-shares
-                  :eval-in
-                  :jvm-opts
-                  :local-repo
-                  :repositories
-                  :resource-paths
-                  :dependencies])
-    ;; This might be the important function
-    (merge {:local-repo-classpath true
-            :source-paths (concat
-                            (:source-paths project)
-                            (mapcat :source-paths (project->builds project)))})
-    (with-meta (meta project))))
+      ;; This might be protecting against something, remove?
+      (select-keys [:checkout-deps-shares
+                    :eval-in
+                    :jvm-opts
+                    :local-repo
+                    :repositories
+                    :resource-paths
+                    :source-paths
+                    :dependencies])
+      (assoc :local-repo-classpath true)
+      (with-meta (meta project))))
 
 (defn add-dep
   "Adds one dependency (needs to be a vector with a quoted symbol)
@@ -201,15 +199,16 @@ under :doo in the project.clj.\n")
          js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
          project' (-> project
-                    correct-builds
-                    (add-dep ['doo "0.1.7-SNAPSHOT"]))
+                      correct-builds
+                      (add-dep ['doo "0.1.7-SNAPSHOT"]))
          {:keys [source-paths compiler]}
          (cli->build cli project' opts)]
      (doo/assert-alias alias js-envs (:alias opts))
      (doseq [js-env js-envs]
        (doo/assert-js-env js-env))
      ;; FIX: there is probably a bug regarding the incorrect use of builds
-     (run-local-project project'
+     ;; Important to add sources to the classpath
+     (run-local-project (add-sources project' source-paths)
        '(require 'cljs.build.api 'doo.core 'doo.karma)
        `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)]
           (doseq [js-env# ~js-envs]
