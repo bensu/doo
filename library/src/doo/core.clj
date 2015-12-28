@@ -223,6 +223,11 @@ If it does work, file an issue and we'll sort it together!")
                    :debug false
                    :karma {:install? false}})
 
+(def untrustworthy-exit-env
+  "The set of JS envs having executables which may not be able to signify
+  failure with a non-zero exit code."
+  #{:phantom :slimer})
+
 (defn run-script
   "Runs the script defined in :output-to of compiler-opts
    in the selected js-env.
@@ -255,13 +260,15 @@ where:
      (when (:debug doo-opts)
        (utils/debug-log "Command to run script:" cmd))
      (try
-       (let [r (shell/sh cmd doo-opts)]
+       (let [{:keys [err exit] :as r} (shell/sh cmd doo-opts)]
          ;; Phantom/Slimer don't return correct exit code when
          ;; provided bad opts
          ;; Try `phantomjs --bad-opts=asdfasdf main.js` followed by
          ;; `echo $?` for phantomjs 1.9.0 / slimerjs 0.9.6
          (cond-> r
-           (and (not (empty? (:err r))) (zero? (:exit r))) (assoc :exit 1)))
+           (and (untrustworthy-exit-env js-env)
+                (not-empty err)
+                (zero? exit)) (assoc :exit 1)))
        (catch java.io.IOException e
          (utils/debug-log "Failed to run command: " (pr-str e))
          (let [js-path (first cmd)
