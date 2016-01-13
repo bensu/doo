@@ -196,6 +196,7 @@
   [js-env compiler-opts]
   {:pre [(keyword? js-env) (map? compiler-opts)]}
   (let [optimization (:optimizations compiler-opts)]
+    (assert (some? (:output-to compiler-opts)) ":output-to can't be nil")
     (when (= :node js-env)
       (assert (= :nodejs (:target compiler-opts))
         "node should be used with :target :nodejs"))

@@ -6,6 +6,9 @@
 (deftest compiler-opts
   (are [msg js-env opts] (is (thrown? java.lang.AssertionError
                                (doo/assert-compiler-opts js-env opts)) msg)
+       ":output-to can't be nil"
+       :node {:main 'example.runner
+              :optimizations :none}
        ":rhino doesn't support :none"
        :rhino {:output-to "target/testable.js"
                :main 'example.runner
