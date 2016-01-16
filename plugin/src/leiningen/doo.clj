@@ -218,7 +218,7 @@ under :doo in the project.clj.\n")
                   karma-on?# (atom false)
                   non-karma-envs# (vec (remove doo.karma/env? ~js-envs))]
               (cljs.build.api/watch
-                (apply cljs.build.api/inputs ~source-paths)
+                (apply cljs.build.api/inputs ~(vec source-paths))
                 (assoc compiler#
                   :watch-fn
                   (fn []
@@ -235,7 +235,7 @@ under :doo in the project.clj.\n")
                       (doo.core/karma-run! ~opts))))))
             (do
               (cljs.build.api/build
-                (apply cljs.build.api/inputs ~source-paths) compiler#)
+                (apply cljs.build.api/inputs ~(vec source-paths)) compiler#)
               (let [ok# (->> ~js-envs
                           (map (fn [e#]
                                  (doo.core/print-envs e#)
