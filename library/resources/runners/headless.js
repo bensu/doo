@@ -4,13 +4,20 @@
 var p = require('webpage').create();
 var fs = require('fs');
 var sys = require('system');
+var os = sys.os;
+
+// phantomjs has problems with windows drive letters, it thinks them to be a protocol definition. By using
+// triple slashes with file: protocol definition it works as expected
+function relativizePath(path) {
+    return os.name === 'windows' ? "file:///" + path : "file://" + path;
+}
 
 var pagePath = fs.absolute("doo-index.html");
 
 var scripts = "";
 
 for (var i = 1; i < sys.args.length; i++) {
-    scripts += '<script src="' + fs.absolute(sys.args[i]) + '"></script>';
+    scripts += '<script src="' + relativizePath(fs.absolute(sys.args[i])) + '"></script>';
 }
 
 var html = "<html><head><meta charset=\"UTF-8\">"
@@ -43,7 +50,7 @@ p.onError = function(msg) {
     exit(1);
 };
 
-p.open("file://" + pagePath, function (status) {
+p.open(relativizePath(pagePath), function (status) {
     fs.remove(pagePath);
     if (status == "fail") {
         console.log(noScriptMsg(isSlimer() ? "Slimer" : "Phantom"));
