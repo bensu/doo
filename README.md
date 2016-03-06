@@ -91,6 +91,29 @@ To run a JavaScript file in your preferred runner you can directly call
   (doo/run-script :phantom compiler-opts doo-opts))
 ```
 
+You can run `doo.core/run-script` with the following arguments:
+
+```
+(run-script js-env compiler-opts)
+(run-script js-env compiler-opts opts)
+```
+
+where:
+
+* `js-env` - any of `:phantom`, `:slimer`, :`node`, `:rhino`,
+  `:nashorn`, `:chrome`, `:firefox`, `:ie`, `:safari`, or `:opera`
+* `compiler-opts` - the options passed to the ClojureScript when it
+  compiled the script that doo should run
+* `opts` - a map that can contain:
+    `:verbose` - bool (default true) that determines if the scripts
+    output should be printed and returned (verbose true) or only
+    returned (verbose false).
+    `:debug` - bool (default false) to log to standard-out internal events
+             to aid debugging
+    `:paths` - a map from runners (keywords) to string commands for bash.
+    `:exec-dir` - a directory path (file) from where runner should be
+    executed. Defaults to nil which resolves to the current dir
+
 ## Setting up Environments
 
 This is the hardest part and `doo` doesn't do it for you (yet?). Right
