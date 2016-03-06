@@ -250,7 +250,7 @@ where:
              to aid debugging
     :paths - a map from runners (keywords) to string commands for bash.
     :exec-dir - a directory path (file) from where runner should be
-                exectuted. Defaults to nil which resolves to the current dir"
+                executed. Defaults to nil which resolves to the current dir"
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
