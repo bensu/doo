@@ -7,6 +7,11 @@ console.debug = print;
 console.warn = print;
 console.log = print;
 
+// This enables some applications that would otherwise not work
+// and gives better error messages than others.
+
+var document = {};
+
 var setTimeout, clearTimeout, setInterval, clearInterval;
 
 (function () {
