@@ -77,7 +77,8 @@
                   (update-in [:compiler] correct-main)))
           builds)
 
-        (vector? builds) (mapv #(update-in % [:compiler] correct-main) builds)
+        (or (vector? builds) (seq? builds))
+        (mapv #(update-in % [:compiler] correct-main) builds)
 
         :else (throw (Exception. ":cljsbuild :builds needs to be either a vector or a map"))))))
 
