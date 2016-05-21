@@ -70,7 +70,7 @@
                 (.destroy process))))))
 
 
-(def terminal-notify true)
+(def terminal-notify false)
 (def always-notify false)
 
 (defn- escape [message]
@@ -94,11 +94,13 @@
     (condp re-find s
       #"0 failures, 0 errors" "Ok"
       #"0 errors" "Failed"
-      #"0 failures" "Errors")))
+      #"0 failures" "Errors"
+      s)))
 
-(defn handle-notifications [prev new]
-  (let [new-status (notify-title new)
-        old-status (notify-title prev)
+(defn handle-notifications [out]
+  (let [new (reset! last-run (get-assertion-string @out))
+        new-status (notify-title new)
+        old-status (notify-title @last-run)
         changed (not= new-status old-status)]
     (when (or always-notify changed)
       (notify new-status new))))
@@ -110,9 +112,7 @@
   ([cmd opts]
    (let [proc (exec! cmd (:exec-dir opts))
          {:keys [out err]} (capture-process! proc opts)
-         exit-code (.waitFor proc)
-         prev @last-run
-         new (reset! last-run (get-assertion-string @out))]
+         exit-code (.waitFor proc)]
      (when terminal-notify
-       (handle-notifications prev new))
+       (handle-notifications out))
      {:exit exit-code :out @out :err @err})))
