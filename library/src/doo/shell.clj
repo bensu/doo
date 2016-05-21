@@ -1,7 +1,9 @@
 (ns doo.shell
   "Rewrite of clojure.java.shell to have access to the output stream."
   (:require [clojure.java.io :as io]
-            [doo.utils :as utils])
+            [doo.utils :as utils]
+            [clojure.string :as str]
+            [clojure.java.shell :as shell])
   (:import (java.io StringWriter BufferedReader InputStreamReader File)
            (java.nio.charset Charset)))
 
@@ -68,6 +70,40 @@
                 (println msg)
                 (.destroy process))))))
 
+
+(def terminal-notify true)
+(def always-notify false)
+
+(defn- escape [message]
+  (str/replace message "[" "\\["))
+
+(defn- notify [title-postfix message]
+  (try
+    (shell/sh "terminal-notifier" "-message" (escape message) "-title" (str "AutoExpect - " (escape title-postfix)))
+    (catch Exception ex
+      (println "Problem communicating with notification center, please make sure you installed terminal-notifier (e.g. using 'brew install terminal-notifier'), exception:" (.getMessage ex)))))
+
+
+(def last-run (atom nil))
+
+(defn get-assertion-string [s]
+  (when s
+    (re-find #"Ran \d+ tests containing.+" s)))
+
+(defn notify-title [s]
+  (when s
+    (condp re-find s
+      #"0 failures, 0 errors" "Ok"
+      #"0 errors" "Failed"
+      #"0 failures" "Errors")))
+
+(defn handle-notifications [prev new]
+  (let [new-status (notify-title new)
+        old-status (notify-title prev)
+        changed (not= new-status old-status)]
+    (when (or always-notify changed)
+      (notify new-status new))))
+
 (defn sh
   "Rewrite of clojure.java.shell/sh that writes output to console,
    as it happens by default."
@@ -75,5 +111,9 @@
   ([cmd opts]
    (let [proc (exec! cmd (:exec-dir opts))
          {:keys [out err]} (capture-process! proc opts)
-         exit-code (.waitFor proc)]
+         exit-code (.waitFor proc)
+         prev @last-run
+         new (reset! last-run (get-assertion-string @out))]
+     (when terminal-notify
+       (handle-notifications prev new))
      {:exit exit-code :out @out :err @err})))
