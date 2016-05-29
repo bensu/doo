@@ -98,19 +98,25 @@
 (defn default? [cli-opt]
   (or (nil? cli-opt) (= :default cli-opt)))
 
-(defn watch-mode? [arg]
-  (contains? #{"auto" "once"} arg))
+(defn optional-args? [arg]
+  (contains? #{"auto" "once" "notify" "change-only"} arg))
+
+(defn parse-notify [args]
+  (when (some #{"notify"} args)
+    (or (keyword (some #{"change-only"} args)) :always)))
 
 (defn args->cli
   "Parses & validates the cli arguments into a consistent format"
   [args]
-  (let [[js-env build-id & xs] (remove watch-mode? args)]
+  (let [[js-env build-id & xs] (remove optional-args? args)
+        notify (parse-notify args)]
     (assert (empty? xs)
       (str "We couldn't parse " xs " as a watch-mode,"
         " only auto or once are supported"))
     {:alias (keyword (or js-env "default"))
      :build (or build-id :default)
-     :watch-mode (keyword (or (first (filter watch-mode? args)) "auto"))}))
+     :notify notify
+     :watch-mode (keyword (or (first (filter #{"auto" "once"} args)) "auto"))}))
 
 (defn cli->js-envs
   "Returns the js-envs where doo should be run from the cli arguments
@@ -196,7 +202,7 @@ under :doo in the project.clj.\n")
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
    (let [{:keys [watch-mode] :as cli} (args->cli args)
-         opts (:doo project)
+         opts (assoc (:doo project) :notify (:notify cli))
          js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
          project' (-> project
