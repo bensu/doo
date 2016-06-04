@@ -4,10 +4,12 @@
   "description": "",
   "dependencies": {},
   "devDependencies": {
-    "karma": "^0.13.14",
-    "karma-chrome-launcher": "^0.2.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^1.0.1",
     "karma-cljs-test": "^0.1.0",
-    "karma-firefox-launcher": "^0.1.6",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-opera-launcher": "^1.0.0",
+    "karma-safari-launcher": "^1.0.0",
     "slimerjs": "^0.9.6"
   }
 }
