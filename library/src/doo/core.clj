@@ -29,6 +29,10 @@
        (resolve-alias :slimer {}) => [:slimer]
        (resolve-alias :something {}) => []"
   [alias alias-table]
+  {:pre [(keyword? alias) (map? alias-table)]}
+  (assert (every? vector? (vals alias-table))
+          (format "The values for the alias tables must be vectors but at least one of them, %s, is not.\n\nEx: {:default [:firefox]}"
+                  (first (remove vector? (vals alias-table)))))
   (let [alias-table (merge default-aliases alias-table)
         stack-number (atom 0)]
     (letfn [(resolve-alias' [alias]
