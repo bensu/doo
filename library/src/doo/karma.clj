@@ -29,7 +29,9 @@
    :karma-phantom {:plugin (karma-plugin-name "phantomjs")
                    :name   "PhantomJS"}
    :karma-slimer  {:plugin (karma-plugin-name "slimerjs")
-                   :name   "SlimerJS"}})
+                   :name   "SlimerJS"}
+   :electron      {:plugin (karma-plugin-name "electron")
+                   :name   "Electron"}})
 
 (def envs (set (keys karma-envs)))
 
