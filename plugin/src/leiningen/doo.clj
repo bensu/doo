@@ -227,7 +227,9 @@ under :doo in the project.clj.\n")
                       ;; Karma needs to be installed after
                       ;; compilation, so that the files to be included exist
                       (swap! karma-on?# not)
-                      (doo.core/install! karma-envs# compiler# ~opts))
+                      (doo.core/install! karma-envs# compiler# ~opts)
+                      ;; We wait for the Karma server to be setup before we kick off tests
+                      (Thread/sleep 1000))
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
                       (doo.core/run-script js-env# compiler# ~opts))
