@@ -41,6 +41,7 @@
   (into-array String xs))
 
 (defn exec! [cmd ^File exec-dir]
+  {:pre [(some? cmd)]}
   (let [windows? (= :windows (utils/get-os))
         windows-cmd (when windows? ["cmd" "/c"])
         command-arr (str-array (concat windows-cmd cmd))]
