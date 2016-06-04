@@ -46,7 +46,8 @@
     (are [js-env] (not (doo/valid-js-env? js-env))
          :spidermonkey :browser :browsers :v8 :d8 :something-else)
     (are [js-env] (doo/valid-js-env? js-env)
-         :rhino :nashorn :slimer :phantom :node :chrome :safari :firefox :opera :ie))
+      :rhino :nashorn :slimer :phantom :node
+      :chrome :safari :firefox :opera :ie :karma-phantom))
   (testing "We can resolve aliases"
     (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
          :phantom [:phantom]
@@ -115,12 +116,14 @@
                                      (doo/run-script compiler-opts' doo-opts)
                                      doo-ok?)))
                            (every? true?)))
-           {} [:phantom :chrome :firefox]
+           {} [:phantom :chrome :firefox :karma-phantom]
            {:target :nodejs} [:node]
-           {:optimizations :whitespace} [:rhino :nashorn :phantom :chrome :firefox]
+           {:optimizations :whitespace} [:rhino :nashorn :phantom
+                                         :chrome :firefox :karma-phantom]
            {:optimizations :simple :target :nodejs} [:node]
            {:optimizations :advanced :target :nodejs} [:node]
-           {:optimizations :advanced} [:phantom :rhino :nashorn :chrome :firefox]))))
+           {:optimizations :advanced} [:phantom :rhino :nashorn
+                                       :chrome :firefox :karma-phantom]))))
 
 (deftest paths-with-options
   (testing "We can pass paths with options"
