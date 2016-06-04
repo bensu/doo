@@ -27,7 +27,9 @@
    :ie            {:plugin (karma-plugin-name "ie")
                    :name   "IE"}
    :karma-phantom {:plugin (karma-plugin-name "phantomjs")
-                   :name   "PhantomJS"}})
+                   :name   "PhantomJS"}
+   :karma-slimer  {:plugin (karma-plugin-name "slimerjs")
+                   :name   "SlimerJS"}})
 
 (def envs (set (keys karma-envs)))
 
