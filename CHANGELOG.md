@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased - 2015-12-05
+## Unreleased - 2016-06-01
+
+### Changed
+- Wait 1sec after starting the Karma server so that the tests are run right after starting auto
 
 ### Added
 - `:debug` option to `doo.core/run-script`.
