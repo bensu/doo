@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Wait 1sec after starting the Karma server so that the tests are run right after starting auto
 
 ### Added
+- Karma PhantomJS, Karma SlimerJS, and Karma Electron as new runners
 - `:debug` option to `doo.core/run-script`.
 - Support for Chrome Canary from Karma.
 - Add AppVeyor CI.
