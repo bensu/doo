@@ -100,7 +100,7 @@
   (zero? (:exit doo-output)))
 
 (deftest integration
-  (testing "We can compile a cljs project"
+  (testing "We can compile a cljs project and run the script"
     (let [doo-opts {:verbose false
                     :paths {:slimer "../example/node_modules/.bin/slimerjs"}}
           compiler-opts {:output-to "out/testable.js"
@@ -108,22 +108,18 @@
                          :main 'example.runner
                          :optimizations :none}
           srcs (cljs/inputs "../example/src" "../example/test")]
-      (are [opts envs] (let [compiler-opts' (merge compiler-opts opts)]
-                         (cljs/build srcs compiler-opts')
-                         (->> envs
-                           (mapv (fn [env]
-                                   (-> env
-                                     (doo/run-script compiler-opts' doo-opts)
-                                     doo-ok?)))
-                           (every? true?)))
-           {} [:phantom :chrome :firefox :karma-phantom]
-           {:target :nodejs} [:node]
-           {:optimizations :whitespace} [:rhino :nashorn :phantom
-                                         :chrome :firefox :karma-phantom]
-           {:optimizations :simple :target :nodejs} [:node]
-           {:optimizations :advanced :target :nodejs} [:node]
-           {:optimizations :advanced} [:phantom :rhino :nashorn
-                                       :chrome :firefox :karma-phantom]))))
+      (doseq [[opts envs] [[{} [:phantom :chrome :firefox :karma-phantom]]
+                           [{:target :nodejs} [:node]]
+                           [{:optimizations :whitespace} [:rhino :nashorn :phantom
+                                                          :chrome :firefox :karma-phantom]]
+                           [{:optimizations :simple :target :nodejs} [:node]]
+                           [{:optimizations :advanced :target :nodejs} [:node]]
+                           [{:optimizations :advanced} [:phantom :rhino :nashorn
+                                                        :chrome :firefox :karma-phantom]]]]
+        (let [compiler-opts' (merge compiler-opts opts)]
+          (cljs/build srcs compiler-opts')
+          (doseq [env envs]
+            (is (doo-ok? (doo/run-script env compiler-opts' doo-opts)))))))))
 
 (deftest paths-with-options
   (testing "We can pass paths with options"
@@ -137,5 +133,5 @@
       (is (doo-ok? (doo/run-script :phantom compiler-opts doo-opts)))
       (testing "but there are problems with bad options"
         (is (not (doo-ok? (->> {:phantom "phantomjs --bad-opts=asdfa"}
-                            (assoc doo-opts :paths)
-                            (doo/run-script :phantom compiler-opts)))))))))
+                               (assoc doo-opts :paths)
+                               (doo/run-script :phantom compiler-opts)))))))))
