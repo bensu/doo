@@ -171,7 +171,7 @@ Some requirements:
                        :target :nodejs}}
 ```
 
-### Karma (experimental)
+### Karma
 
 #### Installation
 
@@ -264,6 +264,36 @@ which makes it harder for new contributors to setup.
 > In some systems (e.g. Ubuntu) you might need to run all npm commands
 > as root:
 > 	sudo npm install karma --save-dev
+
+### Karma Phantom and Karma Slimer (experimental)
+
+To avoid starting a new Slimer/Phantom on every run while using `auto`, we can use
+Slimer/Phantom through Karma.
+
+Install any of the launchers you'll use:
+
+    npm install karma-phantomjs-launcher --save-dev
+    npm install karma-slimerjs-launcher --save-dev
+
+and call
+
+    lein doo karma-phantom test auto
+    lein doo karma-slimer test auto
+
+If you are using `once`, the regular `phantom`/`slimer` runners are recommended.
+
+> Note: karma-slimer sometimes fails to close the running Slimer instance,
+> which you need to close manually.
+
+### Electron (experimental)
+
+After installing [Electron](http://electron.atom.io/releases/) install the launcher with
+
+    npm install karma-electron-launcher --save-dev
+
+and call
+
+    lein doo electron test
 
 ## Paths
 
