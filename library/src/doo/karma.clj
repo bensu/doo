@@ -1,6 +1,7 @@
 (ns doo.karma
   (:import java.io.File)
-  (:require [clojure.string :as str]
+  (:require [clojure.set :as set]
+            [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.data.json :as json]
             [doo.shell :as shell]
@@ -12,7 +13,7 @@
 (defn- karma-plugin-name [name]
   (str "karma-" name "-launcher"))
 
-(def browser-envs
+(def karma-envs
   {:chrome        {:plugin (karma-plugin-name "chrome")
                    :name   "Chrome"}
    :chrome-canary {:plugin (karma-plugin-name "chrome")
@@ -24,12 +25,14 @@
    :opera         {:plugin (karma-plugin-name "opera")
                    :name   "Opera"}
    :ie            {:plugin (karma-plugin-name "ie")
-                   :name   "IE"}})
+                   :name   "IE"}
+   :karma-phantom {:plugin (karma-plugin-name "phantomjs")
+                   :name   "PhantomJS"}})
 
-(def envs (set (keys browser-envs)))
+(def envs (set (keys karma-envs)))
 
 (defn env? [js]
-  (contains? browser-envs js))
+  (contains? envs js))
 
 ;; In Karma all paths (including config.files) are normalized to
 ;; absolute paths using the basePath.
@@ -47,10 +50,10 @@
 ;; https://github.com/clojure/clojurescript/blob/master/src/main/clojure/cljs/closure.clj#L1152
 
 (defn js-env->plugin [js-env]
-  (get-in browser-envs [js-env :plugin]))
+  (get-in karma-envs [js-env :plugin]))
 
 (defn js-env->browser [js-env]
-  (get-in browser-envs [js-env :name]))
+  (get-in karma-envs [js-env :name]))
 
 (defn ->karma-opts [js-envs compiler-opts]
   (letfn [(->out-dir [p]
