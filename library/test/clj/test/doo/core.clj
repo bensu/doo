@@ -47,7 +47,7 @@
          :spidermonkey :browser :browsers :v8 :d8 :something-else)
     (are [js-env] (doo/valid-js-env? js-env)
       :rhino :nashorn :slimer :phantom :node
-      :chrome :safari :firefox :opera :ie
+      :chrome :safari :firefox :opera :ie :electron
       :karma-phantom :karma-slimer))
   (testing "We can resolve aliases"
     (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
@@ -109,16 +109,16 @@
                          :main 'example.runner
                          :optimizations :none}
           srcs (cljs/inputs "../example/src" "../example/test")]
-      (doseq [[opts envs] [[{} [:phantom :slimer :chrome :firefox
+      (doseq [[opts envs] [[{} [:phantom :slimer :chrome :firefox :electron
                                 :karma-phantom :karma-slimer]]
                            [{:target :nodejs} [:node]]
                            [{:optimizations :whitespace} [:rhino :nashorn :phantom :slimer
-                                                          :chrome :firefox
+                                                          :chrome :firefox :electron
                                                           :karma-phantom :karma-slimer]]
                            [{:optimizations :simple :target :nodejs} [:node]]
                            [{:optimizations :advanced :target :nodejs} [:node]]
                            [{:optimizations :advanced} [:phantom :slimer :rhino :nashorn
-                                                        :chrome :firefox
+                                                        :chrome :firefox :electron
                                                         :karma-phantom :karma-slimer]]]]
         (let [compiler-opts' (merge compiler-opts opts)]
           (cljs/build srcs compiler-opts')
