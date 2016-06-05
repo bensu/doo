@@ -118,7 +118,7 @@
   [{cli-alias :alias} {alias-map :alias}]
   (assert (not (and (default? cli-alias) (not (contains? alias-map :default))))
     "\n
- To call lein doo without a js-env you need to a :default :alias in
+ To call lein doo without a js-env you need a :default :alias in
  your project.clj and a default build. For example:
 
    {:doo {:build {:source-paths [\"src\" \"test\"]}
@@ -187,15 +187,16 @@ Usage:
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode: either auto (default) or once\n
 
-All arguments are optional provided there is a corresponding default
-under :doo in the project.clj.\n")
+All arguments are optional provided there is a corresponding default under :doo
+in project.clj.\n")
 
 (defn ^{:doc help-string}
   doo
-  ([project] (lmain/info help-string))
+  ([project]
+   (doo project "default" :default "auto"))
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
-   (let [{:keys [watch-mode] :as cli} (args->cli args)
+   (let [{:keys [alias watch-mode] :as cli} (args->cli args)
          opts (:doo project)
          js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
