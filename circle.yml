@@ -85,17 +85,17 @@ test:
     - cd example && lein doo node node-none-fail once && exit 1 || exit 0
     - cd example && lein doo node node-advanced-fail once && exit 1 || exit 0
     # Karma Phantom
-    - cd example && lein doo karma-phantom test once && exit 1 || exit 0
-    - cd example && lein doo karma-phantom advanced once && exit 1 || exit 0
-    - cd example && lein doo karma-phantom none-test once && exit 1 || exit 0
+    - cd example && lein doo karma-phantom test-fail once && exit 1 || exit 0
+    - cd example && lein doo karma-phantom advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo karma-phantom none-test-fail once && exit 1 || exit 0
     # Karma Slimer
-    - cd example && lein doo karma-slimer test once && exit 1 || exit 0
-    - cd example && lein doo karma-slimer advanced once && exit 1 || exit 0
-    - cd example && lein doo karma-slimer none-test once && exit 1 || exit 0
+    - cd example && lein doo karma-slimer test-fail once && exit 1 || exit 0
+    - cd example && lein doo karma-slimer advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo karma-slimer none-test-fail once && exit 1 || exit 0
     # Electron
-    - cd example && lein doo electron test once && exit 1 || exit 0
-    - cd example && lein doo electron advanced once && exit 1 || exit 0
-    - cd example && lein doo electron none-test once && exit 1 || exit 0
+    - cd example && lein doo electron test once-fail && exit 1 || exit 0
+    - cd example && lein doo electron advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo electron none-test-fail once && exit 1 || exit 0
     # Boot
     - cd example && boot add-failures test-cljs -e phantom -x && exit 1 || exit 0
     - cd example && boot add-failures test-cljs -e phantom -x -O advanced && exit 1 || exit 0
