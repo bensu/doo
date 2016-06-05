@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Wait 1sec after starting the Karma server so that the tests are run right after starting auto
+- Fixed `lein doo` with no arguments
 
 ### Added
 - `:debug` option to `doo.core/run-script`.
