@@ -18,6 +18,11 @@ newer.
 
 ### Plugin
 
+All arguments are optional provided there is a corresponding default under `:doo`
+in `project.clj`:
+
+    lein doo
+
     lein doo {js-env}
 
     lein doo {js-env} {build-id}
