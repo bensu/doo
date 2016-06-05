@@ -104,13 +104,12 @@
 (defn args->cli
   "Parses & validates the cli arguments into a consistent format"
   [args]
-  {:post [(every? keyword? (vals %))]}
   (let [[js-env build-id & xs] (remove watch-mode? args)]
     (assert (empty? xs)
       (str "We couldn't parse " xs " as a watch-mode,"
         " only auto or once are supported"))
     {:alias (keyword (or js-env "default"))
-     :build (keyword (or build-id :default))
+     :build (or build-id :default)
      :watch-mode (keyword (or (first (filter watch-mode? args)) "auto"))}))
 
 (defn cli->js-envs
@@ -194,7 +193,7 @@ in project.clj.\n")
 (defn ^{:doc help-string}
   doo
   ([project]
-   (doo project "default" "default" "auto"))
+   (doo project "default" :default "auto"))
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
    (let [{:keys [alias watch-mode] :as cli} (args->cli args)
