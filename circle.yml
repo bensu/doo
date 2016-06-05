@@ -57,6 +57,9 @@ test:
     - cd example && lein doo electron test once
     - cd example && lein doo electron advanced once
     - cd example && lein doo electron none-test once
+    - cd example && lein doo electron electron-test once
+    - cd example && lein doo electron electron-advanced once
+    - cd example && lein doo electron electron-none once
     # Boot
     - cd example && boot add-tests test-cljs -e phantom -x
     - cd example && boot add-tests test-cljs -e phantom -x -O advanced
