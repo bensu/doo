@@ -188,7 +188,7 @@ Usage:
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode: either auto (default) or once\n
 
-build-id is optional provided there is a corresponding default under :doo
+All arguments are optional provided there is a corresponding default under :doo
 in project.clj.\n")
 
 (defn ^{:doc help-string}
