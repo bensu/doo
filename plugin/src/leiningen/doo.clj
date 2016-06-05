@@ -104,12 +104,13 @@
 (defn args->cli
   "Parses & validates the cli arguments into a consistent format"
   [args]
+  {:post [(every? keyword? (vals %))]}
   (let [[js-env build-id & xs] (remove watch-mode? args)]
     (assert (empty? xs)
       (str "We couldn't parse " xs " as a watch-mode,"
         " only auto or once are supported"))
     {:alias (keyword (or js-env "default"))
-     :build (or build-id :default)
+     :build (keyword (or build-id :default))
      :watch-mode (keyword (or (first (filter watch-mode? args)) "auto"))}))
 
 (defn cli->js-envs
@@ -118,7 +119,7 @@
   [{cli-alias :alias} {alias-map :alias}]
   (assert (not (and (default? cli-alias) (not (contains? alias-map :default))))
     "\n
- To call lein doo without a js-env you need to a :default :alias in
+ To call lein doo without a js-env you need a :default :alias in
  your project.clj and a default build. For example:
 
    {:doo {:build {:source-paths [\"src\" \"test\"]}
@@ -192,10 +193,11 @@ in project.clj.\n")
 
 (defn ^{:doc help-string}
   doo
-  ([project] (lmain/info help-string))
+  ([project]
+   (doo project "default" "default" "auto"))
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
-   (let [{:keys [watch-mode] :as cli} (args->cli args)
+   (let [{:keys [alias watch-mode] :as cli} (args->cli args)
          opts (:doo project)
          js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
