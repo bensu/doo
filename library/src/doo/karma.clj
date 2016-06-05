@@ -72,6 +72,8 @@
      ;; base path
      ;; WARNING: the order of the files is important, don't change it.
      "files" (concat
+               (when (some #{:electron} js-envs)
+                [(utils/runner-path! shell/base-dir :electron-shims "electron-shims.js")])
                (when (= :none (:optimizations compiler-opts))
                  (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
                [(:output-to compiler-opts)
