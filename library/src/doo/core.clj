@@ -87,22 +87,7 @@
 ;; Sadly, we can't just point Phantom to the file inside the jar
 ;; http://stackoverflow.com/questions/25307667/launching-phantomjs-as-a-local-resource-when-using-an-executable-jar
 
-;; TODO: runner arg is not necessary
-(defn runner-path!
-  "Creates a temp file for the given runner resource file."
-  ([runner filename]
-   (runner-path! runner filename {:common? false}))
-  ([runner filename {:keys [common?]}]
-   (letfn [(slurp-resource [res]
-             (slurp (io/resource (str shell/base-dir res))))
-           (add-common [file]
-             (when common?
-               (spit file (slurp-resource "common.js"))))]
-     (.getAbsolutePath
-       (doto (File/createTempFile (name runner) ".js")
-         .deleteOnExit
-         add-common
-         (spit (slurp-resource filename) :append true))))))
+(def runner-path! (partial utils/runner-path! shell/base-dir))
 
 (def default-command-table
   {:phantom "phantomjs"
