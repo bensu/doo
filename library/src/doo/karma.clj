@@ -33,10 +33,14 @@
    :electron      {:plugin (karma-plugin-name "electron")
                    :name   "Electron"}})
 
+(defn custom-launchers [opts]
+  (-> opts :karma :launchers))
+
 (def envs (set (keys karma-envs)))
 
-(defn env? [js]
-  (contains? envs js))
+(defn env? [js opts]
+  (or (contains? karma-envs js)
+      (contains? (custom-launchers opts) js)))
 
 ;; In Karma all paths (including config.files) are normalized to
 ;; absolute paths using the basePath.
@@ -53,34 +57,40 @@
 ;; expected by the none shim
 ;; https://github.com/clojure/clojurescript/blob/master/src/main/clojure/cljs/closure.clj#L1152
 
-(defn js-env->plugin [js-env]
-  (get-in karma-envs [js-env :plugin]))
+(defn- karma-env-lookup [js-env custom-launchers]
+  (or (get custom-launchers js-env)
+      (get karma-envs js-env)))
 
-(defn js-env->browser [js-env]
-  (get-in karma-envs [js-env :name]))
+(defn js-env->plugin [js-env custom-launchers]
+  (:plugin (karma-env-lookup js-env custom-launchers)))
 
-(defn ->karma-opts [js-envs compiler-opts]
+(defn js-env->browser [js-env custom-launchers]
+  (:name (karma-env-lookup js-env custom-launchers)))
+
+(defn ->karma-opts [js-envs compiler-opts opts]
   (letfn [(->out-dir [p]
             (str (:output-dir compiler-opts) p))]
-    {"frameworks" ["cljs-test"]
-     ;; basePath should be the path from where the compiler thinks the
-     ;; resources will be served: :asset-path or :output-dir
-     "basePath" (System/getProperty "user.dir")
-     "plugins" (into ["karma-cljs-test"] (mapv js-env->plugin js-envs))
-     "browsers" (mapv js-env->browser js-envs)
-     ;; All this assumes that the output-dir is relative to the user.dir
-     ;; base path
-     ;; WARNING: the order of the files is important, don't change it.
-     "files" (concat
+    (merge
+     {"frameworks" ["cljs-test"]
+      ;; basePath should be the path from where the compiler thinks the
+      ;; resources will be served: :asset-path or :output-dir
+      "basePath" (System/getProperty "user.dir")
+      "plugins" (into ["karma-cljs-test"] (mapv #(js-env->plugin % (custom-launchers opts)) js-envs))
+      "browsers" (mapv #(js-env->browser % (custom-launchers opts)) js-envs)
+      ;; All this assumes that the output-dir is relative to the user.dir
+      ;; base path
+      ;; WARNING: the order of the files is important, don't change it.
+      "files" (concat
                (when (= :none (:optimizations compiler-opts))
                  (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
                [(:output-to compiler-opts)
                 {"pattern" (->out-dir "/**") "included" false}
                 {"pattern" (->out-dir "/**/*.js") "included" false}
                 {"pattern" (->out-dir "/*.js") "included" false}])
-     "autoWatch" false
-     "client" {"args" ["doo.runner.run_BANG_"]}
-     "singleRun" true}))
+      "autoWatch" false
+      "client" {"args" ["doo.runner.run_BANG_"]}
+      "singleRun" true}     
+     (get-in opts [:karma :config]))))
 
 (defn write-var [writer var-name var-value]
   (.write writer (str "var " var-name " = "))
@@ -93,7 +103,7 @@
   [js-envs compiler-opts opts]
   {:pre [(some? (:output-dir compiler-opts))]}
   (let [karma-tmpl (slurp (io/resource (str shell/base-dir "karma.conf.js")))
-        karma-opts (cond-> (->karma-opts js-envs compiler-opts)
+        karma-opts (cond-> (->karma-opts js-envs compiler-opts opts)
                      (:install? (:karma opts)) (assoc "singleRun" false))
         f (File/createTempFile "karma_conf" ".js")]
     (.deleteOnExit f)

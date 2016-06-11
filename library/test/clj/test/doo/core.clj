@@ -43,14 +43,14 @@
 
 (deftest js-env
   (testing "We know which js-envs we support"
-    (are [js-env] (not (doo/valid-js-env? js-env))
+    (are [js-env] (not (doo/valid-js-env? js-env {}))
          :spidermonkey :browser :browsers :v8 :d8 :something-else)
-    (are [js-env] (doo/valid-js-env? js-env)
+    (are [js-env] (doo/valid-js-env? js-env {:custom-chrome {:name "..."}})
       :rhino :nashorn :slimer :phantom :node
       :chrome :safari :firefox :opera :ie :electron
-      :karma-phantom :karma-slimer))
+      :karma-phantom :karma-slimer :custom-chrome))
   (testing "We can resolve aliases"
-    (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
+    (are [alias js-envs] (= (doo/resolve-alias alias {} {}) js-envs)
          :phantom [:phantom]
          :slimer [:slimer]
          :node [:node]
@@ -61,7 +61,7 @@
     (let [alias-map {:browsers [:chrome :firefox]
                      :engines [:rhino :nashorn]
                      :all [:browsers :engines]}]
-      (are [alias js-envs] (= (doo/resolve-alias alias alias-map) js-envs)
+      (are [alias js-envs] (= (doo/resolve-alias alias alias-map {}) js-envs)
            :browsers [:chrome :firefox]
            :engines [:rhino :nashorn]
            :all [:chrome :firefox :rhino :nashorn]
@@ -72,11 +72,17 @@
            :nashorn [:nashorn]
            :headless [:slimer :phantom]
            :not-an-alias [])))
+  (testing "we resolve custom karma launchers"
+    (let [alias-map {:all-chrome [:chrome :chrome-no-security]}
+          karma-launchers {:chrome-no-security {:plugin "karma-chrome-launcher" :name "Chrome_no_security"}}]
+      (are [alias js-envs] (= (doo/resolve-alias alias alias-map karma-launchers) js-envs)
+        :all-chrome [:chrome :chrome-no-security]
+        :chrome-no-security [:chrome-no-security])))
   (testing "we warn against circular dependencies"
     (is (thrown-with-msg? java.lang.Exception #"circular"
           (doo/resolve-alias :all {:browsers [:chrome :engines]
                                    :engines [:rhino :nashorn :browsers]
-                                   :all [:browsers :engines]})))))
+                                   :all [:browsers :engines]} {})))))
 
 (deftest resolve-path
   (testing "When given a js-env, it gets the correct path"

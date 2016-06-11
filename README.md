@@ -368,6 +368,23 @@ default build in your `project.clj`:
                         :main example.runner}}]}
 ```
 
+## Custom Karma Launchers
+
+To add custom Karma launchers  (eg. as described in the [Chrome Karma Plugin](https://github.com/karma-runner/karma-chrome-launcher) you can add the following config entries to your `project.clj` as shown in the example below:
+
+The plugin in the :launchers map should match an installed karma plugin and the name should match a Karma launcher (possibly a custom one as shown in the following example)
+
+Any values in the :config key will be converted to json and merged with the karma.conf.js configuration used to launch Karma.
+
+You will then be able to run `lein doo chrome-no-security` from the comand line.
+
+```clj
+:doo {:karma {:launchers {:chrome-no-security {:plugin "karma-chrome-launcher" :name "Chrome_no_security"}}
+              :config {"customLaunchers"
+                         {"Chrome_no_security" {"base" "Chrome"
+                                                "flags" ["--disable-web-security"]}}}}
+```
+
 ## Travis CI
 
 To run on [travis](https://travis-ci.org/) there is a sample `.travis.yml` file in the example project: [example/.travis.yml](example/.travis.yml)

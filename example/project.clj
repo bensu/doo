@@ -1,4 +1,4 @@
-(defproject lein-doo-example "0.1.7-SNAPSHOT"
+(defproject lein-doo-example "0.1.8-SNAPSHOT"
   :description "Project to test lein-doo. Do not take it as an example"
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"
@@ -9,7 +9,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
 
   :plugins [[lein-cljsbuild "1.0.5"]
-            [lein-doo "0.1.7-SNAPSHOT"]]
+            [lein-doo "0.1.8-SNAPSHOT"]]
 
   :source-paths ["src" "test" "failing-tests"]
 
@@ -19,7 +19,11 @@
         :paths {:slimer "./node_modules/.bin/slimerjs"}
         :alias {:default [:slimer]
                 :browsers [:chrome :firefox]
-                :all [:browsers :headless]}}
+                :all [:browsers :headless]}
+        :karma {:launchers {:chrome-no-security {:plugin "karma-chrome-launcher" :name "Chrome_no_security"}}
+                :config {"customLaunchers"
+                         {"Chrome_no_security" {"base" "Chrome"
+                                                "flags" ["--disable-web-security"]}}}}}
 
   :jvm-opts ["-Xmx1g"]
 
