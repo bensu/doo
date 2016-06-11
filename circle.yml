@@ -5,6 +5,13 @@ machine:
 dependencies:
   pre:
     - sudo apt-get update; sudo apt-get install rhino
+    - wget https://github.com/laurentj/slimerjs/archive/RELEASE_0.9.6.tar.gz
+    - tar xfvz RELEASE_0.9.6.tar.gz
+    - cd slimerjs-RELEASE_0.9.6/
+    - ./buildpackage.sh
+    - mkdir - /tmp/slimerjs/
+    - cp -p _dist/slimerjs-0.9.6-linux-x86_64.tar.bz2 /tmp/slimerjs/
+    - cd ~
     - wget https://github.com/boot-clj/boot-bin/releases/download/2.4.2/boot.sh
     - mv boot.sh boot && chmod a+x boot && sudo mv boot /usr/local/bin
     - cd library && lein deps
