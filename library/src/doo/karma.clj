@@ -75,7 +75,6 @@
       ;; basePath should be the path from where the compiler thinks the
       ;; resources will be served: :asset-path or :output-dir
       "basePath" (System/getProperty "user.dir")
-      "plugins" (into ["karma-cljs-test"] (mapv #(js-env->plugin % (custom-launchers opts)) js-envs))
       "browsers" (mapv #(js-env->browser % (custom-launchers opts)) js-envs)
       ;; All this assumes that the output-dir is relative to the user.dir
       ;; base path
@@ -90,7 +89,10 @@
       "autoWatch" false
       "client" {"args" ["doo.runner.run_BANG_"]}
       "singleRun" true}     
-     (get-in opts [:karma :config]))))
+     (get-in opts [:karma :config])
+     {"plugins" (into ["karma-cljs-test"]
+                      (concat (mapv #(js-env->plugin % (custom-launchers opts)) js-envs)
+                              (get-in opts [:karma :config "plugins"])))})))
 
 (defn write-var [writer var-name var-value]
   (.write writer (str "var " var-name " = "))
