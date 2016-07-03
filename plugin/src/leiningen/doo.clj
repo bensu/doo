@@ -217,7 +217,7 @@ in project.clj.\n")
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      ;; Important to add sources to the classpath
      (run-local-project (add-sources project' source-paths)
-       '(require 'cljs.build.api 'doo.core 'doo.karma)
+       '(require 'cljs.build.api 'doo.core 'doo.karma 'doo.notifier)
        `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# compiler#))
@@ -239,7 +239,8 @@ in project.clj.\n")
                       (Thread/sleep 1000))
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
-                      (doo.core/run-script js-env# compiler# ~opts))
+                      (let [r# (doo.core/run-script js-env# compiler# ~opts)]
+                        (doo.notifier/handle-notifications (:out r#) ~opts)))
                     (when @karma-on?#
                       (apply doo.core/print-envs karma-envs#)
                       (doo.core/karma-run! ~opts))))))
