@@ -1,6 +1,7 @@
 (ns doo.shell
   "Rewrite of clojure.java.shell to have access to the output stream."
   (:require [clojure.java.io :as io]
+            [doo.notifier :as notifier]
             [doo.utils :as utils])
   (:import (java.io StringWriter BufferedReader InputStreamReader File)
            (java.nio.charset Charset)))
@@ -76,4 +77,5 @@
    (let [proc (exec! cmd (:exec-dir opts))
          {:keys [out err]} (capture-process! proc opts)
          exit-code (.waitFor proc)]
+     (notifier/handle-notifications out opts)
      {:exit exit-code :out @out :err @err})))

@@ -29,11 +29,18 @@ in `project.clj`:
 
     lein doo {js-env} {build-id} {watch-mode}
 
+    lein doo {js-env} {build-id} {watch-mode} {notify} {change-only}
+
 * `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
 `slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it
 is planned to support `v8`, `jscore`, and others.
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
+* `notify` (optional): specifies that
+  [terminal notifier](https://github.com/julienXX/terminal-notifier)
+  should be used to notify test run
+* `change-only` (optional): when `notify?` will only notify when there is
+  a change in test status, e.g. from `OK` to `Failed`.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
 
 ```clj
