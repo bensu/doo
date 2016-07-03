@@ -8,6 +8,7 @@
   (str/replace message "[" "\\["))
 
 (defn- notify [title-postfix message]
+  {:pre [(string? title-postfix) (string? message)]}
   (try
     (shell/sh "terminal-notifier" "-message" (escape message) "-title" (str "doo - " (escape title-postfix)))
     (catch Exception ex
@@ -28,7 +29,7 @@
 (defn handle-notifications [out opts]
   (when (:notify opts)
     (let [old-status (notify-title @last-run)
-          new (reset! last-run (get-assertion-string @out))
+          new (reset! last-run (get-assertion-string out))
           new-status (notify-title new)
           changed (not= new-status old-status)]
       (when (or changed (= :always (:notify opts)))
