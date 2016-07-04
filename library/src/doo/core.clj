@@ -29,7 +29,7 @@
        (resolve-alias :slimer {}) => [:slimer]
        (resolve-alias :something {}) => []"
   [alias alias-table]
-  {:pre [(keyword? alias) (map? alias-table)]}
+  {:pre [(keyword? alias) (or (nil? alias-table) (map? alias-table))]}
   (assert (every? vector? (vals alias-table))
           (format "The values for the alias tables must be vectors but at least one of them, %s, is not.\n\nEx: {:default [:firefox]}"
                   (first (remove vector? (vals alias-table)))))
