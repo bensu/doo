@@ -115,9 +115,9 @@
 (defn cli->js-envs
   "Returns the js-envs where doo should be run from the cli arguments
    and the project.clj options"
-  [{cli-alias :alias} {alias-map :alias}]
+  [{cli-alias :alias} {alias-map :alias :or {alias-map {}}}]
   (assert (not (and (default? cli-alias) (not (contains? alias-map :default))))
-    "\n
+          "\n
  To call lein doo without a js-env you need a :default :alias in
  your project.clj and a default build. For example:
 

@@ -43,12 +43,13 @@
   (testing "We can get the js-envs from the cli"
     (let [opts {:build "test"
                 :alias {:default [:firefox]}}]
-      (are [args js-envs] (= js-envs (doo/cli->js-envs (doo/args->cli args) opts))
-           [] [:firefox]
-           ["chrome"] [:chrome]
-           ["chrome" "none-test"] [:chrome]
-           ["chrome" "once"] [:chrome]
-           ["chrome" "none-test" "once"] [:chrome]))))
+      (are [args js-envs doo-opts] (= js-envs (doo/cli->js-envs (doo/args->cli args) doo-opts))
+           [] [:firefox] opts
+           ["chrome"] [:chrome] opts
+           ["chrome" "none-test"] [:chrome] opts
+           ["chrome" "once"] [:chrome] opts
+           ["chrome" "none-test" "once"] [:chrome] opts
+           ["chrome"] [:chrome] {:build "test"}))))
 
 (deftest cli->build
   (testing "We can get the right build from the cli, opts, and project"
