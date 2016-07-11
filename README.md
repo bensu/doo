@@ -9,7 +9,7 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
 This README is for the latest stable release:
 
-`[lein-doo "0.1.6"]`
+`[lein-doo "0.1.7"]`
 
 To use doo you need to use `[org.clojure/clojurescript "0.0-3308"]` or
 newer.
@@ -380,12 +380,12 @@ To run the tests for doo, you need to have installed rhino, phantomjs, slimer, c
 
 ## License
 
-Most code in this project is a repackaging of
+This project started as a repackaging of
 [cemerick/clojurescript.test](https://github.com/cemerick/clojurescript.test),
-therefore most of the credit goes to Chas Emerick and contributors to
+therefore much of the credit goes to Chas Emerick and contributors to
 that project.
 
-Copyright © 2015 Sebastian Bensusan and Contributors.
+Copyright © 2016 Sebastian Bensusan and Contributors.
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
