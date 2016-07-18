@@ -1,5 +1,6 @@
 (ns doo.utils
   "Taken from leiningen.core.utils"
+  (:import java.io.File)
   (:require [clojure.java.io :as io]))
 
 (defn- get-by-pattern
@@ -31,3 +32,20 @@
 
 (defn debug-log [& args]
   (apply println "[doo]" args))
+
+;; TODO: runner arg is not necessary
+(defn runner-path!
+  "Creates a temp file for the given runner resource file."
+  ([base-dir runner filename]
+   (runner-path! base-dir runner filename {:common? false}))
+  ([base-dir runner filename {:keys [common?]}]
+   (letfn [(slurp-resource [res]
+             (slurp (io/resource (str base-dir res))))
+           (add-common [file]
+             (when common?
+               (spit file (slurp-resource "common.js"))))]
+     (.getAbsolutePath
+      (doto (File/createTempFile (name runner) ".js")
+        .deleteOnExit
+        add-common
+        (spit (slurp-resource filename) :append true))))))

@@ -52,6 +52,21 @@
                                                 :optimizations :advanced
                                                 :target        :nodejs}}
 
+            :electron-test      {:source-paths ["src" "test"]
+                                 :compiler     {:output-to     "out/testable.js"
+                                                :main          example.electron-runner
+                                                :optimizations :simple}}
+            :electron-none      {:source-paths ["src" "test"]
+                                 :compiler     {:output-to     "out/testable.js"
+                                                :main          example.electron-runner
+                                                :source-map    true
+                                                :optimizations :none}}
+            :electron-advanced  {:source-paths ["src" "test"]
+                                 :compiler     {:output-to     "out/testable.js"
+                                                :main          example.electron-runner
+                                                :optimizations :advanced
+                                                :externs ["externs/electron.js"]}}
+
             ;; These cljsbuild configs are for CI testing only.
             :dev-fail           {:source-paths ["src"]
                                  :compiler     {:output-to     "resources/public/js/dev.js"
