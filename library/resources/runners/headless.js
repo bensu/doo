@@ -47,7 +47,6 @@ p.onConsoleMessage = function(msg) {
 
 p.onError = function(msg) {
     console.error(msg);
-    exit(1);
 };
 
 p.open(fixFileProtocol(pagePath), function (status) {
