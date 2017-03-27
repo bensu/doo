@@ -34,7 +34,10 @@ function exit(code) {
     if (isSlimer()) {
         slimer.exit(code);
     } else {
-        phantom.exit(code);
+        // http://stackoverflow.com/questions/19144632/phantomjs-crashes-after-phantom-exit-on-linux
+        setTimeout(function() {
+            phantom.exit(code);
+        }, 0);
     }
 }
 
