@@ -83,3 +83,17 @@
            []
            ["chrome"]
            ["chrome" "once"]))))
+
+(deftest run-local-project
+  (testing "Project with managed dependencies can be evaluated"
+    (let [project {:source-paths ["src" "src/main/clj"]
+                   :test-paths ["test" "src/test/clj"]
+                   :managed-dependencies [['org.clojure/clojure "1.8.0"]]
+                   :dependencies [['org.clojure/clojure]]
+                   :cljsbuild {:builds [{:id "test"
+                                         :source-paths ["src" "test"]
+                                         :compiler {:optimizations :simple
+                                                    :output-to "out/testable.js"}}]}}
+          result (try (doo/run-local-project project '() '(+ 1 1)) (catch IllegalArgumentException e e))]
+      (is (nil? result) "Expected that running the local project with managed-dependencies evaluates successfully"))))
+
