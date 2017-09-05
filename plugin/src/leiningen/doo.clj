@@ -28,7 +28,8 @@
                     :repositories
                     :resource-paths
                     :source-paths
-                    :dependencies])
+                    :dependencies
+                    :managed-dependencies])
       (assoc :local-repo-classpath true)
       (with-meta (meta project))))
 
