@@ -88,7 +88,7 @@
   (testing "Project with managed dependencies can be evaluated"
     (let [project {:source-paths ["src" "src/main/clj"]
                    :test-paths ["test" "src/test/clj"]
-                   :managed-dependencies [['org.clojure/clojure "1.8.0"]]
+                   :managed-dependencies [['org.clojure/clojure "1.7.0"]]
                    :dependencies [['org.clojure/clojure]]
                    :cljsbuild {:builds [{:id "test"
                                          :source-paths ["src" "test"]
