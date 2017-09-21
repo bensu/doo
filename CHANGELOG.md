@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased - 2016-06-01
+## [0.1.7] - 2016-07-10
 
 ### Changed
 - Wait 1sec after starting the Karma server so that the tests are run right after starting auto
@@ -15,6 +15,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Support for Chrome Canary from Karma.
 - Add AppVeyor CI.
 - `:exec-dir` option to `doo.core/run-script`.
+
+### Fixed
+- Fixed a problem with empty :alias map in configuration. ([#113](https://github.com/bensu/doo/issues/113))
 
 ## [0.1.6] - 2015-12-05
 
