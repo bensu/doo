@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased - 2017-09-21
+
+### Fixed
+- Made doo exit correctly with ClojureScript 1.9.854 and later. ([#141](https://github.com/bensu/doo/pull/141))
+
 ## [0.1.7] - 2016-07-10
 
 ### Changed
