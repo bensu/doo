@@ -12,7 +12,7 @@
   :eval-in-leiningen true
 
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [doo "0.1.7"]]
+                 [doo "0.1.8-SNAPSHOT"]]
 
   :test-paths ["test/clj" "test/cljs"]
 
