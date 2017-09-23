@@ -22,19 +22,32 @@
     (are [args opts] (= opts (doo/args->cli args))
          [] {:build :default
              :alias :default
+             :notify nil
              :watch-mode :auto}
          ["chrome"] {:build :default
                      :alias :chrome
+                     :notify nil
                      :watch-mode :auto}
          ["chrome" "none-test"] {:build "none-test"
                                  :alias :chrome
+                                 :notify nil
                                  :watch-mode :auto}
          ["chrome" "once"] {:build :default
                             :alias :chrome
+                            :notify nil
                             :watch-mode :once}
          ["chrome" "none-test" "once"] {:build "none-test"
                                         :alias :chrome
-                                        :watch-mode :once})
+                                        :notify nil
+                                        :watch-mode :once}
+         ["chrome" "once" "notify"] {:build :default
+                                     :alias :chrome
+                                     :notify :always
+                                     :watch-mode :once}
+         ["chrome" "once" "notify" "change-only"] {:build :default
+                                                   :alias :chrome
+                                                   :notify :change-only
+                                                   :watch-mode :once})
     (are [args] (is (thrown? java.lang.AssertionError (doo/args->cli args)))
          ["chrome" "none-test" "autoo"]
          ["chrome" "none-test" "auto" "advanced-test"])))

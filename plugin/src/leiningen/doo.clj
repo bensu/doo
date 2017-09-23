@@ -98,19 +98,25 @@
 (defn default? [cli-opt]
   (or (nil? cli-opt) (= :default cli-opt)))
 
-(defn watch-mode? [arg]
-  (contains? #{"auto" "once"} arg))
+(defn optional-args? [arg]
+  (contains? #{"auto" "once" "notify" "change-only"} arg))
+
+(defn parse-notify [args]
+  (when (some #{"notify"} args)
+    (or (keyword (some #{"change-only"} args)) :always)))
 
 (defn args->cli
   "Parses & validates the cli arguments into a consistent format"
   [args]
-  (let [[js-env build-id & xs] (remove watch-mode? args)]
+  (let [[js-env build-id & xs] (remove optional-args? args)
+        notify (parse-notify args)]
     (assert (empty? xs)
       (str "We couldn't parse " xs " as a watch-mode,"
         " only auto or once are supported"))
     {:alias (keyword (or js-env "default"))
      :build (or build-id :default)
-     :watch-mode (keyword (or (first (filter watch-mode? args)) "auto"))}))
+     :notify notify
+     :watch-mode (keyword (or (first (filter #{"auto" "once"} args)) "auto"))}))
 
 (defn cli->js-envs
   "Returns the js-envs where doo should be run from the cli arguments
@@ -197,7 +203,7 @@ in project.clj.\n")
   ([project & args]
    ;; FIX: execute in a try catch like the one in run-local-project
    (let [{:keys [alias watch-mode] :as cli} (args->cli args)
-         opts (:doo project)
+         opts (assoc (:doo project) :notify (:notify cli))
          js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
          project' (-> project
@@ -211,7 +217,7 @@ in project.clj.\n")
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      ;; Important to add sources to the classpath
      (run-local-project (add-sources project' source-paths)
-       '(require 'cljs.build.api 'doo.core 'doo.karma)
+       '(require 'cljs.build.api 'doo.core 'doo.karma 'doo.notifier)
        `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# compiler#))
@@ -233,7 +239,8 @@ in project.clj.\n")
                       (Thread/sleep 1000))
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
-                      (doo.core/run-script js-env# compiler# ~opts))
+                      (let [r# (doo.core/run-script js-env# compiler# ~opts)]
+                        (doo.notifier/handle-notifications (:out r#) ~opts)))
                     (when @karma-on?#
                       (apply doo.core/print-envs karma-envs#)
                       (doo.core/karma-run! ~opts))))))
