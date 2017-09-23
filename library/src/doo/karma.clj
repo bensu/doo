@@ -14,24 +14,26 @@
   (str "karma-" name "-launcher"))
 
 (def karma-envs
-  {:chrome        {:plugin (karma-plugin-name "chrome")
-                   :name   "Chrome"}
-   :chrome-canary {:plugin (karma-plugin-name "chrome")
-                   :name   "ChromeCanary"}
-   :firefox       {:plugin (karma-plugin-name "firefox")
-                   :name   "Firefox"}
-   :safari        {:plugin (karma-plugin-name "safari")
-                   :name   "Safari"}
-   :opera         {:plugin (karma-plugin-name "opera")
-                   :name   "Opera"}
-   :ie            {:plugin (karma-plugin-name "ie")
-                   :name   "IE"}
-   :karma-phantom {:plugin (karma-plugin-name "phantomjs")
-                   :name   "PhantomJS"}
-   :karma-slimer  {:plugin (karma-plugin-name "slimerjs")
-                   :name   "SlimerJS"}
-   :electron      {:plugin (karma-plugin-name "electron")
-                   :name   "Electron"}})
+  {:chrome          {:plugin (karma-plugin-name "chrome")
+                     :name   "Chrome"}
+   :chrome-canary   {:plugin (karma-plugin-name "chrome")
+                     :name   "ChromeCanary"}
+   :chrome-headless {:plugin (karma-plugin-name "chrome")
+                     :name   "ChromeHeadless"}
+   :firefox         {:plugin (karma-plugin-name "firefox")
+                     :name   "Firefox"}
+   :safari          {:plugin (karma-plugin-name "safari")
+                     :name   "Safari"}
+   :opera           {:plugin (karma-plugin-name "opera")
+                     :name   "Opera"}
+   :ie              {:plugin (karma-plugin-name "ie")
+                     :name   "IE"}
+   :karma-phantom   {:plugin (karma-plugin-name "phantomjs")
+                     :name   "PhantomJS"}
+   :karma-slimer    {:plugin (karma-plugin-name "slimerjs")
+                     :name   "SlimerJS"}
+   :electron        {:plugin (karma-plugin-name "electron")
+                     :name   "Electron"}})
 
 (def envs (set (keys karma-envs)))
 

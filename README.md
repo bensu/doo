@@ -32,6 +32,7 @@ in `project.clj`:
 * `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
 `slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it
 is planned to support `v8`, `jscore`, and others.
+  * Note that `chrome-headless` requires `karma-chrome-launcher` >= 2.0.0 and Chrome >= 59
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
