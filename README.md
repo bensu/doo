@@ -29,10 +29,10 @@ in `project.clj`:
 
     lein doo {js-env} {build-id} {watch-mode}
 
-* `js-env` can be any `chrome`, `firefox`, `ie`, `safari`, `opera`,
-`slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it
-is planned to support `v8`, `jscore`, and others.
-  * Note that `chrome-headless` requires `karma-chrome-launcher` >= 2.0.0 and Chrome >= 59
+* `js-env` can be any `chrome`, `chrome-headless`, `firefox`, `ie`, `safari`,
+  `opera`, `slimer`, `phantom`, `node`, `rhino`, or `nashorn`. In the future it
+  is planned to support `v8`, `jscore`, and others.
+    * Note that `chrome-headless` requires `karma-chrome-launcher` >= 2.0.0 and Chrome >= 59
 * `watch-mode` (optional): either `auto` (default) or `once` which
   exits with 0 if the tests were successful and 1 if they failed.
 * `build-id` is one of your `cljsbuild` profiles. For example `test` from:
@@ -106,8 +106,8 @@ You can run `doo.core/run-script` with the following arguments:
 
 where:
 
-* `js-env` - any of `:phantom`, `:slimer`, :`node`, `:rhino`,
-  `:nashorn`, `:chrome`, `:firefox`, `:ie`, `:safari`, or `:opera`
+* `js-env` - any of `:phantom`, `:slimer`, :`node`, `:rhino`, `:nashorn`,
+  `:chrome`, `:chrome-headless`, `:firefox`, `:ie`, `:safari`, or `:opera`
 * `compiler-opts` - the options passed to the ClojureScript when it
   compiled the script that doo should run
 * `opts` - a map that can contain:
