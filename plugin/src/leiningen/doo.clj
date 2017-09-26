@@ -17,21 +17,6 @@
 (defn add-sources [project sources]
   (update-in project [:source-paths] #(into % sources)))
 
-;; TODO: what's this for?
-(defn make-subproject [project]
-  (-> project
-      ;; This might be protecting against something, remove?
-      (select-keys [:checkout-deps-shares
-                    :eval-in
-                    :jvm-opts
-                    :local-repo
-                    :repositories
-                    :resource-paths
-                    :source-paths
-                    :dependencies])
-      (assoc :local-repo-classpath true)
-      (with-meta (meta project))))
-
 (defn add-dep
   "Adds one dependency (needs to be a vector with a quoted symbol)
   to the project's dependencies.
@@ -43,10 +28,7 @@
 (defn run-local-project
   "Runs both forms (requires and form) in the context of the project"
   [project requires form]
-  (let [project' (-> project
-                   make-subproject
-                   ;; just for use inside the plugin
-                   (dissoc :eval-in))]
+  (let [project' (dissoc project :eval-in)] ;;just for use inside the plugin
     (leval/eval-in-project project'
       `(try
          (do
