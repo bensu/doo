@@ -48,7 +48,7 @@
     (are [js-env] (doo/valid-js-env? js-env)
       :rhino :nashorn :slimer :phantom :node
       :chrome :safari :firefox :opera :ie :electron
-      :karma-phantom :karma-slimer))
+      :karma-phantom :karma-slimer :chrome-headless))
   (testing "We can resolve aliases"
     (are [alias js-envs] (= (doo/resolve-alias alias {}) js-envs)
          :phantom [:phantom]

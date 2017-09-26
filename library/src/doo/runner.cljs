@@ -13,12 +13,6 @@
   (set! cljs.core.*print-fn* f))
 
 ;; ======================================================================
-;; Node
-
-(defn node? []
-  (exists? js/process))
-
-;; ======================================================================
 ;; Karma Helpers
 
 (defn karma? []
@@ -41,14 +35,13 @@
   (set! *exit-fn* f))
 
 (defn exit! [success?]
-  (if (node?)
-    (let [process-exit (gobj/get js/process "exit")]
-      (process-exit (if success? 0 1)))
-    (try
-      (*exit-fn* success?)
-      (catch :default e
-        (println "WARNING: doo's exit function was not properly set")
-        (println e)))))
+  (try
+    (if-let [nodejs-exit (and (exists? js/process) (gobj/get js/process "exit"))]
+      (nodejs-exit (if success? 0 1))
+      (*exit-fn* success?))
+    (catch :default e
+      (println "WARNING: doo's exit function was not properly set")
+      (println e))))
 
 (defmethod cljs.test/report [:cljs.test/default :end-run-tests] [m]
   (exit! (successful? m)))
