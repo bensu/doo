@@ -52,7 +52,7 @@
 ;; Karma starts the runner with arguments
 (defn ^:export run! [a]
   (if-not (fn? *main-cli-fn*)
-    (do (println "WARNING: doo's init function was not set")
+    (do (println "WARNING: doo's init function was not set or is not a function")
         (exit! false))
     (try
       (*main-cli-fn* a)
