@@ -7,6 +7,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - New runner: Headless Chrome (`chrome-headless`, [#136](https://github.com/bensu/doo/pull/136)) 
 
+### Changed
+- Improve the error messages when an exception is thrown outside the tests. ([#151](https://github.com/bensu/doo/issues/151))
+
 ### Fixed
 - Made doo exit correctly with ClojureScript 1.9.854 and later. ([#141](https://github.com/bensu/doo/pull/141))
 - Added support for Leiningen 2.7's managed dependencies. ([#143](https://github.com/bensu/doo/pull/143))
