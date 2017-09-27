@@ -57,12 +57,15 @@
     (try
       (*main-cli-fn* a)
       (catch :default e
-        (println "\nERROR: Exception outside tests:")
-        (println e)
+        (println)
+        (println "ERROR: Exception outside tests:")
+        (println "ERROR:" e)
         (if (.hasOwnProperty e "stack")
-          (do (println "\nERROR: Stacktrace:")
-              (println (.-stack e)))
-          (println "\nNo stacktrace available."))
+          (do (println)
+              (println "ERROR: Stacktrace:")
+              (println "ERROR:" (.-stack e)))
+          (do (println)
+              (println "ERROR: No stacktrace available.")))
         (exit! false)))))
 
 (defn set-entry-point!
