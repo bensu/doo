@@ -59,11 +59,10 @@
       (catch :default e
         (println "\nERROR: Exception outside tests:")
         (println e)
-        (println "\nERROR: Stacktrace:")
-        (println
-         (if (.hasOwnProperty e "stack")
-           (.-stack e)
-           "No stacktrace available."))
+        (if (.hasOwnProperty e "stack")
+          (do (println "\nERROR: Stacktrace:")
+              (println (.-stack e)))
+          (println "\nNo stacktrace available."))
         (exit! false)))))
 
 (defn set-entry-point!
