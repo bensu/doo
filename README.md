@@ -9,7 +9,7 @@ A library and Leiningen plugin to run `cljs.test` in many JS environments.
 
 This README is for the latest stable release:
 
-`[lein-doo "0.1.7"]`
+`[lein-doo "0.1.8"]`
 
 To use doo you need to use `[org.clojure/clojurescript "0.0-3308"]` or
 newer.
