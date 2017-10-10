@@ -77,9 +77,7 @@
                (when (= :none (:optimizations compiler-opts))
                  (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
                [(:output-to compiler-opts)
-                {"pattern" (->out-dir "/**") "included" false}
-                {"pattern" (->out-dir "/**/*.js") "included" false}
-                {"pattern" (->out-dir "/*.js") "included" false}])
+                {"pattern" (->out-dir "/**") "included" false}])
      "autoWatch" false
      "client" {"args" ["doo.runner.run_BANG_"]}
      "singleRun" true}))
