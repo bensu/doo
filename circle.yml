@@ -42,6 +42,10 @@ test:
     - cd example && lein doo chrome-headless test once
     - cd example && lein doo chrome-headless advanced once
     - cd example && lein doo chrome-headless none-test once
+    # Firefox Headless
+    - cd example && lein doo firefox-headless test once
+    - cd example && lein doo firefox-headless advanced once
+    - cd example && lein doo firefox-headless none-test once
     # Rhino
     # rhino doesn't support :optimizations :none
     - cd example && lein doo rhino test once
@@ -85,6 +89,10 @@ test:
     - cd example && lein doo chrome-headless test-fail once && exit 1 || exit 0
     - cd example && lein doo chrome-headless advanced-fail once && exit 1 || exit 0
     - cd example && lein doo chrome-headless none-test-fail once && exit 1 || exit 0
+    # Firefox Headless
+    - cd example && lein doo firefox-headless test-fail once && exit 1 || exit 0
+    - cd example && lein doo firefox-headless advanced-fail once && exit 1 || exit 0
+    - cd example && lein doo firefox-headless none-test-fail once && exit 1 || exit 0
     # Rhino
     - cd example && lein doo rhino test-fail once && exit 1 || exit 0
     - cd example && lein doo rhino advanced-fail once && exit 1 || exit 0
