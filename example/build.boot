@@ -1,9 +1,8 @@
 (set-env!
  :source-paths    #{"src"}
- :resource-paths  #{"resources"}
- :dependencies '[[org.clojure/core.async      "0.1.346.0-17112a-alpha"]
-                 [org.clojure/clojurescript   "1.7.170"]
-                 [crisptrutski/boot-cljs-test "0.2.1-SNAPSHOT"]
+ :dependencies '[[org.clojure/core.async      "0.4.474"]
+                 [org.clojure/clojurescript   "1.9.946"]
+                 [crisptrutski/boot-cljs-test "0.3.5-SNAPSHOT"]
                  [doo                         "0.1.9-SNAPSHOT"]])
 
 (require

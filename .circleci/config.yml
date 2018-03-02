@@ -1,0 +1,91 @@
+version: 2
+
+jobs:
+  install_deps:
+    docker:
+      - image: circleci/clojure:lein-2.8.1-node-browsers
+    working_directory: ~/doo
+    environment:
+      LEIN_ROOT: "true"
+      JVM_OPTS: "-Xmx3200m"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+            - v1-
+
+      # Install dependencies and build the plugin and library.
+      - run: |
+          mkdir -p ~/bin
+          curl -fsSLo ~/bin/boot https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh
+          chmod +x ~/bin/boot
+      - run: cd library && lein deps
+      - run: cd library && npm install
+      - run: cd library && lein install
+      - run: cd plugin && lein deps
+      - run: cd plugin && lein install
+      - run: cd example && npm install
+      - run: cd example && lein deps
+      - run: cd example && ~/bin/boot deps
+
+      - save_cache:
+          paths:
+            - ~/.m2
+            - ~/doo/library/node_modules
+            - ~/doo/example/node_modules
+            - ~/.boot/cache/bin
+            - ~/.boot/cache/lib
+          key: v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+
+  test_lib_and_plugin:
+    docker:
+      - image: circleci/clojure:lein-2.8.1-node-browsers
+    working_directory: ~/doo
+    environment:
+      LEIN_ROOT: "true"
+      JVM_OPTS: "-Xmx3200m"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+            - v1-
+      - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino
+      - run: sudo npm install karma-cli -g
+      - run: cd library && lein test
+      - run: cd plugin && lein test
+
+  test_example:
+    docker:
+      - image: circleci/clojure:lein-2.8.1-node-browsers
+    working_directory: ~/doo
+    parallelism: 3
+    environment:
+      LEIN_ROOT: "true"
+      JVM_OPTS: "-Xmx3200m"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+            - v1-
+      - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino
+      - run: sudo npm install karma-cli -g
+      - run: |
+          cd example
+          export PATH="$HOME/bin:$PATH"
+          ~/doo/.circleci/split-and-run-tests.sh ~/doo/.circleci/tests.txt
+
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - install_deps
+      - test_lib_and_plugin:
+          requires:
+            - install_deps
+      - test_example:
+          requires:
+            - install_deps
