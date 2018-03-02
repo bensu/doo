@@ -60,7 +60,7 @@ jobs:
     docker:
       - image: circleci/clojure:lein-2.8.1-node-browsers
     working_directory: ~/doo
-    parallelism: 3
+    parallelism: 4
     environment:
       LEIN_ROOT: "true"
       JVM_OPTS: "-Xmx3200m"
