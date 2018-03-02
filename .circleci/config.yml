@@ -12,7 +12,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}
             - v1-
 
       # Install dependencies and build the plugin and library.
@@ -36,7 +36,7 @@ jobs:
             - ~/doo/example/node_modules
             - ~/.boot/cache/bin
             - ~/.boot/cache/lib
-          key: v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+          key: v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}
 
   test_lib_and_plugin:
     docker:
@@ -49,7 +49,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}
             - v1-
       - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino
       - run: sudo npm install karma-cli -g
@@ -68,15 +68,32 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}
             - v1-
       - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino
       - run: sudo npm install karma-cli -g
-      - run: |
-          cd example
-          export PATH="$HOME/bin:$PATH"
-          ~/doo/.circleci/split-and-run-tests.sh ~/doo/.circleci/tests.txt
-
+      - run:
+          name: "Install Bats"
+          command: |
+            git clone https://github.com/sstephenson/bats.git ~/bats
+            cd ~/bats
+            sudo ./install.sh /usr/local
+      - run:
+          name: "Run tests"
+          command: |
+            cd example
+            export PATH="$HOME/bin:$PATH"
+            mkdir -p ~/test-results/example
+            TESTS=$(circleci tests glob test/bats/*.bats | circleci tests split)
+            bats --tap $TESTS | tee ~/test-results/example/results.tap
+      - run:
+          name: Format the test results
+          when: always
+          command: |
+            sudo apt-get install -y libtap-formatter-junit-perl
+            cd ~/test-results/example && tap2junit results.tap
+      - store_test_results:
+          path: ~/test-results
 
 workflows:
   version: 2
