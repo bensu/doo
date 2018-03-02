@@ -7,6 +7,8 @@ install:
 
     Invoke-WebRequest -Uri https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein.bat -OutFile "C:\scripts\lein.bat"
 
+    $env:HTTP_CLIENT = "curl -f -L -k -o"
+
     lein self-install
 
     lein version
