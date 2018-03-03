@@ -49,11 +49,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}-{{ checksum "library/package.json" }}
             - v1-
       - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino
       - run: sudo npm install karma-cli -g
-      - run: cd library && lein test
+      - run: cd library && lein test && lein install
       - run: cd plugin && lein test
 
   test_example:
@@ -68,7 +68,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}
+            - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}-{{ checksum "library/package.json" }}
             - v1-
       - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino
       - run: sudo npm install karma-cli -g
@@ -78,6 +78,13 @@ jobs:
             git clone https://github.com/sstephenson/bats.git ~/bats
             cd ~/bats
             sudo ./install.sh /usr/local
+      # The ~/.m2 cache might not have the latest lib and plugin because it only
+      # changes when the project.clj checksums change!
+      - run:
+          name: "Install Doo library and plugin"
+          command: |
+            (cd library && lein install)
+            (cd plugin && lein install)
       - run:
           name: "Run tests"
           command: |
