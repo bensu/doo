@@ -7,7 +7,7 @@ machine:
 dependencies:
   pre:
     - wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
-    - chmod +x lein && sudo mv lein /usr/local/bin
+    - chmod +x lein && mv lein ~/bin/lein
     - sudo apt-get update; sudo apt-get install rhino
     - wget https://github.com/boot-clj/boot-bin/releases/download/2.7.2/boot.sh
     - mv boot.sh boot && chmod a+x boot && sudo mv boot /usr/local/bin
