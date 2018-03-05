@@ -1,18 +1,19 @@
 # doo
 
-[![Circle CI](https://circleci.com/gh/bensu/doo.svg?style=svg)](https://circleci.com/gh/bensu/doo)
-[![Build status](https://ci.appveyor.com/api/projects/status/ufuprdbgn5afhudt?svg=true)](https://ci.appveyor.com/project/bensu/doo)
+[![Circle CI](https://circleci.com/gh/bensu/doo.svg?style=svg)](https://circleci.com/gh/bensu/doo) [![Build status](https://ci.appveyor.com/api/projects/status/ufuprdbgn5afhudt?svg=true)](https://ci.appveyor.com/project/bensu/doo) [![Clojars Project](https://img.shields.io/clojars/v/lein-doo.svg)](https://clojars.org/lein-doo)
 
-A library and Leiningen plugin to run `cljs.test` in many JS environments.
+A library and Leiningen plugin to run `cljs.test` in many JS environments. For
+Boot plugin, see [boot-cljs-test](https://github.com/crisptrutski/boot-cljs-test).
 
 >  ...and I would have gotten away with it, too, if it wasn't for you meddling kids.
 
-This README is for the latest stable release:
+The latest stable release:
 
-`[lein-doo "0.1.8"]`
+```clojure
+{:plugins [[lein-doo "0.1.8"]]}
+```
 
-To use doo you need to use `[org.clojure/clojurescript "0.0-3308"]` or
-newer.
+To use doo you need to use `[org.clojure/clojurescript "0.0-3308"]` or newer.
 
 ## Usage
 
@@ -386,7 +387,7 @@ This project started as a repackaging of
 therefore much of the credit goes to Chas Emerick and contributors to
 that project.
 
-Copyright © 2016 Sebastian Bensusan and Contributors.
+Copyright © 2016-2018 Sebastian Bensusan and Contributors.
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
