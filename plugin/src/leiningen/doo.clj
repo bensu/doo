@@ -194,9 +194,13 @@ in project.clj.\n")
      ;; Important to add sources to the classpath
      (run-local-project (add-sources project' source-paths)
        '(require 'cljs.build.api 'doo.core 'doo.karma)
-       `(let [compiler# (cljs.build.api/add-implicit-options ~compiler)]
+       ;; add-implicit-options should be only called once. cljs.build.api does it
+       ;; internally but doo.core functions expect us to do it. That's why we have
+       ;; compiler# and full-compiler#.
+       `(let [compiler# ~compiler
+              full-compiler# (cljs.build.api/add-implicit-options compiler#)]
           (doseq [js-env# ~js-envs]
-            (doo.core/assert-compiler-opts js-env# compiler#))
+            (doo.core/assert-compiler-opts js-env# full-compiler#))
           (if (= :auto ~watch-mode)
             (let [karma-envs# (vec (filter doo.karma/env? ~js-envs))
                   karma-on?# (atom false)
@@ -210,12 +214,12 @@ in project.clj.\n")
                       ;; Karma needs to be installed after
                       ;; compilation, so that the files to be included exist
                       (swap! karma-on?# not)
-                      (doo.core/install! karma-envs# compiler# ~opts)
+                      (doo.core/install! karma-envs# full-compiler# ~opts)
                       ;; We wait for the Karma server to be setup before we kick off tests
                       (Thread/sleep 1000))
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
-                      (doo.core/run-script js-env# compiler# ~opts))
+                      (doo.core/run-script js-env# full-compiler# ~opts))
                     (when @karma-on?#
                       (apply doo.core/print-envs karma-envs#)
                       (doo.core/karma-run! ~opts))))))
@@ -225,6 +229,6 @@ in project.clj.\n")
               (let [ok# (->> ~js-envs
                           (map (fn [e#]
                                  (doo.core/print-envs e#)
-                                 (doo.core/run-script e# compiler# ~opts)))
+                                 (doo.core/run-script e# full-compiler# ~opts)))
                           (every? (comp zero? :exit)))]
                 (System/exit (if ok# 0 1))))))))))
