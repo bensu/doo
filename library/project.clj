@@ -15,9 +15,9 @@
 
   :clean-targets ^{:protect false} [:target-path "out"]
 
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
-                 [karma-reporter "0.1.0"]]
+                 [karma-reporter "2.1.2"]]
 
   :jvm-opts ["-Xmx1g"]
 

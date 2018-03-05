@@ -2,7 +2,7 @@
   (:refer-clojure :exclude (run! set-print-fn!))
   (:require [cljs.test :refer [successful?]]
             [goog.object :as gobj]
-            [jx.reporter.karma :as karma :include-macros true]))
+            [jx.reporter.karma :as karma]))
 
 ;; ======================================================================
 ;; Printing
