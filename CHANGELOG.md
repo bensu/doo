@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Fixed
+- Make ClojureScript compiler warnings about `:preloads` go away. ([#163](https://github.com/bensu/doo/issues/163))
+
 ## [0.1.8] - 2017-10-02
 
 ### Added
