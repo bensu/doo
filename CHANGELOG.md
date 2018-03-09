@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - Make ClojureScript compiler warnings about `:preloads` go away. ([#163](https://github.com/bensu/doo/issues/163))
+- Make Karma warnings about matchers go away. ([#153](https://github.com/bensu/doo/pull/153))
 
 ## [0.1.8] - 2017-10-02
 
