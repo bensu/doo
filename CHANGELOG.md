@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### Added
+- New runner: Headless Firefox (`firefox-headless`, [#170](https://github.com/bensu/doo/pull/170))
+
 ### Fixed
 - Make ClojureScript compiler warnings about `:preloads` go away. ([#163](https://github.com/bensu/doo/issues/163))
 
