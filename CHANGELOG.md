@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - New runner: Headless Firefox (`firefox-headless`, [#160](https://github.com/bensu/doo/pull/160))
+- Add support for arbitrary Karma configuration. ([#108](https://github.com/bensu/doo/pull/108), [#43](https://github.com/bensu/doo/issues/43))
+- Add support for custom Karma launchers. ([#108](https://github.com/bensu/doo/pull/108))
 
 ### Fixed
 - Make ClojureScript compiler warnings about `:preloads` go away. ([#163](https://github.com/bensu/doo/issues/163))
