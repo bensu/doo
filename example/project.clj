@@ -19,7 +19,11 @@
         :paths {:slimer "./node_modules/.bin/slimerjs"}
         :alias {:default [:slimer]
                 :browsers [:chrome :firefox]
-                :all [:browsers :headless]}}
+                :all [:browsers :headless]}
+        :karma {:launchers {:chrome-no-security {:plugin "karma-chrome-launcher" :name "Chrome_no_security"}}
+                :config {"customLaunchers"
+                         {"Chrome_no_security" {"base" "Chrome"
+                                                "flags" ["--disable-web-security"]}}}}}
 
   :jvm-opts ["-Xmx1g"]
 
