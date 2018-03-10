@@ -374,13 +374,14 @@ default build in your `project.clj`:
 
 ## Custom Karma configuration
 
-You can supply arbitrary [configuration options][karma-config] to Karma with the `:karma
+You can supply arbitrary [configuration options][karma-config] to Karma under the `:karma
 {:config {}}` key. For example, if you want to use [karma-junit-reporter](https://github.com/karma-runner/karma-junit-reporter), do this:
 
 ```clojure
 {:doo {:karma
        {:config {"plugins" ["karma-junit-reporter"]
-                 "reporters" ["junit"]}}}}
+                 "reporters" ["progress" "junit"]
+                 "junitReporter" {"outputDir" "test-results"}}}}}
 ```
 
 [karma-config]: http://karma-runner.github.io/2.0/config/configuration-file.html
@@ -389,12 +390,12 @@ You can supply arbitrary [configuration options][karma-config] to Karma with the
 The options are merged to Doo's Karma configuration. By default, array values
 are merged by appending. For example, in the example above, the value of
 `"plugins"` is appended to the list of plugins needed by Doo. Merging is
-implemented with [meta-merge][meta-merge], so if you need more control you can
+implemented with [meta-merge][meta-merge], so if you need more control, you can
 use `^:replace` and `^:prepend` metadata.
 
 ## Custom Karma launchers
 
-To add custom Karma launchers  (eg. as described in the [Chrome Karma Plugin](https://github.com/karma-runner/karma-chrome-launcher) you can add the following config entries to your `project.clj` as shown in the example below:
+To add custom Karma launchers  (eg. as described in the [Chrome Karma Plugin](https://github.com/karma-runner/karma-chrome-launcher)) you can add the following config entries to your `project.clj` as shown in the example below:
 
 The plugin in the `:launchers` map should match an installed Karma plugin and
 the name should match a Karma launcher (possibly a custom one as shown in the
