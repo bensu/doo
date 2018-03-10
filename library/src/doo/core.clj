@@ -28,7 +28,7 @@
    Ex: (resolve-alias :headless {}) => [:phantom :slimer]
        (resolve-alias :slimer {}) => [:slimer]
        (resolve-alias :something {}) => []"
-  [alias alias-table]
+  [alias alias-table karma-launchers]
   {:pre [(keyword? alias) (map? alias-table)]}
   (assert (every? vector? (vals alias-table))
           (format "The values for the alias tables must be vectors but at least one of them, %s, is not.\n\nEx: {:default [:firefox]}"
@@ -41,31 +41,36 @@
                 (do (swap! stack-number inc)
                     (cond
                       (contains? js-envs alias) [alias]
+                      (contains? karma-launchers alias) [alias]
                       (contains? alias-table alias)
                       (vec (mapcat resolve-alias' (get alias-table alias)))
                       :else []))))]
       (resolve-alias' alias))))
 
-(defn valid-js-env? [js-env]
+(defn valid-js-env? [js-env karma-custom-launchers]
   {:pre [(keyword? js-env)]}
-  (contains? js-envs js-env))
+  (or (contains? js-envs js-env)
+      (contains? karma-custom-launchers js-env)))
 
 (defn assert-alias
   ([js-env-alias resolved-js-envs]
    (assert-alias js-env-alias resolved-js-envs {}))
   ([js-env-alias resolved-js-envs user-aliases]
+   (assert-alias js-env-alias resolved-js-envs user-aliases {}))
+  ([js-env-alias resolved-js-envs user-aliases karma-launchers]
    (assert (not (empty? resolved-js-envs))
-     (str "The given alias: " js-env-alias
-       " didn't resolve to any runners. Try any of: "
-       (str/join ", " (map name (concat js-envs
-                                  (keys default-aliases)
-                                  (keys user-aliases))))))))
+           (str "The given alias: " js-env-alias
+                " didn't resolve to any runners. Try any of: "
+                (str/join ", " (map name (concat js-envs
+                                                 (keys default-aliases)
+                                                 (keys user-aliases)
+                                                 (keys karma-launchers))))))))
 
 (defn assert-js-env
   "Throws an exception if the js-env is not valid.
    See valid-js-env?"
-  [js-env]
-  (assert (valid-js-env? js-env)
+  [js-env karma-custom-launchers ]
+  (assert (valid-js-env? js-env karma-custom-launchers)
     (str "The js-env should be one of: "
          (str/join ", " (map name js-envs))
          " and we got: " js-env)))
@@ -120,8 +125,8 @@
     (str/split #" ")))
 
 (defmulti js->command*
-  (fn [js _ _]
-    (if (karma/env? js)
+  (fn [js _ opts]
+    (if (karma/env? js opts)
       :karma
       js)))
 
@@ -204,7 +209,7 @@
     (when (= :node js-env)
       (assert (= :nodejs (:target compiler-opts))
         "node should be used with :target :nodejs"))
-    (when (karma/env? js-env)
+    (when (karma/env? js-env compiler-opts)
       (assert (some? (:output-dir compiler-opts))
         "Karma runners need :output-dir specified"))
     (when (= :rhino js-env)
@@ -254,11 +259,15 @@ where:
              to aid debugging
     :paths - a map from runners (keywords) to string commands for bash.
     :exec-dir - a directory path (file) from where runner should be
-                executed. Defaults to nil which resolves to the current dir"
+                executed. Defaults to nil which resolves to the current dir
+    :karma - a map with the folling keys
+       :config - additional config that will be added to karma.conf.js
+       :launchers - custom karma lauchers, eg. {:chrome-no-security {:name \"Chrome_no_security\"
+                                                                     :plugin \"karma-chrome-launcher\"}}"
   ([js-env compiler-opts]
    (run-script js-env compiler-opts {}))
   ([js-env compiler-opts opts]
-   {:pre [(valid-js-env? js-env)]}
+   {:pre [(valid-js-env? js-env (karma/custom-launchers opts))]}
    (let [doo-opts (merge default-opts opts)
          cmd (conj (js->command js-env compiler-opts doo-opts)
                    (:output-to compiler-opts))]

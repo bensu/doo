@@ -97,7 +97,7 @@
 (defn cli->js-envs
   "Returns the js-envs where doo should be run from the cli arguments
    and the project.clj options"
-  [{cli-alias :alias} {alias-map :alias :or {alias-map {}}}]
+  [{cli-alias :alias} {alias-map :alias :keys [karma] :or {alias-map {}}}]
   (assert (not (and (default? cli-alias) (not (contains? alias-map :default))))
           "\n
  To call lein doo without a js-env you need a :default :alias in
@@ -109,7 +109,8 @@
  then you can simply use
 
    lein doo\n")
-  (doo/resolve-alias cli-alias alias-map))
+  (let [{karma-launchers :launchers} karma]
+    (doo/resolve-alias cli-alias alias-map karma-launchers)))
 
 ;; Not being used
 (defn project->test-build [project]
@@ -180,6 +181,7 @@ in project.clj.\n")
    ;; FIX: execute in a try catch like the one in run-local-project
    (let [{:keys [alias watch-mode] :as cli} (args->cli args)
          opts (:doo project)
+         karma-custom-launchers (doo.karma/custom-launchers opts)
          js-envs (cli->js-envs cli opts)
          ;; FIX: get the version dynamically
          project' (-> project
@@ -187,9 +189,9 @@ in project.clj.\n")
                       (add-dep ['doo "0.1.9-SNAPSHOT"]))
          {:keys [source-paths compiler]}
          (cli->build cli project' opts)]
-     (doo/assert-alias alias js-envs (:alias opts))
+     (doo/assert-alias alias js-envs (:alias opts) karma-custom-launchers)
      (doseq [js-env js-envs]
-       (doo/assert-js-env js-env))
+       (doo/assert-js-env js-env karma-custom-launchers))
      ;; FIX: there is probably a bug regarding the incorrect use of builds
      ;; Important to add sources to the classpath
      (run-local-project (add-sources project' source-paths)
@@ -202,9 +204,9 @@ in project.clj.\n")
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# full-compiler#))
           (if (= :auto ~watch-mode)
-            (let [karma-envs# (vec (filter doo.karma/env? ~js-envs))
+            (let [karma-envs# (vec (filter #(doo.karma/env? % ~opts) ~js-envs))
                   karma-on?# (atom false)
-                  non-karma-envs# (vec (remove doo.karma/env? ~js-envs))]
+                  non-karma-envs# (vec (remove #(doo.karma/env? % ~opts) ~js-envs))]
               (cljs.build.api/watch
                 (apply cljs.build.api/inputs ~(vec source-paths))
                 (assoc compiler#
