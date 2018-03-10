@@ -83,8 +83,4 @@
                                  :compiler     {:output-to     "out/testable.js"
                                                 :main          example.failing-runner
                                                 :optimizations :advanced
-                                                :target        :nodejs}}
-
-            }
-
-   })
+                                                :target        :nodejs}}}})
