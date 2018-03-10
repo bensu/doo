@@ -1,6 +1,8 @@
 version: 1.0.{build}
 install:
 - ps: >-
+    Install-Product node 8
+
     New-Item c:\scripts -type directory
 
     $env:Path += ";C:\scripts"
