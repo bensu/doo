@@ -188,7 +188,11 @@ in project.clj.\n")
                       correct-builds
                       (add-dep ['doo "0.1.9-SNAPSHOT"]))
          {:keys [source-paths compiler]}
-         (cli->build cli project' opts)]
+         (cli->build cli project' opts)
+         ;; opts may have meta-merge metadata, which needs to be passed
+         ;; into run-local-project. Unquote does not preserve metadata,
+         ;; so we print opts into a string and read it back.
+         opts-string (binding [*print-meta* true] (pr-str opts))]
      (doo/assert-alias alias js-envs (:alias opts) karma-custom-launchers)
      (doseq [js-env js-envs]
        (doo/assert-js-env js-env karma-custom-launchers))
@@ -199,14 +203,15 @@ in project.clj.\n")
        ;; add-implicit-options should be only called once. cljs.build.api does it
        ;; internally but doo.core functions expect us to do it. That's why we have
        ;; compiler# and full-compiler#.
-       `(let [compiler# ~compiler
+       `(let [opts# (read-string ~opts-string)
+              compiler# ~compiler
               full-compiler# (cljs.build.api/add-implicit-options compiler#)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# full-compiler#))
           (if (= :auto ~watch-mode)
-            (let [karma-envs# (vec (filter #(doo.karma/env? % ~opts) ~js-envs))
+            (let [karma-envs# (vec (filter #(doo.karma/env? % opts#) ~js-envs))
                   karma-on?# (atom false)
-                  non-karma-envs# (vec (remove #(doo.karma/env? % ~opts) ~js-envs))]
+                  non-karma-envs# (vec (remove #(doo.karma/env? % opts#) ~js-envs))]
               (cljs.build.api/watch
                 (apply cljs.build.api/inputs ~(vec source-paths))
                 (assoc compiler#
@@ -216,21 +221,21 @@ in project.clj.\n")
                       ;; Karma needs to be installed after
                       ;; compilation, so that the files to be included exist
                       (swap! karma-on?# not)
-                      (doo.core/install! karma-envs# full-compiler# ~opts)
+                      (doo.core/install! karma-envs# full-compiler# opts#)
                       ;; We wait for the Karma server to be setup before we kick off tests
                       (Thread/sleep 1000))
                     (doseq [js-env# non-karma-envs#]
                       (doo.core/print-envs js-env#)
-                      (doo.core/run-script js-env# full-compiler# ~opts))
+                      (doo.core/run-script js-env# full-compiler# opts#))
                     (when @karma-on?#
                       (apply doo.core/print-envs karma-envs#)
-                      (doo.core/karma-run! ~opts))))))
+                      (doo.core/karma-run! opts#))))))
             (do
               (cljs.build.api/build
                 (apply cljs.build.api/inputs ~(vec source-paths)) compiler#)
               (let [ok# (->> ~js-envs
                           (map (fn [e#]
                                  (doo.core/print-envs e#)
-                                 (doo.core/run-script e# full-compiler# ~opts)))
+                                 (doo.core/run-script e# full-compiler# opts#)))
                           (every? (comp zero? :exit)))]
                 (System/exit (if ok# 0 1))))))))))

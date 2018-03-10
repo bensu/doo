@@ -372,21 +372,44 @@ default build in your `project.clj`:
                         :main example.runner}}]}
 ```
 
-## Custom Karma Launchers
+## Custom Karma configuration
+
+You can supply arbitrary [configuration options][karma-config] to Karma with the `:karma
+{:config {}}` key. For example, if you want to use [karma-junit-reporter](https://github.com/karma-runner/karma-junit-reporter), do this:
+
+```clojure
+{:doo {:karma
+       {:config {"plugins" ["karma-junit-reporter"]
+                 "reporters" ["junit"]}}}}
+```
+
+[karma-config]: http://karma-runner.github.io/2.0/config/configuration-file.html
+[meta-merge]: https://github.com/weavejester/meta-merge
+
+The options are merged to Doo's Karma configuration. By default, array values
+are merged by appending. For example, in the example above, the value of
+`"plugins"` is appended to the list of plugins needed by Doo. Merging is
+implemented with [meta-merge][meta-merge], so if you need more control you can
+use `^:replace` and `^:prepend` metadata.
+
+## Custom Karma launchers
 
 To add custom Karma launchers  (eg. as described in the [Chrome Karma Plugin](https://github.com/karma-runner/karma-chrome-launcher) you can add the following config entries to your `project.clj` as shown in the example below:
 
-The plugin in the :launchers map should match an installed karma plugin and the name should match a Karma launcher (possibly a custom one as shown in the following example)
-
-Any values in the :config key will be converted to json and merged with the karma.conf.js configuration used to launch Karma.
+The plugin in the `:launchers` map should match an installed Karma plugin and
+the name should match a Karma launcher (possibly a custom one as shown in the
+following example). If needed, add `"customLaunchers"` configuration
+under the `:config` key.
 
 You will then be able to run `lein doo chrome-no-security` from the comand line.
 
 ```clj
-:doo {:karma {:launchers {:chrome-no-security {:plugin "karma-chrome-launcher" :name "Chrome_no_security"}}
-              :config {"customLaunchers"
-                         {"Chrome_no_security" {"base" "Chrome"
-                                                "flags" ["--disable-web-security"]}}}}
+:doo {:karma
+      {:launchers {:chrome-no-security {:plugin "karma-chrome-launcher"
+                                        :name "Chrome_no_security"}}
+       :config {"customLaunchers"
+                {"Chrome_no_security" {"base" "Chrome"
+                                       "flags" ["--disable-web-security"]}}}}
 ```
 
 ## Travis CI
