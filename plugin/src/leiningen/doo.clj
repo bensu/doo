@@ -199,7 +199,7 @@ in project.clj.\n")
        ;; add-implicit-options should be only called once. cljs.build.api does it
        ;; internally but doo.core functions expect us to do it. That's why we have
        ;; compiler# and full-compiler#.
-       `(let [compiler# ~compiler
+       `(let [compiler# '~compiler
               full-compiler# (cljs.build.api/add-implicit-options compiler#)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# full-compiler#))
