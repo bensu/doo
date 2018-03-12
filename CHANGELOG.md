@@ -6,12 +6,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - New runner: Headless Firefox (`firefox-headless`, [#160](https://github.com/bensu/doo/pull/160))
-- Add support for arbitrary Karma configuration. ([#108](https://github.com/bensu/doo/pull/108), [#43](https://github.com/bensu/doo/issues/43))
+- Add support for arbitrary Karma configuration. ([#108](https://github.com/bensu/doo/pull/108), [#43](https://github.com/bensu/doo/issues/43), [#171](https://github.com/bensu/doo/pull/171))
 - Add support for custom Karma launchers. ([#108](https://github.com/bensu/doo/pull/108))
+
+### Changed
+- Quoted values for `:main` in `:compiler-opts` are deprecated. Use a plain value instead. ([`0f6bc87`](https://github.com/bensu/doo/commit/0f6bc8764dacff1d7ebae954e85722ecf9c680e3))
+  - Quoted values will continue to work for now, but doo will print a deprecation warning if you use them.
+  - Example: if you have `{:main 'my-project.runner}`, change it to `{:main myproject.runner}`.
 
 ### Fixed
 - Make ClojureScript compiler warnings about `:preloads` go away. ([#163](https://github.com/bensu/doo/issues/163))
 - Make Karma warnings about matchers go away. ([#153](https://github.com/bensu/doo/pull/153))
+- Fix the need to quote symbols in Doo build configuration. ([#133](https://github.com/bensu/doo/issues/133), [#172](https://github.com/bensu/doo/pull/172))
 
 ## [0.1.8] - 2017-10-02
 
