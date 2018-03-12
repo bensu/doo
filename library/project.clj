@@ -17,7 +17,8 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/data.json "0.2.6"]
-                 [karma-reporter "2.1.2"]]
+                 [karma-reporter "2.1.2"]
+                 [meta-merge "1.0.0"]]
 
   :jvm-opts ["-Xmx1g"]
 

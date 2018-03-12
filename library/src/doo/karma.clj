@@ -5,7 +5,8 @@
             [clojure.java.io :as io]
             [clojure.data.json :as json]
             [doo.shell :as shell]
-            [doo.utils :as utils]))
+            [doo.utils :as utils]
+            [meta-merge.core :refer [meta-merge]]))
 
 ;; ======================================================================
 ;; Karma Clients
@@ -72,9 +73,9 @@
   (:name (karma-env-lookup js-env custom-launchers)))
 
 (defn ->karma-opts [js-envs compiler-opts opts]
-  (letfn [(->out-dir [p]
-            (str (:output-dir compiler-opts) p))]
-    (merge
+  (let [->out-dir (fn [p] (str (:output-dir compiler-opts) p))
+        launcher-plugins (mapv #(js-env->plugin % (custom-launchers opts)) js-envs)]
+    (meta-merge
      {"frameworks" ["cljs-test"]
       ;; basePath should be the path from where the compiler thinks the
       ;; resources will be served: :asset-path or :output-dir
@@ -88,13 +89,11 @@
                  (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
                [(:output-to compiler-opts)
                 {"pattern" (->out-dir "/**") "included" false}])
-     "autoWatch" false
-     "client" {"args" ["doo.runner.run_BANG_"]}
-     "singleRun" true}
-     (get-in opts [:karma :config])
-     {"plugins" (into ["karma-cljs-test"]
-                      (concat (mapv #(js-env->plugin % (custom-launchers opts)) js-envs)
-                              (get-in opts [:karma :config "plugins"])))})))
+      "autoWatch" false
+      "client" {"args" ["doo.runner.run_BANG_"]}
+      "singleRun" true
+      "plugins" (into ["karma-cljs-test"] launcher-plugins)}
+     (get-in opts [:karma :config]))))
 
 (defn write-var [writer var-name var-value]
   (.write writer (str "var " var-name " = "))
@@ -115,5 +114,6 @@
       (write-var w "configData" karma-opts)
       (io/copy karma-tmpl w))
     (when (:debug opts)
+      (utils/debug-log "Karma config:" (pr-str karma-opts))
       (utils/debug-log "Created karma conf file:" (.getAbsolutePath f)))
     (.getAbsolutePath f)))
