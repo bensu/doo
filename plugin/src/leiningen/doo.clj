@@ -204,7 +204,7 @@ in project.clj.\n")
        ;; internally but doo.core functions expect us to do it. That's why we have
        ;; compiler# and full-compiler#.
        `(let [opts# (read-string ~opts-string)
-              compiler# ~compiler
+              compiler# '~compiler
               full-compiler# (cljs.build.api/add-implicit-options compiler#)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# full-compiler#))
