@@ -151,6 +151,23 @@
     (find-by-id (project->builds project) build-id)
     (project->test-build project)))
 
+(def ^:private main-quoting-warning
+"
+[doo] WARNING: In project.clj :compiler-opts, value for :main is quoted. This is
+      deprecated and Doo will stop supporting it. To make this warning go away,
+      please change {:main '%s} to {:main %s}.
+")
+
+(defn- fix-quoting
+  "For backwards compability, remove quoting around `:main` config key."
+  [{:keys [main] :as compiler}]
+  (if (and (list? main) (= 'quote (first main)))
+    (do
+      (let [new-main (second main)]
+        (println (str/trim (format main-quoting-warning new-main new-main)))
+        (assoc compiler :main new-main)))
+    compiler))
+
 ;; ======================================================================
 ;; doo
 
@@ -189,6 +206,7 @@ in project.clj.\n")
                       (add-dep ['doo "0.1.9-SNAPSHOT"]))
          {:keys [source-paths compiler]}
          (cli->build cli project' opts)
+         compiler (fix-quoting compiler)
          ;; opts may have meta-merge metadata, which needs to be passed
          ;; into run-local-project. Unquote does not preserve metadata,
          ;; so we print opts into a string and read it back.
@@ -204,7 +222,7 @@ in project.clj.\n")
        ;; internally but doo.core functions expect us to do it. That's why we have
        ;; compiler# and full-compiler#.
        `(let [opts# (read-string ~opts-string)
-              compiler# ~compiler
+              compiler# '~compiler
               full-compiler# (cljs.build.api/add-implicit-options compiler#)]
           (doseq [js-env# ~js-envs]
             (doo.core/assert-compiler-opts js-env# full-compiler#))
