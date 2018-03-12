@@ -5,7 +5,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :scm {:name "git"
-        :url "https://github.com/bensu/doo"}
+        :url "https://github.com/bensu/doo"
+        :dir ".."}
 
   :deploy-repositories [["clojars" {:creds :gpg}]]
 
