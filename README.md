@@ -241,6 +241,32 @@ installed modules. It is recommended to add `node-modules` to your
 If you are using `lein-npm`, follow their
 [instructions](https://github.com/RyanMcG/lein-npm).
 
+#### Measuring coverage with Istanbul
+
+It's possible to generate Istanbul coverage reports for JS files produced from CLJS.
+
+To make it work two things are required.
+
+Install your karma coverage plugin.
+
+    npm install karma-coverage --save-dev
+
+Add coverage seetings to your `project.clj`
+
+    :doo {:coverage {:packages [:my-app.module]
+                     :reporter {:check {:global {:statements 100}}}}}
+
+Packages section is essential, it enables coverage cofiguration and defines which
+files would have coverage instrumentation.
+
+By default HTML reporter is enabled which creates `coverage` folder with the report
+and there are no coverage reqirements.
+
+Anything under `:reporter` is passed as `coverageReporter` config to Karma config.
+
+See [Karma coverage](https://github.com/karma-runner/karma-coverage) for more details.
+See [Reagent covered](https://github.com/katlex/reagent-covered) for a sample project configuration.
+
 #### Non-standard Karma configuration
 
 If you are using a local installation and/or `node_modules` is not located

@@ -6,6 +6,7 @@
             [clojure.data.json :as json]
             [doo.shell :as shell]
             [doo.utils :as utils]
+            [doo.coverage :as coverage]
             [meta-merge.core :refer [meta-merge]]))
 
 ;; ======================================================================
@@ -93,7 +94,9 @@
       "client" {"args" ["doo.runner.run_BANG_"]}
       "singleRun" true
       "plugins" (into ["karma-cljs-test"] launcher-plugins)}
-     (get-in opts [:karma :config]))))
+     (get-in opts [:karma :config])
+     (coverage/settings ->out-dir opts)
+     )))
 
 (defn write-var [writer var-name var-value]
   (.write writer (str "var " var-name " = "))
@@ -109,11 +112,12 @@
         karma-opts (cond-> (->karma-opts js-envs compiler-opts opts)
                      (:install? (:karma opts)) (assoc "singleRun" false))
         f (File/createTempFile "karma_conf" ".js")]
-    (.deleteOnExit f)
     (with-open [w (io/writer f)]
       (write-var w "configData" karma-opts)
       (io/copy karma-tmpl w))
-    (when (:debug opts)
-      (utils/debug-log "Karma config:" (pr-str karma-opts))
-      (utils/debug-log "Created karma conf file:" (.getAbsolutePath f)))
+    (if (:debug opts)
+      (do
+        (utils/debug-log "Karma config:" (pr-str karma-opts))
+        (utils/debug-log "Created karma conf file:" (.getAbsolutePath f)))
+      (.deleteOnExit f))
     (.getAbsolutePath f)))
