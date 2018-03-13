@@ -1,6 +1,6 @@
 # doo
 
-[![Circle CI](https://circleci.com/gh/bensu/doo.svg?style=svg)](https://circleci.com/gh/bensu/doo) [![Build status](https://ci.appveyor.com/api/projects/status/ufuprdbgn5afhudt?svg=true)](https://ci.appveyor.com/project/bensu/doo) [![Clojars Project](https://img.shields.io/clojars/v/lein-doo.svg)](https://clojars.org/lein-doo)
+[![CircleCI](https://img.shields.io/circleci/project/github/bensu/doo.svg?label=CircleCI)](https://circleci.com/gh/bensu/doo) [![Build status](https://ci.appveyor.com/api/projects/status/ufuprdbgn5afhudt?svg=true)](https://ci.appveyor.com/project/bensu/doo) [![Clojars Project](https://img.shields.io/clojars/v/lein-doo.svg)](https://clojars.org/lein-doo)
 
 A library and Leiningen plugin to run `cljs.test` in many JS environments. For
 Boot plugin, see [boot-cljs-test](https://github.com/crisptrutski/boot-cljs-test).
