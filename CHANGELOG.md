@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Fixed
+- Fix merging Karma `files` option. ([#173](https://github.com/bensu/doo/pull/173))
+
 ## [0.1.9] - 2018-03-13
 
 ### Added
