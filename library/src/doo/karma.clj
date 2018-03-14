@@ -84,11 +84,11 @@
       ;; All this assumes that the output-dir is relative to the user.dir
       ;; base path
       ;; WARNING: the order of the files is important, don't change it.
-      "files" (concat
-               (when (= :none (:optimizations compiler-opts))
-                 (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
-               [(:output-to compiler-opts)
-                {"pattern" (->out-dir "/**") "included" false}])
+      "files" (vec (concat
+                    (when (= :none (:optimizations compiler-opts))
+                      (mapv ->out-dir ["/goog/base.js" "/cljs_deps.js"]))
+                      [(:output-to compiler-opts)
+                       {"pattern" (->out-dir "/**") "included" false}]))
       "autoWatch" false
       "client" {"args" ["doo.runner.run_BANG_"]}
       "singleRun" true
