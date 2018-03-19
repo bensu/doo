@@ -253,7 +253,7 @@ Install your karma coverage plugin.
 
 Add coverage seetings to your `project.clj`
 
-    :doo {:coverage {:packages [:my-app.module]
+    :doo {:coverage {:packages [my-app.module]
                      :reporter {:check {:global {:statements 100}}}}}
 
 Packages section is essential, it enables coverage cofiguration and defines which

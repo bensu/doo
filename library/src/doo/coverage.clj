@@ -5,7 +5,8 @@
   "Adds preprocessors for sources from a given packages"
   [->out-dir package]
   (let [package-path (-> (name package)
-                         (clojure.string/replace #"\." "/"))
+                         (clojure.string/replace #"\." "/")
+                         (clojure.string/replace #"-" "_"))
         package-files #(->out-dir (str "/" package-path %))
         preprocessors ["coverage"]]
     [(package-files "/**/!(*test).js") preprocessors]))

@@ -94,8 +94,8 @@
       "client" {"args" ["doo.runner.run_BANG_"]}
       "singleRun" true
       "plugins" (into ["karma-cljs-test"] launcher-plugins)}
-     (get-in opts [:karma :config])
      (coverage/settings ->out-dir opts)
+     (get-in opts [:karma :config])
      )))
 
 (defn write-var [writer var-name var-value]
