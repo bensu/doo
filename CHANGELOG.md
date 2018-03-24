@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
+### Added
+
+- Support for code coverage with [karma-coverage](https://github.com/karma-runner/karma-coverage). ([#125](https://github.com/bensu/doo/pull/125))
+
 ### Fixed
 - Fix merging Karma `files` option. ([#173](https://github.com/bensu/doo/pull/173))
 
