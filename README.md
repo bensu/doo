@@ -10,7 +10,7 @@ Boot plugin, see [boot-cljs-test](https://github.com/crisptrutski/boot-cljs-test
 The latest stable release:
 
 ```clojure
-{:plugins [[lein-doo "0.1.9"]]}
+{:plugins [[lein-doo "0.1.10"]]}
 ```
 
 To use doo you need to use `[org.clojure/clojurescript "0.0-3308"]` or newer.
