@@ -183,7 +183,8 @@ Usage:
 
   lein doo {js-env} {build-id} {watch-mode}
 
-  - js-env: slimer, phantom, node, chrome, firefox, or an alias like headless
+  - js-env: slimer, phantom, node, chrome, firefox, lumo, planck, or an
+            alias like headless
   - build-id: any of the ids under the :cljsbuild map in your project.clj
   - watch-mode: either auto (default) or once\n
 

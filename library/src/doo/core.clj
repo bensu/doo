@@ -14,9 +14,14 @@
 
 ;; All js-envs are keywords.
 
-(def doo-envs #{:phantom :slimer :node :rhino :nashorn})
+(def doo-self-hosted-envs #{:lumo :planck})
+
+(def doo-envs (into #{:phantom :slimer :node :rhino :nashorn} doo-self-hosted-envs))
 
 (def js-envs (set/union doo-envs karma/envs))
+
+(defn self-hosted? [js-env]
+  (boolean (doo-self-hosted-envs js-env)))
 
 (def default-aliases {:headless [:slimer :phantom]})
 
@@ -115,7 +120,9 @@
    :rhino "rhino"
    :nashorn "jjs"
    :node "node"
-   :karma "karma"})
+   :karma "karma"
+   :lumo "lumo"
+   :planck "planck"})
 
 (defn command-table [js-env opts]
   {:post [(some? %)]}
@@ -123,6 +130,20 @@
     (merge (:paths opts))
     (get js-env)
     (str/split #" ")))
+
+(defn clojurescript-jar?
+  [jar-name]
+  (boolean (re-matches #".*/clojurescript-.*\.jar" jar-name)))
+
+(defn clojure-jar?
+  [jar-name]
+  (boolean (re-matches #".*/clojure-.*\.jar" jar-name)))
+
+(defn self-hosted-classpath []
+  (->> (str/split (System/getProperty "java.class.path") (re-pattern File/pathSeparator))
+    (remove clojure-jar?)
+    (remove clojurescript-jar?)
+    (str/join File/pathSeparator)))
 
 (defmulti js->command*
   (fn [js _ opts]
@@ -162,6 +183,20 @@
   [(command-table :karma opts)
    "start"
    (karma/runner! [js-env] compiler-opts opts)])
+
+(defmethod js->command* :lumo
+  [_ compiler-opts opts]
+  [(command-table :lumo opts)
+   "-c" (self-hosted-classpath)
+   "-e" (pr-str `(require '~(symbol (:main compiler-opts))))])
+
+(defmethod js->command* :planck
+  [_ compiler-opts opts]
+  [(command-table :planck opts)
+   "-c" (self-hosted-classpath)
+   "-e" (pr-str '(require 'doo.runner 'planck.core))
+   "-e" (pr-str '(do (doo.runner/set-exit-point! (fn [success?] (planck.core/exit (if success? 0 1)))) nil))
+   "-e" (pr-str `(require '~(symbol (:main compiler-opts))))])
 
 (defn js->command [js-env compiler-opts opts]
   {:post [(every? string? %)]}
@@ -269,8 +304,8 @@ where:
   ([js-env compiler-opts opts]
    {:pre [(valid-js-env? js-env (karma/custom-launchers opts))]}
    (let [doo-opts (merge default-opts opts)
-         cmd (conj (js->command js-env compiler-opts doo-opts)
-                   (:output-to compiler-opts))]
+         cmd (cond-> (js->command js-env compiler-opts doo-opts)
+               (not (self-hosted? js-env)) (conj (:output-to compiler-opts)))]
      (when (:debug doo-opts)
        (utils/debug-log "Command to run script:" cmd))
      (try

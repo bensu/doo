@@ -31,7 +31,7 @@ in `project.clj`:
     lein doo {js-env} {build-id} {watch-mode}
 
 * `js-env` can be any `chrome`, `chrome-headless`, `firefox`,`firefox-headless`,
-  `ie`, `safari`,`opera`, `slimer`, `phantom`, `node`, `rhino`, or `nashorn`.
+  `ie`, `safari`,`opera`, `slimer`, `phantom`, `node`, `rhino`, `nashorn`, `lumo`, or `planck`.
   In the future it is planned to support `v8`, `jscore`, and others.
     * Note that `chrome-headless` requires `karma-chrome-launcher` >= 2.0.0 and Chrome >= 59
     * Note that `firefox-headless` requires `karma-firefox-launcher` >= 1.1.0 and Firefox >= 56
@@ -109,6 +109,7 @@ You can run `doo.core/run-script` with the following arguments:
 where:
 
 * `js-env` - any of `:phantom`, `:slimer`, :`node`, `:rhino`, `:nashorn`,
+  `:lumo`, `:planck`,
   `:chrome`, `:chrome-headless`, `:firefox`, `:firefox-headless`,`:ie`,
   `:safari`, or `:opera`
 * `compiler-opts` - the options passed to the ClojureScript when it
@@ -141,6 +142,10 @@ you need to install them so that these commands work on the command line:
     jjs -h
 
     rhino -help
+    
+    lumo -h
+    
+    planck -h
 
 If you want to use a different command to run a certain runner, see
 Paths.
@@ -329,6 +334,10 @@ After installing [Electron](http://electron.atom.io/releases/) install the launc
 and call
 
     lein doo electron test
+
+### Planck
+
+Planck `2.14.0` or later is required.
 
 ## Paths
 
