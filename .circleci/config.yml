@@ -99,8 +99,10 @@ jobs:
           name: Format the test results
           when: always
           command: |
-            sudo apt-get install -y libtap-formatter-junit-perl
-            cd ~/test-results/example && tap2junit results.tap
+            if [ -f ~/test-results/example/results.tap ]; then
+              sudo apt-get install -y libtap-formatter-junit-perl
+              cd ~/test-results/example && tap2junit results.tap
+            fi
       - store_test_results:
           path: ~/test-results
 
