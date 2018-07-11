@@ -34,7 +34,7 @@
                                                 :optimizations :none}}
             :test               {:source-paths ["src" "test"]
                                  :compiler     {:output-to     "out/testable.js"
-                                                :main          'example.runner
+                                                :main          example.runner
                                                 :optimizations :simple}}
             :advanced           {:source-paths ["src" "test"]
                                  :compiler     {:output-to     "out/testable.js"
