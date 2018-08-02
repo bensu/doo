@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased] -
+
+### Added
+- Add support for Lumo and Planck. ([#179](https://github.com/bensu/doo/pull/179))
+
+### Fixed
+- Fix printing test failures with records. ([#180](https://github.com/bensu/doo/issues/180))
+
 ## [0.1.10] - 2018-03-24
 
 ### Added
