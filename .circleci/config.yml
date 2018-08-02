@@ -70,8 +70,10 @@ jobs:
           keys:
             - v1-{{ checksum "library/project.clj" }}-{{ checksum "plugin/project.clj" }}-{{ checksum "example/package.json" }}-{{ checksum "library/package.json" }}
             - v1-
-      - run: sudo apt-get update && sudo apt-get install -y phantomjs rhino libgconf-2-4
-      - run: sudo npm install karma-cli -g
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y phantomjs rhino libgconf-2-4
+      - run: sudo npm install karma-cli lumo-cljs -g --unsafe-perm
       - run:
           name: "Install Bats"
           command: |
@@ -97,8 +99,10 @@ jobs:
           name: Format the test results
           when: always
           command: |
-            sudo apt-get install -y libtap-formatter-junit-perl
-            cd ~/test-results/example && tap2junit results.tap
+            if [ -f ~/test-results/example/results.tap ]; then
+              sudo apt-get install -y libtap-formatter-junit-perl
+              cd ~/test-results/example && tap2junit results.tap
+            fi
       - store_test_results:
           path: ~/test-results
 
