@@ -9,7 +9,7 @@
                  [andare "0.9.0"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-doo "0.1.11-SNAPSHOT"]]
+            [lein-doo "0.1.10"]]
 
   :source-paths ["src" "test" "failing-tests"]
 
@@ -23,7 +23,9 @@
         :karma {:launchers {:chrome-no-security {:plugin "karma-chrome-launcher" :name "Chrome_no_security"}}
                 :config {"customLaunchers"
                          {"Chrome_no_security" {"base" "Chrome"
-                                                "flags" ["--disable-web-security"]}}}}}
+                                                "flags" ["--disable-web-security"]}}}}
+        :coverage {:packages [example]
+                   :reporter {:check {:global {:statements 100}}}}}
 
   :jvm-opts ["-Xmx1g"]
 
