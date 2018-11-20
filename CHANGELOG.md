@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] -
+## [0.1.11] - 2018-11-20
 
 ### Added
 - Add support for Lumo and Planck. ([#179](https://github.com/bensu/doo/pull/179))

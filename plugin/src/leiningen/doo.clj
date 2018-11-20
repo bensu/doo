@@ -204,7 +204,7 @@ in project.clj.\n")
          ;; FIX: get the version dynamically
          project' (-> project
                       correct-builds
-                      (add-dep ['doo "0.1.11-SNAPSHOT"]))
+                      (add-dep ['doo "0.1.11"]))
          {:keys [source-paths compiler]}
          (cli->build cli project' opts)
          compiler (fix-quoting compiler)
