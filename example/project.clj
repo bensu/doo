@@ -1,4 +1,4 @@
-(defproject lein-doo-example "0.1.11"
+(defproject lein-doo-example "0.1.12-SNAPSHOT"
   :description "Project to test lein-doo. Do not take it as an example"
   :url "https://github.com/bensu/doo"
   :license {:name "Eclipse Public License"
@@ -9,7 +9,7 @@
                  [andare "0.9.0"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
-            [lein-doo "0.1.11"]]
+            [lein-doo "0.1.12-SNAPSHOT"]]
 
   :source-paths ["src" "test" "failing-tests"]
 

@@ -3,7 +3,7 @@
  :dependencies '[[org.clojure/core.async      "0.4.474"]
                  [org.clojure/clojurescript   "1.9.946"]
                  [crisptrutski/boot-cljs-test "0.3.5-SNAPSHOT"]
-                 [doo                         "0.1.11"]])
+                 [doo                         "0.1.12-SNAPSHOT"]])
 
 (require
  '[crisptrutski.boot-cljs-test :refer [test-cljs]])
