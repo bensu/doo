@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - Add support for Lumo and Planck. ([#179](https://github.com/bensu/doo/pull/179))
+- Log error stack trace with PhantomJS/SlimerJS. ([#188](https://github.com/bensu/doo/pull/188))
 
 ### Fixed
 - Fix printing test failures with records. ([#180](https://github.com/bensu/doo/issues/180))
