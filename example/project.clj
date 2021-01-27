@@ -4,11 +4,11 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.9.946"]
-                 [andare "0.9.0"]]
+  :dependencies [[org.clojure/clojure "1.10.2"]
+                 [org.clojure/clojurescript "1.10.773"]
+                 [andare "1.1.587"]]
 
-  :plugins [[lein-cljsbuild "1.1.7"]
+  :plugins [[lein-cljsbuild "1.1.8"]
             [lein-doo "0.1.12-SNAPSHOT"]]
 
   :source-paths ["src" "test" "failing-tests"]
