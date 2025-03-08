@@ -1,5 +1,10 @@
 # doo
 
+> [!WARNING]  
+> This is unmaintained. It looks like [ingesolvoll/doo](https://github.com/ingesolvoll/doo) is more up to date.
+
+<br>
+
 [![CircleCI](https://img.shields.io/circleci/project/github/bensu/doo.svg?label=CircleCI)](https://circleci.com/gh/bensu/doo) [![Build status](https://ci.appveyor.com/api/projects/status/ufuprdbgn5afhudt?svg=true)](https://ci.appveyor.com/project/bensu/doo) [![Clojars Project](https://img.shields.io/clojars/v/lein-doo.svg)](https://clojars.org/lein-doo)
 
 A library and Leiningen plugin to run `cljs.test` in many JS environments. For
