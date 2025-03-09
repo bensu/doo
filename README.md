@@ -194,7 +194,7 @@ Some requirements:
 
 #### Installation
 
-[Karma](http://karma-runner.github.io/0.13/index.html)
+[Karma](https://karma-runner.github.io/latest/)
 is a comprehensive JavaScript test runner. It uses
 [plugins](http://karma-runner.github.io/0.13/dev/plugins.html) to
 extend functionality. We are interested in several "launcher" plugins
