@@ -152,31 +152,36 @@
       js)))
 
 (defmethod js->command* :phantom
-  [_ _ opts]
+  [_ compiler-opts opts]
   [(command-table :phantom opts)
    (runner-path! :phantom "headless.js" {:common? true})
-   (runner-path! :phantom-shim "phantomjs-shims.js")])
+   (runner-path! :phantom-shim "phantomjs-shims.js")
+   (:output-to compiler-opts)])
 
 (defmethod js->command* :slimer
-  [_ _ opts]
+  [_ compiler-opts opts]
   [(command-table :slimer opts)
-   (runner-path! :slimer "headless.js" {:common? true})])
+   (runner-path! :slimer "headless.js" {:common? true})
+   (:output-to compiler-opts)])
 
 (defmethod js->command* :rhino
-  [_ _ opts]
+  [_ compiler-opts opts]
   [(command-table :rhino opts)
    "-opt" "-1"
-   (runner-path! :rhino "rhino.js" {:common? true})])
+   (runner-path! :rhino "rhino.js" {:common? true})
+   (:output-to compiler-opts)])
 
 (defmethod js->command* :nashorn
-  [_ _ opts]
+  [_ compiler-opts opts]
   [(command-table :nashorn opts)
    (runner-path! :nashorn "nashorn.js" {:common? true})
-   "--"])
+   "--"
+   (:output-to compiler-opts)])
 
 (defmethod js->command* :node
-  [_ _ opts]
-  [(command-table :node opts)])
+  [_ compiler-opts opts]
+  [(command-table :node opts)
+   (:output-to compiler-opts)])
 
 (defmethod js->command* :karma
   [js-env compiler-opts opts]
@@ -304,8 +309,7 @@ where:
   ([js-env compiler-opts opts]
    {:pre [(valid-js-env? js-env (karma/custom-launchers opts))]}
    (let [doo-opts (merge default-opts opts)
-         cmd (cond-> (js->command js-env compiler-opts doo-opts)
-               (not (self-hosted? js-env)) (conj (:output-to compiler-opts)))]
+         cmd (js->command js-env compiler-opts doo-opts)]
      (when (:debug doo-opts)
        (utils/debug-log "Command to run script:" cmd))
      (try
