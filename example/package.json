@@ -7,7 +7,7 @@
     "bats-assert": "git+https://github.com/ztombol/bats-assert.git#v0.3.0",
     "bats-support": "git+https://github.com/ztombol/bats-support.git#v0.2.0",
     "electron": "^1.7.8",
-    "karma": "^1.7.0",
+    "karma": "^6.4.1",
     "karma-chrome-launcher": "^2.1.1",
     "karma-cljs-test": "^0.1.0",
     "karma-electron-launcher": "^0.2.0",
